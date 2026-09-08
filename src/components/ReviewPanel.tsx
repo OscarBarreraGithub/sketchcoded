@@ -1,3 +1,4 @@
+import { AutoTextarea } from './AutoTextarea';
 import { useMemo, useState } from 'react';
 import {
   AlertCircle,
@@ -48,7 +49,10 @@ export function ReviewPanel({
         </button>
         <span className="eyebrow">A SECOND LOOK</span>
         <h2>Follow every thread.</h2>
-        <p>A few thoughtful checks to help your idea hold together.</p>
+        <p>
+          Check for missing paths, screens you cannot reach, and ways back. Open each finding to fix
+          it or record why a one-way path is intentional—for example, after signing in.
+        </p>
       </div>
       <div className="review-tabs">
         <button
@@ -169,7 +173,7 @@ export function ReviewPanel({
                       >
                         <label>
                           This is intentional because…
-                          <textarea
+                          <AutoTextarea
                             required
                             rows={3}
                             value={reason}

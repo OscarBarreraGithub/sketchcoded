@@ -1,6 +1,15 @@
+import { AutoTextarea } from './AutoTextarea';
 import { useRef, useState } from 'react';
 import { ArrowLeft, ArrowUpRight, Flag, Link2, MapPin, Plus, Trash2, Undo2 } from 'lucide-react';
-import { assetUrl, removePin, uid, type Pin, type Project, type Screen } from '../../shared/model';
+import {
+  assetUrl,
+  attachDetail,
+  removePin,
+  uid,
+  type Pin,
+  type Project,
+  type Screen,
+} from '../../shared/model';
 import type { Update } from '../useProject';
 import { Modal, Confirm } from './Modal';
 export function ScreenEditor({
@@ -71,7 +80,7 @@ export function ScreenEditor({
               }}
             >
               <MapPin size={15} />
-              {placing ? 'Click the sketch to place' : 'Add an interaction pin'}
+              {placing ? 'Click the sketch to place' : 'Add a pin'}
             </button>
           </div>
           <div className={`sketch-stage ${placing ? 'placing' : ''}`}>
@@ -88,7 +97,17 @@ export function ScreenEditor({
                   id = uid();
                 update((p) => ({
                   ...p,
-                  pins: [...p.pins, { id, screenId: s.id, ...pos, title: '', description: '' }],
+                  pins: [
+                    ...p.pins,
+                    {
+                      id,
+                      screenId: s.id,
+                      ...pos,
+                      title: '',
+                      description: '',
+                      kind: s.role === 'detail' ? 'detail' : 'interaction',
+                    },
+                  ],
                 }));
                 setSelected(id);
                 setPlacing(false);
@@ -160,10 +179,34 @@ export function ScreenEditor({
                   <MapPin size={18} />
                 </span>
                 <div>
-                  <span className="eyebrow">INTERACTION {pins.indexOf(pin) + 1}</span>
-                  <h3>What happens here?</h3>
+                  <span className="eyebrow">PIN {pins.indexOf(pin) + 1}</span>
+                  <h3>{pin.kind === 'detail' ? 'Show a closer look.' : 'What happens here?'}</h3>
                 </div>
               </div>
+              <label>
+                Pin purpose
+                <select
+                  value={pin.kind ?? 'interaction'}
+                  onChange={(e) =>
+                    editPin({ kind: e.target.value as Pin['kind'], detailTarget: null })
+                  }
+                >
+                  <option value="interaction" disabled={s.role === 'detail'}>
+                    App interaction — go somewhere or do something
+                  </option>
+                  <option
+                    value="detail"
+                    disabled={project.transitions.some((t) => t.pinId === pin.id)}
+                  >
+                    Detail reference — show a closer look
+                  </option>
+                </select>
+              </label>
+              <p className="field-help">
+                {pin.kind === 'detail'
+                  ? 'Attach an enlarged or supporting sketch. This explains the design without changing the app screen.'
+                  : 'Describe an action, then connect the possible outcomes. To change an existing interaction to a reference, remove its yarns first.'}
+              </p>
               <label>
                 Pin name
                 <input
@@ -177,7 +220,7 @@ export function ScreenEditor({
               </label>
               <label>
                 The idea
-                <textarea
+                <AutoTextarea
                   rows={5}
                   value={pin.description}
                   placeholder="Describe this part of the screen and what a click should do…"
@@ -185,38 +228,88 @@ export function ScreenEditor({
                 />
               </label>
               <p className="field-help">
-                Think in intentions. The detailed rules live on each yarn.
+                {pin.kind === 'detail'
+                  ? 'Describe what this closer look explains. It does not move the user to another page.'
+                  : 'Think in intentions. The detailed rules live on each yarn.'}
               </p>
-              <div className="inspector-section">
-                <div className="section-heading">
-                  <span>OUTGOING YARNS</span>
-                  <span>{project.transitions.filter((t) => t.pinId === pin.id).length}</span>
+              {pin.kind === 'detail' ? (
+                <div className="inspector-section">
+                  <label>
+                    Detail sketch
+                    <select
+                      value={pin.detailTarget ?? ''}
+                      onChange={(e) =>
+                        update((p) => attachDetail(p, pin.id, e.target.value || null))
+                      }
+                    >
+                      <option value="">Choose a sketch already on the board</option>
+                      {project.screens
+                        .filter((target) => target.id !== s.id)
+                        .map((target) => (
+                          <option key={target.id} value={target.id}>
+                            {target.title}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  <p className="field-help">
+                    A sketch with no app connections becomes a detail view. A screen already used in
+                    your app keeps its existing role.
+                  </p>
+                  {pin.detailTarget && (
+                    <div className="detail-thumbnail">
+                      <img
+                        src={assetUrl(
+                          project.assets.find(
+                            (a) =>
+                              a.id ===
+                              project.screens.find((target) => target.id === pin.detailTarget)
+                                ?.assetId,
+                          ),
+                        )}
+                        alt={`Attached detail: ${project.screens.find((target) => target.id === pin.detailTarget)?.title}`}
+                      />
+                      <small>Reference only · no navigation step</small>
+                    </div>
+                  )}
+                  <button className="button full" onClick={() => onConnect(pin.id)}>
+                    <Link2 size={16} /> Choose detail on board
+                  </button>
                 </div>
-                {project.transitions
-                  .filter((t) => t.pinId === pin.id)
-                  .map((t) => (
-                    <button className="connection-row" key={t.id} onClick={() => onEdge(t.id)}>
-                      <span className={`thread-dot ${t.color}`} />
-                      <span>
-                        {t.summary || 'Unnamed connection'}
-                        <small>
-                          {t.target
-                            ? project.screens.find((s) => s.id === t.target)?.title
-                            : t.navigation === 'back'
-                              ? 'Previous screen'
-                              : 'Dialog caller'}
-                        </small>
-                      </span>
-                      <ArrowUpRight size={15} />
+              ) : (
+                <>
+                  <div className="inspector-section">
+                    <div className="section-heading">
+                      <span>OUTGOING YARNS</span>
+                      <span>{project.transitions.filter((t) => t.pinId === pin.id).length}</span>
+                    </div>
+                    {project.transitions
+                      .filter((t) => t.pinId === pin.id)
+                      .map((t) => (
+                        <button className="connection-row" key={t.id} onClick={() => onEdge(t.id)}>
+                          <span className={`thread-dot ${t.color}`} />
+                          <span>
+                            {t.summary || 'Unnamed connection'}
+                            <small>
+                              {t.target
+                                ? project.screens.find((s) => s.id === t.target)?.title
+                                : t.navigation === 'back'
+                                  ? 'Previous screen'
+                                  : 'Dialog caller'}
+                            </small>
+                          </span>
+                          <ArrowUpRight size={15} />
+                        </button>
+                      ))}
+                    <button className="button full" onClick={() => onConnect(pin.id)}>
+                      <Link2 size={15} /> Connect to a screen
                     </button>
-                  ))}
-                <button className="button full" onClick={() => onConnect(pin.id)}>
-                  <Link2 size={15} /> Connect to a screen
-                </button>
-                <button className="text-button full centered" onClick={() => onHistory(pin.id)}>
-                  <Undo2 size={14} /> Add Back / Dismiss action
-                </button>
-              </div>
+                    <button className="text-button full centered" onClick={() => onHistory(pin.id)}>
+                      <Undo2 size={14} /> Add Back / Dismiss action
+                    </button>
+                  </div>
+                </>
+              )}
               <button className="text-button delete-action" onClick={() => setRemove(true)}>
                 <Trash2 size={14} /> Remove pin
               </button>
@@ -236,7 +329,7 @@ export function ScreenEditor({
               </label>
               <label>
                 What is this screen for?
-                <textarea
+                <AutoTextarea
                   rows={4}
                   value={s.purpose}
                   onChange={(e) => editScreen({ purpose: e.target.value })}
@@ -247,14 +340,35 @@ export function ScreenEditor({
                 Screen type
                 <select
                   value={s.role}
-                  onChange={(e) => editScreen({ role: e.target.value as Screen['role'] })}
+                  onChange={(e) =>
+                    editScreen({
+                      role: e.target.value as Screen['role'],
+                      ...(e.target.value === 'detail' ? { entry: false } : {}),
+                    })
+                  }
                 >
                   <option value="screen">Regular screen</option>
                   <option value="auth">Login / onboarding</option>
                   <option value="modal">Dialog / overlay</option>
                   <option value="terminal">Intentional ending</option>
+                  <option
+                    value="detail"
+                    disabled={project.transitions.some(
+                      (t) => t.target === s.id || pins.some((pin) => pin.id === t.pinId),
+                    )}
+                  >
+                    Detail / enlarged sketch (not an app page)
+                  </option>
                 </select>
               </label>
+              {project.transitions.some(
+                (t) => t.target === s.id || pins.some((pin) => pin.id === t.pinId),
+              ) && (
+                <p className="field-help">
+                  This screen is part of your app flow. Remove its app connections before making it
+                  a detail-only sketch.
+                </p>
+              )}
               {s.role === 'terminal' && (
                 <p className="field-help">
                   Describe the intended ending above so the flow review understands it.
@@ -263,6 +377,7 @@ export function ScreenEditor({
               <label className="check-row">
                 <input
                   type="checkbox"
+                  disabled={s.role === 'detail'}
                   checked={s.entry}
                   onChange={(e) => editScreen({ entry: e.target.checked })}
                 />

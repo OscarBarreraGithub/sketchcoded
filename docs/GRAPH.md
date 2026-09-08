@@ -4,16 +4,16 @@
 
 ## Records
 
-| Record     | Purpose                                                                                                                                                                       |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Project    | Schema version, stable ID, name, storage revision, timestamps, graph arrays, presentation, and decisions.                                                                     |
-| Asset      | Stable ID, immutable content-addressed WebP filename, dimensions, original filename, import timestamp, and an optional local source path. Source paths are removed on export. |
-| Screen     | Stable ID, asset reference, title, purpose, explicit entry flag, and role (`screen`, `auth`, `modal`, `terminal`). Represents a view, potentially reusable for many records.  |
-| Pin        | Stable ID, owning screen, normalized `x/y` from the image’s top-left, short name, and free-text intent. Its position is anchored to the image, not the rendered board size.   |
-| Transition | Stable ID, source pin, target screen or dynamic history destination, summary, condition, detailed logic, context passed, fallback flag, navigation kind, and yarn color.      |
-| Layout     | Map from screen IDs to world-space position and display width. No routing semantics.                                                                                          |
-| Viewport   | Pan and zoom, independent of graph semantics.                                                                                                                                 |
-| Review     | Finding identity, evidence fingerprint, reason, author, and acceptance timestamp.                                                                                             |
+| Record     | Purpose                                                                                                                                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project    | Schema version, stable ID, name, storage revision, timestamps, graph arrays, presentation, and decisions.                                                                                                                                                   |
+| Asset      | Stable ID, immutable content-addressed WebP filename, dimensions, original filename, import timestamp, and an optional local source path. Source paths are removed on export.                                                                               |
+| Screen     | Stable ID, asset reference, title, purpose, explicit entry flag, and role (`screen`, `auth`, `modal`, `terminal`, `detail`). Represents a view, potentially reusable for many records.                                                                      |
+| Pin        | Stable ID, owning screen, normalized `x/y` from the image’s top-left, short name, free-text intent, optional `kind` (`interaction` or `detail`), and optional `detailTarget` screen ID. Its position is anchored to the image, not the rendered board size. |
+| Transition | Stable ID, source pin, target screen or dynamic history destination, summary, condition, detailed logic, context passed, fallback flag, navigation kind, and yarn color.                                                                                    |
+| Layout     | Map from screen IDs to world-space position and display width. No routing semantics.                                                                                                                                                                        |
+| Viewport   | Pan and zoom, independent of graph semantics.                                                                                                                                                                                                               |
+| Review     | Finding identity, evidence fingerprint, reason, author, and acceptance timestamp.                                                                                                                                                                           |
 
 Transitions form a **directed multigraph**. Several transitions may share the same source pin and destination. Each interaction should be read with _all_ of its outgoing transitions, not as independent pairs of screenshots.
 
@@ -26,6 +26,14 @@ A selected chat is modeled as context on a transition to a reusable conversation
 `back` and `dismiss` must have `target: null`. Back pops one frame. Dismiss removes the most recent modal root and everything above it, returning to its actual caller. It works with nested dialogs. An action without the required caller is explicitly unavailable in preview.
 
 Starting at a screen in preview creates fresh history. Selecting a non-entry screen is a deliberate testing convenience, labeled as a test entry. The preview’s separate rewind uses saved simulator snapshots and is never interpreted as an authored return route.
+
+## Detail references
+
+A pin with `kind: "detail"` and `detailTarget: "screen-id"` points to an enlarged or supporting illustration. Missing `kind` means `interaction`, preserving existing version-1 projects without rewriting them. The optional fields extend version 1; exports include the current full JSON Schema. A dedicated illustration has screen `role: "detail"` and cannot be an app entry. A detail pin may also reference an existing app screen as an illustration while that screen retains its normal navigation role.
+
+References form a separate relation from `transitions`. They never make an app screen reachable, satisfy a return path, or add a preview history frame. Dedicated detail screens are excluded from app entry, reachability, and dead-end checks. A missing/unattached reference still produces a finding. Reference cycles that cannot be reached from any app sketch also produce a warning. Supporting illustrations do not invalidate navigation acceptance by changing app topology. A reference mixed with app transitions, an invalid/self target, or a detail marked as an entry produces an unwaivable error. Deleting a detail target clears attached pins’ target IDs and leaves a repairable missing-reference finding.
+
+The UI marks an otherwise unused regular target as `detail` when attached. It preserves an entry or already connected screen’s role. Reference browsing can follow further detail pins with its own Back controls, without changing app history. It does not silently change that role back when detached; the author can reuse the illustration or change its type. The outline groups detail sketches separately and exports describe their illustrative purpose explicitly.
 
 ## Automated review
 

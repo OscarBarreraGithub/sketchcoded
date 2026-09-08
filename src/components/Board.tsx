@@ -9,9 +9,7 @@ import {
   ArrowDownRight,
   Flag,
   Focus,
-  Hand,
   Minus,
-  MousePointer2,
   Plus,
   Redo2,
   Undo2,
@@ -42,10 +40,12 @@ export function Board({
   canUndo,
   canRedo,
   fitSignal,
+  focusRequest,
+  onFocusHandled,
 }: {
   project: Project;
   update: Update;
-  onScreen: (id: string) => void;
+  onScreen: (id: string, pin?: string) => void;
   onEdge: (id: string) => void;
   onAdd: (a: Asset, pos: { x: number; y: number }) => void;
   onConnect: (pinId: string, target: string) => void;
@@ -56,12 +56,13 @@ export function Board({
   canUndo: boolean;
   canRedo: boolean;
   fitSignal: number;
+  focusRequest: { id: string; nonce: number } | null;
+  onFocusHandled: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null),
     [view, setView] = useState(project.viewport),
     viewRef = useRef(view),
     [moving, setMoving] = useState<{ id: string; x: number; y: number } | null>(null),
-    [hand, setHand] = useState(false),
     [space, setSpace] = useState(false);
   viewRef.current = view;
   const drag = useRef<{
@@ -105,9 +106,31 @@ export function Board({
       zoom: z,
     });
   };
+  const lastFit = useRef(fitSignal);
   useEffect(() => {
-    if (fitSignal > 0) fit();
+    if (lastFit.current !== fitSignal) {
+      lastFit.current = fitSignal;
+      fit();
+    }
   }, [fitSignal]);
+  useEffect(() => {
+    if (!focusRequest || !ref.current) return;
+    const p = projectRef.current,
+      s = p.screens.find((s) => s.id === focusRequest.id);
+    if (!s) return;
+    const pos = p.layout[s.id],
+      size = screenSize(p, s),
+      w = ref.current.clientWidth,
+      h = ref.current.clientHeight;
+    if (!pos) return;
+    const z = Math.max(0.15, Math.min(1.2, (w - 100) / size.width, (h - 150) / size.height));
+    commitView({
+      x: w / 2 - (pos.x + size.width / 2) * z,
+      y: (h - 60) / 2 - (pos.y + size.height / 2) * z,
+      zoom: z,
+    });
+    onFocusHandled();
+  }, [focusRequest]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (
@@ -149,11 +172,14 @@ export function Board({
   useEffect(() => {
     const el = ref.current!;
     const wheel = (e: WheelEvent) => {
-      if ((e.target as HTMLElement).closest('.board-controls')) return;
+      if (e.ctrlKey || e.metaKey || (e.target as HTMLElement).closest('.board-controls')) return;
       e.preventDefault();
-      if (e.ctrlKey || e.metaKey) {
+      if (!e.shiftKey) {
         const r = el.getBoundingClientRect();
-        zoom(Math.exp(-e.deltaY * 0.008), { x: e.clientX - r.left, y: e.clientY - r.top });
+        zoom(Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.03 : 0.002)), {
+          x: e.clientX - r.left,
+          y: e.clientY - r.top,
+        });
       } else {
         const old = viewRef.current;
         commitView({ ...old, x: old.x - e.deltaX, y: old.y - e.deltaY });
@@ -174,7 +200,7 @@ export function Board({
       onConnect(connecting, s.id);
       return;
     }
-    const actual = hand || space || e.button === 1 ? 'pan' : type;
+    const actual = space || e.button === 1 ? 'pan' : type;
     const pos = actual === 'pan' ? view : position(s!);
     drag.current = {
       type: actual,
@@ -245,12 +271,13 @@ export function Board({
   return (
     <main
       ref={ref}
-      className={`board ${hand || space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''}`}
+      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''}`}
+      style={{ '--board-zoom': view.zoom } as CSSProperties}
       aria-label="Design board"
       onPointerDown={(e) => {
         if (
           !(e.target as HTMLElement).closest(
-            'button,.screen-card,.yarn-hit,.yarn-label,.board-controls',
+            'button,input,.screen-card,.yarn-hit,.yarn-label,.board-controls',
           )
         )
           start(e, 'pan');
@@ -287,7 +314,10 @@ export function Board({
       </div>
       {connecting && (
         <div className="connection-banner">
-          <span className="mini-pin" /> Choose a screen to tie this yarn to{' '}
+          <span className="mini-pin" />{' '}
+          {project.pins.find((pin) => pin.id === connecting)?.kind === 'detail'
+            ? 'Choose a sketch for this closer look'
+            : 'Choose a screen to tie this yarn to'}{' '}
           <button className="icon-button" onClick={onCancelConnect} aria-label="Cancel connection">
             <X size={16} />
           </button>
@@ -326,10 +356,10 @@ export function Board({
                   )}
                   {pins.map((pin, i) => (
                     <button
-                      className={`board-pin ${connecting === pin.id ? 'selected' : ''}`}
+                      className={`board-pin ${pin.kind === 'detail' ? 'reference-pin' : ''} ${connecting === pin.id ? 'selected' : ''}`}
                       key={pin.id}
                       style={{ left: `${pin.x * 100}%`, top: `${pin.y * 100}%` }}
-                      title={`${pin.title} — click to connect`}
+                      title={`${pin.title} — ${pin.kind === 'detail' ? 'choose a detail sketch' : 'click to connect'}`}
                       aria-label={`Connect ${pin.title}`}
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
@@ -337,20 +367,22 @@ export function Board({
                         onConnect(pin.id, '');
                       }}
                     >
-                      {i + 1}
+                      <span>{pin.kind === 'detail' ? <Focus size={14} /> : i + 1}</span>
                     </button>
                   ))}
                 </div>
                 <div className="card-footer">
                   <span>
                     {String(index + 1).padStart(2, '0')} /{' '}
-                    {s.role === 'auth'
-                      ? 'AUTHENTICATION'
-                      : s.role === 'modal'
-                        ? 'DIALOG'
-                        : s.role === 'terminal'
-                          ? 'ENDING'
-                          : 'SCREEN'}
+                    {s.role === 'detail'
+                      ? 'DETAIL REFERENCE'
+                      : s.role === 'auth'
+                        ? 'AUTHENTICATION'
+                        : s.role === 'modal'
+                          ? 'DIALOG'
+                          : s.role === 'terminal'
+                            ? 'ENDING'
+                            : 'SCREEN'}
                   </span>
                   <button
                     className="icon-button"
@@ -373,6 +405,29 @@ export function Board({
             </article>
           );
         })}
+        <svg className="yarn-hit-layer" aria-hidden="true" width="1" height="1">
+          {project.transitions
+            .filter((t) => !isHistory(t) && t.target)
+            .map((t) => {
+              const p = points(t.pinId, t.target!, t.id);
+              return p ? (
+                <path key={t.id} d={p.d} className="yarn-hit" onClick={() => onEdge(t.id)} />
+              ) : null;
+            })}
+          {project.pins
+            .filter((pin) => pin.kind === 'detail' && pin.detailTarget)
+            .map((pin) => {
+              const p = points(pin.id, pin.detailTarget!, pin.id);
+              return p ? (
+                <path
+                  key={pin.id}
+                  d={p.d}
+                  className="yarn-hit"
+                  onClick={() => onScreen(pin.screenId, pin.id)}
+                />
+              ) : null;
+            })}
+        </svg>
         <svg className="yarn-layer" aria-hidden="true" width="1" height="1">
           <defs>
             {Object.entries(colors).map(([name, color]) => (
@@ -390,6 +445,16 @@ export function Board({
               </marker>
             ))}
           </defs>
+          {project.pins
+            .filter((pin) => pin.kind === 'detail' && pin.detailTarget)
+            .map((pin) => {
+              const p = points(pin.id, pin.detailTarget!, pin.id);
+              return p ? (
+                <g key={pin.id}>
+                  <path d={p.d} className="detail-thread" />
+                </g>
+              ) : null;
+            })}
           {project.transitions
             .filter((t) => !isHistory(t) && t.target)
             .map((t) => {
@@ -404,7 +469,6 @@ export function Board({
                     markerEnd={`url(#arrow-${t.color})`}
                   />
                   <path d={p.d} className="yarn-strand" />
-                  <path d={p.d} className="yarn-hit" onClick={() => onEdge(t.id)} />
                 </g>
               ) : null;
             })}
@@ -464,23 +528,6 @@ export function Board({
       )}
       <div className="board-controls">
         <div className="control-group">
-          <button
-            className={`icon-button ${!hand ? 'active' : ''}`}
-            onClick={() => setHand(false)}
-            aria-label="Select tool"
-          >
-            <MousePointer2 size={18} />
-          </button>
-          <button
-            className={`icon-button ${hand ? 'active' : ''}`}
-            onClick={() => setHand(true)}
-            aria-label="Pan tool"
-          >
-            <Hand size={18} />
-          </button>
-        </div>
-        <span className="control-divider" />
-        <div className="control-group">
           <button className="icon-button" onClick={undo} disabled={!canUndo} aria-label="Undo">
             <Undo2 size={17} />
           </button>
@@ -493,6 +540,15 @@ export function Board({
           <button className="icon-button" onClick={() => zoom(1 / 1.2)} aria-label="Zoom out">
             <Minus size={17} />
           </button>
+          <input
+            className="zoom-slider"
+            type="range"
+            aria-label="Board zoom"
+            min="15"
+            max="300"
+            value={Math.round(view.zoom * 100)}
+            onChange={(e) => zoom(Number(e.target.value) / 100 / viewRef.current.zoom)}
+          />
           <button className="zoom-value" title="Reset to 100%" onClick={() => zoom(1 / view.zoom)}>
             {Math.round(view.zoom * 100)}%
           </button>
@@ -506,8 +562,8 @@ export function Board({
       </div>
       <div className="board-help">
         <span>Drag to arrange</span>
-        <i /> <span>Space to pan</span>
-        <i /> <span>⌘ / Ctrl + scroll to zoom</span>
+        <i /> <span>Drag blank space to pan</span>
+        <i /> <span>Scroll to zoom · Shift + scroll to pan</span>
       </div>
       <div className="board-legend">
         <span className="legend-line" /> A thread of an idea

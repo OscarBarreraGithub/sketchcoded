@@ -9,6 +9,7 @@ import '@fontsource/caveat/600.css';
 import '@fontsource/newsreader/400.css';
 import App from './App';
 import './styles.css';
+import './usability.css';
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: boolean }> {
   state = { error: false };
   static getDerivedStateFromError() {
@@ -20,7 +21,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
         <h1>Let’s pick up the thread.</h1>
         <p>The interface hit an unexpected problem. Your saved board is still on disk.</p>
         <button className="button primary" onClick={() => location.reload()}>
-          Reload Drawcode
+          Reload Sketchcoded
         </button>
       </main>
     ) : (

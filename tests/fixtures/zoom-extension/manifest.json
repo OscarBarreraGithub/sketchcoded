@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "Sketchcoded browser zoom test",
+  "version": "1.0",
+  "permissions": ["tabs"],
+  "host_permissions": ["http://127.0.0.1:5174/*"],
+  "background": { "service_worker": "background.js" }
+}

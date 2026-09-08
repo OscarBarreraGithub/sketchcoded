@@ -218,7 +218,7 @@ export class Store {
         ),
       ),
       'READ-ME.md': strToU8(
-        '# Drawcode project\n\nStart with flow.md for the organized specification, project.json for the canonical graph (schemaVersion 1), and schema.json for its JSON Schema. Screens reference assets; pins use normalized image coordinates; transitions connect a pin to a target screen or use dynamic back/dismiss history. layout and viewport are presentation only.\n\nRead each pin description with all of its outgoing transitions: summary, condition, logic, context, fallback and navigation. Screens describe reusable views, not necessarily unique records. Entry screens model supported launch contexts. Screen roles describe intent, not automatic exceptions.\n\nreview.json contains structural findings and saved acceptances. Natural-language conditions are not executed or verified. Acknowledgments can be stale and must be reviewed again. Do not assume every branch is exhaustive or every structural return path is available at runtime.\n\nImages are relative to assets/. Source folder paths are excluded. Import this ZIP in Drawcode to continue editing.\n',
+        '# Sketchcoded project\n\nStart with flow.md for the organized specification, project.json for the canonical graph (schemaVersion 1), and schema.json for its JSON Schema. Screens reference assets; pins use normalized image coordinates; transitions connect a pin to a target screen or use dynamic back/dismiss history. A pin with kind=detail and detailTarget points to a supporting illustration; a missing kind means interaction. Dedicated detail screens have role=detail. These references never change app history or count as app paths or ways back. layout and viewport are presentation only.\n\nRead each pin description with all of its outgoing transitions: summary, condition, logic, context, fallback and navigation. Screens describe reusable views, not necessarily unique records. Entry screens model supported launch contexts. Screen roles describe intent, not automatic exceptions.\n\nreview.json contains structural findings and saved acceptances. Natural-language conditions are not executed or verified. Acknowledgments can be stale and must be reviewed again. Do not assume every branch is exhaustive or every structural return path is available at runtime.\n\nImages are relative to assets/. Source folder paths are excluded. Import this ZIP in Sketchcoded to continue editing.\n',
       ),
     };
     for (const asset of portable.assets) {
@@ -247,7 +247,8 @@ export class Store {
     } catch {
       throw new AppError('This ZIP is invalid or exceeds the 250 MB expanded limit.');
     }
-    if (!files['project.json']) throw new AppError('The ZIP must contain a Drawcode project.json.');
+    if (!files['project.json'])
+      throw new AppError('The ZIP must contain a Sketchcoded project.json.');
     let decoded: unknown;
     try {
       decoded = JSON.parse(strFromU8(files['project.json']));

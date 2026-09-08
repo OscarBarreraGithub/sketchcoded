@@ -1,7 +1,10 @@
+import { flowDocument } from '../shared/flow-document';
 import { describe, expect, it } from 'vitest';
 import { analyze, decisionFor, type Issue } from '../shared/graph';
 import {
   emptyProject,
+  attachDetail,
+  projectSchema,
   removePin,
   removeScreen,
   type Project,
@@ -232,5 +235,108 @@ describe('deletion integrity', () => {
     const p = graph();
     p.transitions = [edge('ab', 'a', 'b'), edge('ac', 'a', 'c')];
     expect(removePin(p, 'pin-a').transitions).toEqual([]);
+  });
+});
+
+describe('detail references', () => {
+  it('reads legacy projects without inventing reference links', () => {
+    const p = graph();
+    expect(projectSchema.parse(p)).toEqual(p);
+    expect(rules(p)).toContain('unconnected-pin');
+  });
+  it('excludes attached detail sketches from app reachability without making a return path', () => {
+    const p = graph();
+    p.pins = p.pins.filter((pin) => pin.screenId !== 'c');
+    p.transitions = [edge('ab', 'a', 'b')];
+    const next = attachDetail(p, 'pin-b', 'c');
+    expect(next.screens[2].role).toBe('detail');
+    expect(next.transitions).toEqual(p.transitions);
+    expect(analyze(next).filter((i) => i.subjects.includes('c'))).toEqual([]);
+    expect(rules(next)).toContain('one-way');
+    expect(
+      analyze(next).some((i) => i.rule === 'unconnected-pin' && i.subjects.includes('pin-b')),
+    ).toBe(false);
+    expect(projectSchema.parse(next)).toEqual(next);
+    expect(flowDocument(next)).toContain('Detail reference: c (c)');
+    expect(flowDocument(next)).toContain(
+      'does not advance app navigation or satisfy a return path',
+    );
+  });
+  it('preserves the role of an entry or connected app screen used as a visual reference', () => {
+    const p = graph();
+    p.transitions = [edge('ab', 'a', 'b')];
+    expect(attachDetail(p, 'pin-c', 'a').screens[0].role).toBe('screen');
+    expect(attachDetail(p, 'pin-c', 'b').screens[1].role).toBe('screen');
+    expect(attachDetail(p, 'pin-a', 'c')).toBe(p);
+  });
+  it('rejects self links and nonexistent targets and clears deleted references', () => {
+    const p = graph();
+    expect(attachDetail(p, 'pin-a', 'a')).toBe(p);
+    expect(attachDetail(p, 'pin-a', 'missing')).toBe(p);
+    const next = removeScreen(attachDetail(p, 'pin-a', 'c'), 'c');
+    expect(next.pins[0].detailTarget).toBeNull();
+    expect(rules(next)).toContain('unattached-reference');
+    expect(rules(next)).not.toContain('invalid-detail-reference');
+  });
+  it('diagnoses navigation incorrectly mixed with references as an unwaivable error', () => {
+    const p = attachDetail(graph(), 'pin-a', 'c');
+    p.transitions = [edge('bad', 'a', 'c')];
+    const issue = find(p, 'detail-navigation');
+    expect(issue.severity).toBe('error');
+    accept(p, issue);
+    expect(decisionFor(issue, p.reviews).status).toBe('open');
+    p.pins[0].detailTarget = 'missing';
+    expect(rules(p)).toContain('invalid-detail-reference');
+  });
+
+  it('keeps navigation acceptance when only supporting illustrations change', () => {
+    const p = graph(['a', 'b']);
+    p.transitions = [edge('ab', 'a', 'b')];
+    accept(p, find(p, 'one-way'));
+    p.screens.push({
+      id: 'c',
+      assetId: 'art',
+      title: 'Closer look',
+      purpose: 'Supporting layout',
+      entry: false,
+      role: 'detail',
+    });
+    p.layout.c = { x: 600, y: 0, width: 250 };
+    p.pins.push({
+      id: 'reference',
+      screenId: 'a',
+      title: 'Explain the header',
+      description: 'A closer look',
+      x: 0.2,
+      y: 0.2,
+      kind: 'detail',
+      detailTarget: 'c',
+    });
+    expect(decisionFor(find(p, 'one-way'), p.reviews).status).toBe('accepted');
+  });
+  it('does not use a malformed detail history action as evidence for a return route', () => {
+    const p = attachDetail(graph(), 'pin-b', 'c');
+    p.transitions = [edge('ab', 'a', 'b'), edge('bad-back', 'b', null, { navigation: 'back' })];
+    expect(rules(p)).toContain('detail-navigation');
+    expect(rules(p)).toContain('one-way');
+  });
+  it('finds isolated reference cycles and accepts reference chains rooted in an app sketch', () => {
+    let p = graph();
+    p.screens[1].role = 'detail';
+    p.screens[2].role = 'detail';
+    p = attachDetail(attachDetail(p, 'pin-b', 'c'), 'pin-c', 'b');
+    expect(analyze(p).filter((i) => i.rule === 'unreachable-detail')).toHaveLength(2);
+    p = attachDetail(p, 'pin-a', 'b');
+    expect(rules(p)).not.toContain('unreachable-detail');
+    expect(rules(p)).not.toContain('unreachable');
+  });
+  it('does not ask for an app entry on a reference-only board but still checks unattached details', () => {
+    const p = graph(['a']);
+    p.screens[0].entry = false;
+    p.screens[0].role = 'detail';
+    p.pins = [];
+    expect(rules(p)).toEqual(['unattached-detail']);
+    p.screens[0].entry = true;
+    expect(rules(p)).toContain('detail-entry');
   });
 });

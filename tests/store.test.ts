@@ -89,7 +89,9 @@ describe('durable local projects', () => {
     expect(saved.transitions).toEqual(p.transitions);
     expect(files['review.json']).toBeDefined();
     expect(files['schema.json']).toBeDefined();
-    expect(strFromU8(files['flow.md'])).toContain('Context passed: conversationId, selectedUserId');
+    expect(strFromU8(files['flow.md'])).toContain(
+      'Data or information: conversationId, selectedUserId',
+    );
     const imported = await store.importBundle(Buffer.from(zip));
     expect(imported.id).not.toBe(p.id);
     expect(imported.pins).toEqual(p.pins);

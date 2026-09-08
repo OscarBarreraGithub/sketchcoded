@@ -11,7 +11,7 @@ export function flowDocument(p: Project): string {
     '',
     '## Entry points',
     '',
-    ...p.screens.filter((s) => s.entry).map((s) => `- ${s.title} (${s.id})`),
+    ...p.screens.filter((s) => s.entry && s.role !== 'detail').map((s) => `- ${s.title} (${s.id})`),
     '',
   ];
   for (const screen of p.screens) {
@@ -28,6 +28,8 @@ export function flowDocument(p: Project): string {
         '',
       );
     lines.push(screen.purpose || '_Screen purpose has not been described._', '');
+    if (screen.role === 'detail')
+      lines.push('This is an enlarged/supporting illustration, not a navigable app page.', '');
     const pins = p.pins.filter((pin) => pin.screenId === screen.id);
     if (!pins.length) lines.push('_No interaction pins._', '');
     for (const pin of pins) {
@@ -39,6 +41,15 @@ export function flowDocument(p: Project): string {
         pin.description || '_Interaction intent is missing._',
         '',
       );
+      if (pin.kind === 'detail') {
+        lines.push(
+          `Detail reference: ${p.screens.find((s) => s.id === pin.detailTarget)?.title ?? 'NOT ATTACHED'} (${pin.detailTarget ?? 'none'})`,
+          '',
+          'This pin shows a supporting sketch. It does not advance app navigation or satisfy a return path.',
+          '',
+        );
+        continue;
+      }
       const branches = p.transitions.filter((t) => t.pinId === pin.id);
       if (!branches.length)
         lines.push('_No outgoing connection. This interaction is unfinished._', '');
@@ -59,7 +70,7 @@ export function flowDocument(p: Project): string {
           '',
           `Behavior: ${t.logic || 'No additional behavior specified.'}`,
           '',
-          `Context passed: ${t.context || 'Not specified.'}`,
+          `Data or information: ${t.context || 'Not specified.'}`,
           '',
         );
       }

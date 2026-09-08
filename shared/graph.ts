@@ -64,10 +64,16 @@ export function analyze(p: Project): Issue[] {
     const source = pinById.get(t.pinId)?.screenId;
     if (source) byScreen.set(source, [...(byScreen.get(source) ?? []), t]);
   }
-  const outgoing = (s: string) => byScreen.get(s) ?? [];
+  const outgoing = (s: string) => (byScreen.get(s) ?? []).filter((t) => validSet.has(t));
   const valid = p.transitions.filter(
-    (t) => pinById.has(t.pinId) && (isHistory(t) || (t.target && screenById.has(t.target))),
+    (t) =>
+      pinById.has(t.pinId) &&
+      pinById.get(t.pinId)?.kind !== 'detail' &&
+      screenById.get(pinById.get(t.pinId)!.screenId)?.role !== 'detail' &&
+      (isHistory(t) ||
+        (t.target && screenById.has(t.target) && screenById.get(t.target)?.role !== 'detail')),
   );
+  const validSet = new Set(valid);
   const adjacency = new Map(p.screens.map((s) => [s.id, [] as string[]]));
   for (const t of valid)
     if (!isHistory(t) && t.target) {
@@ -91,7 +97,7 @@ export function analyze(p: Project): Issue[] {
   };
   // Topology evidence omits coordinates, image choice, and cosmetic labels.
   const topology = {
-    screens: sorted(p.screens).map((s) => ({
+    screens: sorted(p.screens.filter((s) => s.role !== 'detail')).map((s) => ({
       id: s.id,
       entry: s.entry,
       role: s.role,
@@ -109,6 +115,23 @@ export function analyze(p: Project): Issue[] {
     })),
   };
   const topologyStamp = fingerprint(topology);
+  // Reference-only cycles still need a path from an app sketch to be useful in preview.
+  const referenceReach = new Set(p.screens.filter((s) => s.role !== 'detail').map((s) => s.id));
+  const referenceQueue = [...referenceReach];
+  const referencesByScreen = new Map<string, string[]>();
+  for (const pin of p.pins)
+    if (pin.kind === 'detail' && pin.detailTarget && screenById.has(pin.detailTarget))
+      referencesByScreen.set(pin.screenId, [
+        ...(referencesByScreen.get(pin.screenId) ?? []),
+        pin.detailTarget,
+      ]);
+  for (let i = 0; i < referenceQueue.length; i++)
+    for (const target of referencesByScreen.get(referenceQueue[i]) ?? [])
+      if (!referenceReach.has(target)) {
+        referenceReach.add(target);
+        referenceQueue.push(target);
+      }
+
   for (const [kind, list] of Object.entries({
     screen: p.screens,
     pin: p.pins,
@@ -129,8 +152,8 @@ export function analyze(p: Project): Issue[] {
       ids.add(item.id);
     }
   }
-  const entries = p.screens.filter((s) => s.entry).map((s) => s.id);
-  if (p.screens.length && !entries.length)
+  const entries = p.screens.filter((s) => s.entry && s.role !== 'detail').map((s) => s.id);
+  if (p.screens.some((s) => s.role !== 'detail') && !entries.length)
     add(
       'no-entry',
       'warning',
@@ -168,6 +191,39 @@ export function analyze(p: Project): Issue[] {
         'Name the screen so its purpose is clear.',
         s.title,
       );
+    if (s.role === 'detail') {
+      if (s.entry)
+        add(
+          'detail-entry',
+          'error',
+          [s.id],
+          'A detail cannot be an app entry',
+          'A detail sketch explains another view. Change its type to use it as an app screen.',
+          s,
+        );
+      if (!p.pins.some((pin) => pin.kind === 'detail' && pin.detailTarget === s.id))
+        add(
+          'unattached-detail',
+          'warning',
+          [s.id],
+          `${s.title} needs a reference`,
+          'Attach this detail to a pin on the sketch it explains, or change it to a regular screen.',
+          s.id,
+        );
+      if (
+        !referenceReach.has(s.id) &&
+        p.pins.some((pin) => pin.kind === 'detail' && pin.detailTarget === s.id)
+      )
+        add(
+          'unreachable-detail',
+          'warning',
+          [s.id],
+          `${s.title} has no reference from an app screen`,
+          'These detail references only lead to one another. Attach one to an app screen to make the closer look available during a test.',
+          { id: s.id, references: [...referencesByScreen].sort() },
+        );
+      continue;
+    }
     if (entries.length && !reachable.has(s.id))
       add(
         'unreachable',
@@ -216,6 +272,36 @@ export function analyze(p: Project): Issue[] {
         { title: pin.title, description: pin.description },
       );
     const branches = byPin.get(pin.id) ?? [];
+    if (screenById.get(pin.screenId)?.role === 'detail' && pin.kind !== 'detail')
+      add(
+        'detail-interaction',
+        'error',
+        [pin.id],
+        'A detail sketch contains an app interaction',
+        'Change this pin to a detail reference, or make its sketch a regular app screen.',
+        pin,
+      );
+    if (pin.kind === 'detail') {
+      if (!pin.detailTarget)
+        add(
+          'unattached-reference',
+          'warning',
+          [pin.id],
+          `${pin.title || 'This detail pin'} needs a sketch`,
+          'Choose the enlarged or supporting sketch that explains this part of the design.',
+          { screenId: pin.screenId, title: pin.title, description: pin.description },
+        );
+      else if (!screenById.has(pin.detailTarget) || pin.detailTarget === pin.screenId)
+        add(
+          'invalid-detail-reference',
+          'error',
+          [pin.id],
+          'A detail reference has no valid target',
+          'Choose another existing sketch to show the detail.',
+          pin.detailTarget,
+        );
+      continue;
+    }
     if (!branches.length)
       add(
         'unconnected-pin',
@@ -262,6 +348,21 @@ export function analyze(p: Project): Issue[] {
   for (const t of p.transitions) {
     const pin = pinById.get(t.pinId),
       source = pin && screenById.get(pin.screenId);
+    if (
+      pin?.kind === 'detail' ||
+      source?.role === 'detail' ||
+      (t.target && screenById.get(t.target)?.role === 'detail')
+    ) {
+      add(
+        'detail-navigation',
+        'error',
+        [t.id],
+        'A detail reference is mixed with app navigation',
+        'Detail sketches explain a view without changing app screens. Use a detail pin, or change the sketch type to a regular screen.',
+        semantics(t),
+      );
+      continue;
+    }
     if (!pin)
       add(
         'orphan-transition',

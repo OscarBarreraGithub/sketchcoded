@@ -1,16 +1,19 @@
+import { DetailView } from './DetailView';
 import { useState } from 'react';
 import { ArrowLeft, ArrowRight, Flag, MapPin, Play, RotateCcw, Undo2 } from 'lucide-react';
 import { assetUrl, type Project, type Transition } from '../../shared/model';
 import { follow, startPreview, type PreviewState } from '../../shared/navigation';
 import { Modal } from './Modal';
 export function Preview({ project, onClose }: { project: Project; onClose: () => void }) {
-  const initial = project.screens.find((s) => s.entry)?.id ?? project.screens[0]?.id;
+  const appScreens = project.screens.filter((s) => s.role !== 'detail');
+  const initial = appScreens.find((s) => s.entry)?.id ?? appScreens[0]?.id;
   const [start, setStart] = useState(initial),
     [state, setState] = useState(() => startPreview(initial)),
     [rewinds, setRewinds] = useState<PreviewState[]>([]),
     [choice, setChoice] = useState<string | null>(null),
     [notice, setNotice] = useState(''),
-    [showPins, setShowPins] = useState(true);
+    [showPins, setShowPins] = useState(true),
+    [detail, setDetail] = useState<string | null>(null);
   const current = state.stack.at(-1)!,
     screen = project.screens.find((s) => s.id === current.screenId),
     asset = project.assets.find((a) => a.id === screen?.assetId),
@@ -18,6 +21,12 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
     pin = project.pins.find((p) => p.id === choice);
   const transitions = project.transitions.filter((t) => t.pinId === choice);
   const take = (t: Transition) => {
+    if (t.target && project.screens.find((s) => s.id === t.target)?.role === 'detail') {
+      setNotice(
+        'This path points to a detail sketch. Use a detail pin or change the sketch type in the editor.',
+      );
+      return;
+    }
     if (t.target && !project.screens.some((s) => s.id === t.target)) {
       setNotice('This destination is missing. Return to the board to reconnect it.');
       return;
@@ -51,7 +60,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             value={start}
             onChange={(e) => reset(e.target.value)}
           >
-            {project.screens.map((s) => (
+            {appScreens.map((s) => (
               <option value={s.id} key={s.id}>
                 {s.entry ? '↳ ' : ''}
                 {s.title}
@@ -96,6 +105,15 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
                 aria-label={`Try ${p.title || `interaction ${i + 1}`}`}
                 title={p.title}
                 onClick={() => {
+                  if (p.kind === 'detail') {
+                    setChoice(null);
+                    if (p.detailTarget) setDetail(p.detailTarget);
+                    else
+                      setNotice(
+                        'This detail pin needs an attached sketch. Choose one in the pin editor.',
+                      );
+                    return;
+                  }
                   const options = project.transitions.filter((t) => t.pinId === p.id);
                   setNotice('');
                   if (options.length === 1) take(options[0]);
@@ -107,7 +125,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             ))}
           </div>
           <p className="preview-hint">
-            <MapPin size={14} /> Click an interaction pin to see where it takes you.
+            <MapPin size={14} /> Click a pin to try a path or open a closer look.
           </p>
           {notice && (
             <div className="preview-notice" role="status">
@@ -181,7 +199,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
                   <span className="eyebrow">LAST CONNECTION</span>
                   <strong>{last.summary}</strong>
                   {last.condition && <p>{last.condition}</p>}
-                  {last.context && <small>Context: {last.context}</small>}
+                  {last.context && <small>Data or information: {last.context}</small>}
                 </div>
               )}
               {screen?.role === 'terminal' && (
@@ -214,6 +232,14 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
           <Play size={13} /> {state.trail.length} steps
         </span>
       </div>
+      {detail && (
+        <DetailView
+          project={project}
+          targetId={detail}
+          sourceTitle={screen?.title ?? 'this screen'}
+          onClose={() => setDetail(null)}
+        />
+      )}
     </Modal>
   );
 }

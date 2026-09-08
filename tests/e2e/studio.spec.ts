@@ -21,7 +21,7 @@ async function close(page: Page) {
 }
 async function addPin(page: Page, screen: string, name: string, description: string) {
   await page.getByRole('button', { name: `Edit ${screen}`, exact: true }).click();
-  await page.getByRole('button', { name: 'Add an interaction pin', exact: true }).click();
+  await page.getByRole('button', { name: 'Add a pin', exact: true }).first().click();
   const image = page.locator('.editable-image');
   const box = await image.boundingBox();
   expect(box).not.toBeNull();
@@ -108,7 +108,7 @@ test('connect a local folder, drag sketches, author pins and yarn, save, delete 
     await page
       .getByRole('textbox', { name: 'The details', exact: true })
       .fill('Load the record. Show a retry option if loading fails.');
-    await page.getByLabel('What gets passed along?').fill('itemId');
+    await page.getByLabel('What data or information is needed?').fill('itemId');
     await page.getByRole('button', { name: 'Tie the yarn', exact: true }).click();
     await addPin(page, 'Details', 'Back to Home', 'Return to the item list.');
     await page.getByRole('button', { name: 'Add Back / Dismiss action', exact: true }).click();

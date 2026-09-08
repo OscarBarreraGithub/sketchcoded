@@ -15,7 +15,7 @@ export function createApp(store: Store) {
       }
     };
     if (!local(`http://${req.headers.host}`) || (req.headers.origin && !local(req.headers.origin)))
-      return res.status(403).json({ error: 'Drawcode accepts local browser requests only.' });
+      return res.status(403).json({ error: 'Sketchcoded accepts local browser requests only.' });
     if (
       req.path.startsWith('/api/') &&
       !['GET', 'HEAD'].includes(req.method) &&
@@ -74,11 +74,11 @@ export function createApp(store: Store) {
     const project = projectSchema.parse(req.body),
       zip = await store.export(project);
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', 'attachment; filename="drawcode-project.zip"');
+    res.setHeader('Content-Disposition', 'attachment; filename="sketchcoded-project.zip"');
     res.send(Buffer.from(zip));
   });
   app.post('/api/import', bundle.single('project'), async (req, res) => {
-    if (!req.file) throw new AppError('Choose a Drawcode ZIP.');
+    if (!req.file) throw new AppError('Choose a Sketchcoded ZIP.');
     res.status(201).json(await store.importBundle(req.file.buffer));
   });
   app.use('/api', (_req, res) => res.status(404).json({ error: 'Unknown API route.' }));

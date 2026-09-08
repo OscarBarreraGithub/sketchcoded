@@ -9,6 +9,8 @@ import {
   FilePlus2,
   FolderOpen,
   LayoutDashboard,
+  ListTree,
+  Images,
   Link2,
   LoaderCircle,
   MapPin,
@@ -23,6 +25,7 @@ import {
 } from 'lucide-react';
 import {
   emptyProject,
+  attachDetail,
   removeScreen,
   uid,
   type Asset,
@@ -32,6 +35,7 @@ import {
 import { analyze, decisionFor, type Issue } from '../shared/graph';
 import { api, exportProject, getProjects } from './api';
 import { useProject } from './useProject';
+import { Outline } from './components/Outline';
 import { Board } from './components/Board';
 import { Library } from './components/Library';
 import { Modal, Confirm } from './components/Modal';
@@ -100,11 +104,11 @@ export default function App() {
 function Brand() {
   return (
     <div className="brand">
-      <span className="brand-mark">
-        <span />
+      <span className="brand-mark" aria-hidden="true">
+        <Pencil size={23} />
       </span>
       <span>
-        drawcode<span className="brand-period">.</span>
+        sketchcoded<span className="brand-period">.</span>
       </span>
     </div>
   );
@@ -126,6 +130,9 @@ function Studio({
     [edge, setEdge] = useState<{ draft: Transition; isNew: boolean } | null>(null),
     [preview, setPreview] = useState(false),
     [review, setReview] = useState(false),
+    [viewMode, setViewMode] = useState<'board' | 'outline'>('board'),
+    [libraryOpen, setLibraryOpen] = useState(false),
+    [focusRequest, setFocusRequest] = useState<{ id: string; nonce: number } | null>(null),
     [connecting, setConnecting] = useState<string | null>(null),
     [adding, setAdding] = useState<{ asset: Asset; pos: { x: number; y: number } } | null>(null),
     [remove, setRemove] = useState<string | null>(null),
@@ -318,7 +325,14 @@ function Studio({
         .replace(/^\d+[-_]/, '')
         .replace(/[-_]/g, ' '),
     );
-    setAdding({ asset, pos: pos ?? { x: (400 - v.x) / v.zoom, y: (230 - v.y) / v.zoom } });
+    const placements = Object.values(getCurrent().layout);
+    const next = placements.length
+      ? {
+          x: Math.max(...placements.map((p) => p.x + p.width)) + 100,
+          y: Math.min(...placements.map((p) => p.y)),
+        }
+      : { x: (400 - v.x) / v.zoom, y: (230 - v.y) / v.zoom };
+    setAdding({ asset, pos: pos ?? next });
   };
   const newEdge = (
     pinId: string,
@@ -343,8 +357,27 @@ function Studio({
       },
     });
   };
+  const showOnBoard = (id: string) => {
+    setViewMode('board');
+    setLibraryOpen(false);
+    setFocusRequest({ id, nonce: Date.now() });
+  };
   const connect = (pinId: string, target: string) => {
-    if (target) newEdge(pinId, target);
+    setViewMode('board');
+    if (target && getCurrent().pins.find((pin) => pin.id === pinId)?.kind === 'detail') {
+      const p = getCurrent();
+      if (p.pins.find((pin) => pin.id === pinId)?.screenId === target) {
+        notify('Choose a different sketch for this closer look.');
+        return;
+      }
+      update((p) => attachDetail(p, pinId, target));
+      setConnecting(null);
+      notify('Detail attached. This reference keeps you on the same app screen.');
+    } else if (target && getCurrent().screens.find((s) => s.id === target)?.role === 'detail') {
+      notify(
+        'This is a detail sketch. Choose Detail reference in the pin editor to attach it, or select an app screen.',
+      );
+    } else if (target) newEdge(pinId, target);
     else {
       setScreen(null);
       setConnecting(pinId === connecting ? null : pinId);
@@ -366,7 +399,10 @@ function Studio({
     if (t) editEdge(t.id);
     else if (s) setScreen({ id: s.id });
     else if (pin) setScreen({ id: pin.screenId, pin: pin.id });
-    else if (issue.rule === 'no-entry' && p.screens[0]) setScreen({ id: p.screens[0].id });
+    else if (issue.rule === 'no-entry') {
+      const first = p.screens.find((s) => s.role !== 'detail');
+      if (first) setScreen({ id: first.id });
+    }
   };
   const newModal = (type: typeof modal) => {
     setMenu(false);
@@ -375,12 +411,17 @@ function Studio({
     setModal(type);
   };
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${libraryOpen ? 'library-open' : ''}`}>
       <header className="app-header">
         <Brand />
         <div className="header-separator" />
         <div className="project-switcher">
-          <button className="project-trigger" onClick={() => setMenu(!menu)} aria-expanded={menu}>
+          <button
+            className="project-trigger"
+            aria-label={`Boards: ${project.name}`}
+            onClick={() => setMenu(!menu)}
+            aria-expanded={menu}
+          >
             <FolderOpen size={16} />
             <span>{project.name}</span>
             <ChevronDown size={14} />
@@ -448,7 +489,7 @@ function Studio({
           <button
             className="icon-button help-button"
             onClick={() => newModal('help')}
-            aria-label="How to use Drawcode"
+            aria-label="How to use Sketchcoded"
           >
             <CircleHelp size={19} />
           </button>
@@ -458,7 +499,7 @@ function Studio({
           </button>
           <button
             className="button primary"
-            disabled={!project.screens.length}
+            disabled={!project.screens.some((s) => s.role !== 'detail')}
             onClick={() => setPreview(true)}
           >
             <Play size={15} fill="currentColor" /> Test flow
@@ -478,6 +519,8 @@ function Studio({
       )}
       <div className="studio-layout">
         <Library
+          onLocate={showOnBoard}
+          onClose={() => setLibraryOpen(false)}
           project={project}
           onImport={(files) => void importImages(files)}
           onFolder={() => {
@@ -495,6 +538,11 @@ function Studio({
           }
           onAdd={(a) => add(a)}
           busy={busy}
+        />
+        <button
+          className="library-scrim"
+          aria-label="Close sketch library overlay"
+          onClick={() => setLibraryOpen(false)}
         />
         <section className="studio-main">
           <div className="workspace-header">
@@ -529,6 +577,8 @@ function Studio({
               <button
                 className={`button review-button ${review ? 'selected' : ''}`}
                 onClick={() => setReview(!review)}
+                aria-expanded={review}
+                aria-describedby="review-explanation"
               >
                 <ShieldCheck size={16} /> Review flow{' '}
                 <span className={openCount ? 'review-count' : 'review-clear'}>
@@ -537,22 +587,56 @@ function Studio({
               </button>
             </div>
           </div>
+          <div className="view-toolbar">
+            <div className="view-switch" role="group" aria-label="Workspace view">
+              <button aria-pressed={viewMode === 'board'} onClick={() => setViewMode('board')}>
+                <LayoutDashboard size={17} /> Board
+              </button>
+              <button
+                aria-pressed={viewMode === 'outline'}
+                onClick={() => {
+                  setViewMode('outline');
+                  setConnecting(null);
+                }}
+              >
+                <ListTree size={18} /> App outline
+              </button>
+            </div>
+            <button className="button library-toggle" onClick={() => setLibraryOpen(true)}>
+              <Images size={17} /> Sketch library
+            </button>
+            <p id="review-explanation">
+              Review flow finds missing paths and ways back. You decide which exceptions make sense.
+            </p>
+          </div>
           <div className="board-and-review">
-            <Board
-              project={project}
-              update={update}
-              onScreen={(id) => setScreen({ id })}
-              onEdge={editEdge}
-              onAdd={add}
-              onConnect={connect}
-              connecting={connecting}
-              onCancelConnect={() => setConnecting(null)}
-              undo={undo}
-              redo={redo}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              fitSignal={fitSignal}
-            />
+            {viewMode === 'outline' ? (
+              <Outline
+                project={project}
+                onScreen={(id) => setScreen({ id })}
+                onPin={(id, pin) => setScreen({ id, pin })}
+                onEdge={editEdge}
+                onBoard={showOnBoard}
+              />
+            ) : (
+              <Board
+                project={project}
+                update={update}
+                onScreen={(id, pin) => setScreen({ id, pin })}
+                onEdge={editEdge}
+                onAdd={add}
+                onConnect={connect}
+                connecting={connecting}
+                onCancelConnect={() => setConnecting(null)}
+                undo={undo}
+                redo={redo}
+                canUndo={canUndo}
+                canRedo={canRedo}
+                fitSignal={fitSignal}
+                focusRequest={focusRequest}
+                onFocusHandled={() => setFocusRequest(null)}
+              />
+            )}
             {review && (
               <ReviewPanel
                 project={project}
@@ -604,13 +688,14 @@ function Studio({
                     assetId: adding.asset.id,
                     title: name.trim(),
                     purpose: '',
-                    entry: p.screens.length === 0,
+                    entry: !p.screens.some((s) => s.role !== 'detail'),
                     role: 'screen',
                   },
                 ],
                 layout: { ...p.layout, [id]: { ...adding.pos, width: 320 } },
               }));
               setAdding(null);
+              showOnBoard(id);
               notify('Pinned to the board. Click the sketch to add interactions.');
             }}
           >
@@ -778,12 +863,12 @@ function Studio({
               [
                 '02',
                 'Make a little space',
-                'Drag a sketch onto the board and give it a title. Drag cards to arrange them.',
+                'Drag a sketch onto the board and give it a title. Drag cards to arrange them, or use App outline to read the screens and paths as a directory.',
               ],
               [
                 '03',
                 'Pin an intention',
-                'Click a screen, add a pin, and describe what that part of the UI should do.',
+                'Click a screen, add a pin, and describe what that part of the UI should do. Choose Detail reference to attach a closer look without adding an app navigation step.',
               ],
               [
                 '04',
@@ -810,7 +895,7 @@ function Studio({
               <kbd>Space</kbd> + drag to pan
             </span>
             <span>
-              <kbd>⌘ / Ctrl</kbd> + scroll to zoom
+              Scroll to zoom · <kbd>Shift</kbd> + scroll to pan
             </span>
             <span>
               <kbd>F</kbd> fit board
@@ -837,6 +922,7 @@ function Studio({
           onClose={() => setScreen(null)}
           onConnect={(pin) => {
             setScreen(null);
+            setViewMode('board');
             setConnecting(pin);
           }}
           onEdge={editEdge}
@@ -881,7 +967,7 @@ function Studio({
           }}
         />
       )}
-      {preview && project.screens.length > 0 && (
+      {preview && project.screens.some((s) => s.role !== 'detail') && (
         <Preview project={project} onClose={() => setPreview(false)} />
       )}
       {report && (

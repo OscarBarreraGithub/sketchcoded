@@ -47,14 +47,14 @@ export function Modal({
     >
       <div className="modal-heading">
         <div>
-          <span className="eyebrow">DRAWCODE STUDIO</span>
+          <span className="eyebrow">SKETCHCODED STUDIO</span>
           <h2>{title}</h2>
         </div>
         <button className="icon-button" onClick={onClose} aria-label="Close dialog">
           <X size={20} />
         </button>
       </div>
-      {children}
+      <div className="modal-content">{children}</div>
     </dialog>
   );
 }

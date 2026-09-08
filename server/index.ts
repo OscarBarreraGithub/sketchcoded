@@ -21,6 +21,6 @@ if (process.env.NODE_ENV === 'production') {
 const port = Number(process.env.PORT || 5173);
 server.listen(port, '127.0.0.1', () =>
   console.log(
-    `\n  Drawcode is ready → http://127.0.0.1:${port}\n  Projects saved in ${store.root}\n`,
+    `\n  Sketchcoded is ready → http://127.0.0.1:${port}\n  Projects saved in ${store.root}\n`,
   ),
 );

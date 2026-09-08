@@ -31,7 +31,7 @@ export async function exportProject(project: Project) {
   const url = URL.createObjectURL(await response.blob());
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${project.name.replace(/[^a-z0-9-]/gi, '-')}.drawcode.zip`;
+  link.download = `${project.name.replace(/[^a-z0-9-]/gi, '-')}.sketchcoded.zip`;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }

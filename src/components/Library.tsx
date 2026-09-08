@@ -18,6 +18,8 @@ export function Library({
   onDisconnect,
   onAdd,
   busy,
+  onLocate,
+  onClose,
 }: {
   project: Project;
   onImport: (files: File[]) => void;
@@ -26,11 +28,20 @@ export function Library({
   onDisconnect: (folder: string) => void;
   onAdd: (asset: Asset) => void;
   busy: boolean;
+  onLocate: (screenId: string) => void;
+  onClose: () => void;
 }) {
   const input = useRef<HTMLInputElement>(null),
     [query, setQuery] = useState(''),
-    [drag, setDrag] = useState(false);
-  const assets = project.assets.filter((a) => a.name.toLowerCase().includes(query.toLowerCase()));
+    [drag, setDrag] = useState(false),
+    [usage, setUsage] = useState('all'),
+    [expandedAsset, setExpandedAsset] = useState<string | null>(null);
+  const assets = project.assets.filter(
+    (a) =>
+      a.name.toLowerCase().includes(query.toLowerCase()) &&
+      (usage === 'all' ||
+        (project.screens.some((s) => s.assetId === a.id) ? usage === 'used' : usage === 'unused')),
+  );
   return (
     <aside
       className={`library ${drag ? 'drop-active' : ''}`}
@@ -52,6 +63,13 @@ export function Library({
         }
       }}
     >
+      <button
+        className="icon-button library-close"
+        onClick={onClose}
+        aria-label="Close sketch library"
+      >
+        <X size={20} />
+      </button>
       <div className="library-heading">
         <div>
           <span className="eyebrow">YOUR RAW MATERIAL</span>
@@ -128,6 +146,18 @@ export function Library({
         />
         <kbd>⌕</kbd>
       </label>
+      <label className="library-filter">
+        Show sketches
+        <select
+          aria-label="Filter sketch usage"
+          value={usage}
+          onChange={(e) => setUsage(e.target.value)}
+        >
+          <option value="all">All sketches</option>
+          <option value="unused">Not used yet</option>
+          <option value="used">Already on the board</option>
+        </select>
+      </label>
       <div className="library-scroll">
         <div className="library-section">
           <span>ALL SKETCHES</span>
@@ -157,7 +187,7 @@ export function Library({
                     <Plus size={18} />
                   </span>
                   {used > 0 && (
-                    <span className="asset-used">ON BOARD{used > 1 ? ` · ${used}` : ''}</span>
+                    <span className="asset-used">✓ Used {used > 1 ? `${used} times` : ''}</span>
                   )}
                 </button>
                 <div className="asset-caption">
@@ -170,6 +200,32 @@ export function Library({
                   </span>
                   <FileImage size={13} />
                 </div>
+                {used ? (
+                  <>
+                    <button
+                      className="asset-usage"
+                      aria-expanded={expandedAsset === a.id}
+                      onClick={() => setExpandedAsset(expandedAsset === a.id ? null : a.id)}
+                    >
+                      ✓ Used in {used} {used === 1 ? 'screen' : 'screens'}{' '}
+                      <span>{expandedAsset === a.id ? '−' : 'View'}</span>
+                    </button>
+                    {expandedAsset === a.id && (
+                      <div className="asset-placements">
+                        {project.screens
+                          .filter((s) => s.assetId === a.id)
+                          .map((s) => (
+                            <button key={s.id} onClick={() => onLocate(s.id)}>
+                              {s.title}
+                              <ArrowUpRight size={16} />
+                            </button>
+                          ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <span className="asset-unused">Not used yet</span>
+                )}
               </div>
             );
           })}

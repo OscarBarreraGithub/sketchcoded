@@ -127,3 +127,11 @@ The original in-scope vision is complete. The app is running at http://127.0.0.1
 - User data: `.drawcode/projects/` and `.drawcode/assets/`, ignored by Git.
 - Browser verification data: `.drawcode/ui-tests/`, separate from the user's boards.
 - The demo intentionally starts with three review concerns so users can try the acceptance flow. These are sample design questions, not application test failures.
+
+## 2026-09-08 — Sketchcoded usability follow-up
+
+The user chose Sketchcoded and asked for browser zoom fixes, a text outline, easier board navigation, larger uniform fields, detail references, clearer flow review and visible screenshot usage. The original brief remains the baseline; this is a usability refinement before the user supplies further sketches.
+
+Implemented the requested interface and model changes. All 13 browser workflows pass, including all 9 original workflows and actual browser zoom at 125%, 150%, 200% and 250%. **49 domain/storage/API tests** pass. Domain coverage now includes reference separation, nested/cyclic details, legacy parsing, deletion repair, and preservation of navigation acceptance. Screenshots in `docs/screenshots/` show the updated visual direction; a 390px walkthrough reported zero runtime errors and no form overflow. Detailed acceptance evidence is in `docs/USABILITY_PASS.md`.
+
+Next: collaborate on the user’s forthcoming sketches of Sketchcoded. The current pass preserves the existing user data, local server workflow and original brief. No deployment or agentic execution was added.

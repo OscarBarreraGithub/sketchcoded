@@ -1,3 +1,4 @@
+import { AutoTextarea } from './AutoTextarea';
 import { useState } from 'react';
 import { ArrowRight, Link2, Trash2 } from 'lucide-react';
 import { colors, isHistory, type Project, type Transition } from '../../shared/model';
@@ -56,12 +57,18 @@ export function EdgeEditor({
           <label>
             From interaction
             <select value={draft.pinId} onChange={(e) => set({ pinId: e.target.value })}>
-              {project.pins.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {project.screens.find((s) => s.id === p.screenId)?.title} /{' '}
-                  {p.title || 'Untitled pin'}
-                </option>
-              ))}
+              {project.pins
+                .filter(
+                  (p) =>
+                    p.kind !== 'detail' &&
+                    project.screens.find((s) => s.id === p.screenId)?.role !== 'detail',
+                )
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {project.screens.find((s) => s.id === p.screenId)?.title} /{' '}
+                    {p.title || 'Untitled pin'}
+                  </option>
+                ))}
             </select>
           </label>
           <label>
@@ -75,7 +82,9 @@ export function EdgeEditor({
                   target:
                     navigation === 'back' || navigation === 'dismiss'
                       ? null
-                      : (draft.target ?? project.screens[0]?.id ?? null),
+                      : (draft.target ??
+                        project.screens.find((s) => s.role !== 'detail')?.id ??
+                        null),
                 });
               }}
             >
@@ -99,11 +108,13 @@ export function EdgeEditor({
               <option value="" disabled>
                 Choose a screen
               </option>
-              {project.screens.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.title}
-                </option>
-              ))}
+              {project.screens
+                .filter((s) => s.role !== 'detail')
+                .map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.title}
+                  </option>
+                ))}
             </select>
           </label>
         )}
@@ -123,7 +134,7 @@ export function EdgeEditor({
         </p>
         <label>
           When does this happen?
-          <textarea
+          <AutoTextarea
             rows={2}
             value={draft.condition}
             onChange={(e) => set({ condition: e.target.value })}
@@ -132,7 +143,7 @@ export function EdgeEditor({
         </label>
         <label>
           The details
-          <textarea
+          <AutoTextarea
             rows={4}
             value={draft.logic}
             onChange={(e) => set({ logic: e.target.value })}
@@ -140,11 +151,11 @@ export function EdgeEditor({
           />
         </label>
         <label>
-          What gets passed along?
-          <input
+          What data or information is needed?
+          <AutoTextarea
             value={draft.context}
             onChange={(e) => set({ context: e.target.value })}
-            placeholder="e.g. conversationId, selected user, return destination"
+            placeholder="e.g. The selected person, their conversation ID, and which screen to return to"
           />
         </label>
         <div className="edge-options">

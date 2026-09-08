@@ -17,9 +17,11 @@ export const screenSchema = z.object({
   title: z.string().max(200),
   purpose: prose,
   entry: z.boolean(),
-  role: z.enum(['screen', 'auth', 'modal', 'terminal']),
+  role: z.enum(['screen', 'auth', 'modal', 'terminal', 'detail']),
 });
 export const pinSchema = z.object({
+  kind: z.enum(['interaction', 'detail']).optional(),
+  detailTarget: id.nullable().optional(),
   id,
   screenId: id,
   x: z.number().min(0).max(1),
@@ -112,7 +114,9 @@ export function removeScreen(p: Project, screenId: string): Project {
     ...p,
     layout,
     screens: p.screens.filter((s) => s.id !== screenId),
-    pins: p.pins.filter((pin) => pin.screenId !== screenId),
+    pins: p.pins
+      .filter((pin) => pin.screenId !== screenId)
+      .map((pin) => (pin.detailTarget === screenId ? { ...pin, detailTarget: null } : pin)),
     transitions: p.transitions.filter((t) => !pinIds.has(t.pinId) && t.target !== screenId),
   };
 }
@@ -121,5 +125,27 @@ export function removePin(p: Project, pinId: string): Project {
     ...p,
     pins: p.pins.filter((pin) => pin.id !== pinId),
     transitions: p.transitions.filter((t) => t.pinId !== pinId),
+  };
+}
+
+/** Linking an otherwise unused sketch as a detail declares its illustrative purpose. */
+export function attachDetail(p: Project, pinId: string, target: string | null): Project {
+  const pin = p.pins.find((pin) => pin.id === pinId);
+  if (!pin || target === pin.screenId || p.transitions.some((t) => t.pinId === pinId)) return p;
+  const targetScreen = p.screens.find((s) => s.id === target);
+  if (target && !targetScreen) return p;
+  const usedInFlow =
+    targetScreen?.entry ||
+    p.transitions.some(
+      (t) => t.target === target || p.pins.find((pin) => pin.id === t.pinId)?.screenId === target,
+    );
+  return {
+    ...p,
+    pins: p.pins.map((pin) =>
+      pin.id === pinId ? { ...pin, kind: 'detail', detailTarget: target } : pin,
+    ),
+    screens: p.screens.map((s) =>
+      s.id === target && s.role === 'screen' && !usedInFlow ? { ...s, role: 'detail' } : s,
+    ),
   };
 }
