@@ -15,3 +15,13 @@ Run `npm run dev` for localhost:5173. `npm test` covers graph/navigation/storage
 Preserve `.drawcode/` user data. It is ignored by Git. Do not point tests at a user's production data directory. Do not run multiple app servers against the same data directory. Keep `docs/ORIGINAL_BRIEF.md` out of formatting changes.
 
 Keep click targets at least 44px, fields at least 48px, and long notes readable without nested text scrolling. Preserve the board/outline alternatives and test zoomed browser layouts after layout changes. Detail references are illustrations, separate from app transitions; never count them as reachability or return paths. The Sketchcoded rename deliberately retains the `.drawcode/` storage path and legacy protocol keys.
+
+## Development process lifecycle
+
+The user wants no idle development servers or Chrome/test-browser processes left running. Start them only while directly using them for the current task, then stop them before handing control back unless the user explicitly asks to keep them open.
+
+- Check existing project processes and listening ports before starting a server. Reuse an appropriate instance instead of creating duplicates.
+- Track the processes/sessions started for the task. Close browser contexts and browsers in `finally` blocks; stop temporary servers on success, failure, cancellation, and timeout.
+- Before finishing, verify the project server/watchers, their child processes, temporary test browsers and test-port listeners are gone. Stop the watcher/parent as well as the serving child so it cannot restart the server.
+- Identify processes by executable, working directory, parentage and port. Do not use broad commands such as `pkill node` or `pkill chrome`; unrelated IDE, OS and agent services may be active.
+- Do not launch a browser or server just to verify a documentation or process-cleanup change.

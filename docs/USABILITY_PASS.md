@@ -30,7 +30,7 @@ The user chose **Sketchcoded** and owns sketchcoded.com. They like the visual di
 - `npm run test:ui`: **13** browser workflows pass. The review and native-zoom cases also passed after the final review typography adjustment. Original folder import, graph editing, preview, undo, persistence, review decisions and export/import remain covered. New checks cover outline destinations and search, preservation of panned/zoomed views, detail intake from the outline and board attachment, nested detail preview, ZIP round trips, screenshot usage filtering, and slider/scroll navigation.
 - Actual Chromium browser zoom: 125%, 150%, 200% and 250%, checking horizontal bounds, 48px uniform dropdowns, growing long screen and connection notes, visible close/save controls, review access, library drawer and board slider. Native zoom screenshots use CDP capture without viewport overrides.
 - Visual inspection: updated board, outline, screen/pin editors, connection form, review panel, preview, plus library and editor at 390px. Walkthrough reported no browser runtime errors. Reviewed original brief alongside this checklist; the future agentic workflow remains deferred.
-- `npm run format:check` and `git diff --check` pass. The existing local server responds successfully on port 5173.
+- `npm run format:check` and `git diff --check` pass. The local server responded successfully on port 5173 during verification; it was subsequently stopped at the user’s request.
 - User projects, original image files and the original brief were preserved. The app name changed without a storage migration.
 
 ## Next user collaboration

@@ -97,7 +97,7 @@ The preview should let the user choose among natural-language branches and show 
 
 ## Next action
 
-The original in-scope vision is complete. The app is running at http://127.0.0.1:5173 with the Little chat example. No implementation work remains for the original brief. Future work should start from user feedback or the separately deferred agentic workflow, using docs/GRAPH.md as the data contract.
+The original in-scope vision is complete. Start the app at http://127.0.0.1:5173 when actively using it; keep it stopped otherwise. No implementation work remains for the original brief. Future work should start from user feedback or the separately deferred agentic workflow, using docs/GRAPH.md as the data contract.
 
 ## Final verification evidence
 
@@ -119,7 +119,7 @@ The original in-scope vision is complete. The app is running at http://127.0.0.1
 
 ## Handoff
 
-- Run: `npm install` then `npm run dev`; use the existing http://127.0.0.1:5173 process while it is running.
+- Run: `npm install` then `npm run dev`; start http://127.0.0.1:5173 only for active use and stop it afterward with Ctrl+C.
 - User guide and recovery: `README.md`.
 - Important delegated choices: `docs/DECISIONS.md`.
 - Portable format and checker limits: `docs/GRAPH.md`.
@@ -135,3 +135,9 @@ The user chose Sketchcoded and asked for browser zoom fixes, a text outline, eas
 Implemented the requested interface and model changes. All 13 browser workflows pass, including all 9 original workflows and actual browser zoom at 125%, 150%, 200% and 250%. **49 domain/storage/API tests** pass. Domain coverage now includes reference separation, nested/cyclic details, legacy parsing, deletion repair, and preservation of navigation acceptance. Screenshots in `docs/screenshots/` show the updated visual direction; a 390px walkthrough reported zero runtime errors and no form overflow. Detailed acceptance evidence is in `docs/USABILITY_PASS.md`.
 
 Next: collaborate on the user’s forthcoming sketches of Sketchcoded. The current pass preserves the existing user data, local server workflow and original brief. No deployment or agentic execution was added.
+
+## 2026-09-08 — Stop idle development processes
+
+The user clarified that they are not currently using a browser or local app server. Development servers and test browsers should run only while directly needed for a task, then be closed.
+
+Stopped the leftover Sketchcoded npm/tsx watcher and server on port 5173, including its child processes. Closed the background Google Chrome session. No Playwright/Chromium test processes were left over. The project should remain stopped until the next active development or verification session. The process lifecycle rule is recorded in `AGENTS.md`.

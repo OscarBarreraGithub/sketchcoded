@@ -17,6 +17,8 @@ npm run dev
 
 Open **http://127.0.0.1:5173**. The first launch creates the **Little chat** example with four screens, conditional chat branches, an intentional one-way login, and authored Back actions. No account, API key, or external service is needed. Fonts and images are served locally.
 
+Stop the development server with **Ctrl+C** when finished. During agent work, servers and test browsers run only while actively needed and are closed before handoff.
+
 For the built app:
 
 ```sh
