@@ -9,6 +9,7 @@ import {
   FilePlus2,
   FolderOpen,
   LayoutDashboard,
+  ListChecks,
   ListTree,
   Images,
   Link2,
@@ -24,9 +25,10 @@ import {
   X,
 } from 'lucide-react';
 import {
-  emptyProject,
   attachDetail,
+  ideaStatus,
   removeScreen,
+  setDrawing,
   uid,
   type Asset,
   type Project,
@@ -36,8 +38,10 @@ import { analyze, decisionFor, type Issue } from '../shared/graph';
 import { api, exportProject, getProjects } from './api';
 import { useProject } from './useProject';
 import { Outline } from './components/Outline';
+import { Planning } from './components/Planning';
 import { Board } from './components/Board';
 import { Library } from './components/Library';
+import { IdeasPanel } from './components/IdeasPanel';
 import { Modal, Confirm } from './components/Modal';
 import { ScreenEditor } from './components/ScreenEditor';
 import { EdgeEditor } from './components/EdgeEditor';
@@ -126,11 +130,11 @@ function Studio({
     useProject(initial);
   const [menu, setMenu] = useState(false),
     [modal, setModal] = useState<'folder' | 'new' | 'help' | 'rename' | null>(null),
-    [screen, setScreen] = useState<{ id: string; pin?: string } | null>(null),
+    [screen, setScreen] = useState<{ id: string; pin?: string; idea?: string } | null>(null),
     [edge, setEdge] = useState<{ draft: Transition; isNew: boolean } | null>(null),
     [preview, setPreview] = useState(false),
     [review, setReview] = useState(false),
-    [viewMode, setViewMode] = useState<'board' | 'outline'>('board'),
+    [viewMode, setViewMode] = useState<'board' | 'outline' | 'planning'>('board'),
     [libraryOpen, setLibraryOpen] = useState(false),
     [focusRequest, setFocusRequest] = useState<{ id: string; nonce: number } | null>(null),
     [connecting, setConnecting] = useState<string | null>(null),
@@ -362,6 +366,51 @@ function Studio({
     setLibraryOpen(false);
     setFocusRequest({ id, nonce: Date.now() });
   };
+  const nextPosition = () => {
+    const current = getCurrent(),
+      placements = Object.values(current.layout),
+      v = current.viewport;
+    return placements.length
+      ? {
+          x: Math.max(...placements.map((p) => p.x + p.width)) + 100,
+          y: Math.min(...placements.map((p) => p.y)),
+        }
+      : { x: (400 - v.x) / v.zoom, y: (230 - v.y) / v.zoom };
+  };
+  // A planned frame: a screen with a title and ideas, drawn later.
+  const planScreen = (title: string, purpose: string) => {
+    const id = uid(),
+      pos = nextPosition();
+    update((p) => ({
+      ...p,
+      screens: [
+        ...p.screens,
+        {
+          id,
+          assetId: null,
+          title,
+          purpose,
+          entry: !p.screens.some((s) => s.role !== 'detail'),
+          role: 'screen',
+        },
+      ],
+      layout: { ...p.layout, [id]: { ...pos, width: 320 } },
+    }));
+    notify(`${title} is planned. Assign ideas to it, then drop a sketch onto its frame.`);
+  };
+  const attachDrawing = (screenId: string, asset: Asset) => {
+    const before = getCurrent();
+    update((p) => setDrawing(p, screenId, 'web', asset.id));
+    if (getCurrent() !== before) {
+      notify('Drawing added. Open the frame to place its planned ideas as pins.');
+      showOnBoard(screenId);
+    }
+  };
+  const placeIdeaOnDrawing = (ideaId: string) => {
+    const idea = getCurrent().ideas.find((idea) => idea.id === ideaId);
+    if (idea?.screenId) setScreen({ id: idea.screenId, idea: ideaId });
+  };
+  const waitingIdeas = project.ideas.filter((idea) => ideaStatus(idea) === 'assigned').length;
   const connect = (pinId: string, target: string) => {
     setViewMode('board');
     if (target && getCurrent().pins.find((pin) => pin.id === pinId)?.kind === 'detail') {
@@ -518,27 +567,39 @@ function Studio({
         </div>
       )}
       <div className="studio-layout">
-        <Library
-          onLocate={showOnBoard}
-          onClose={() => setLibraryOpen(false)}
-          project={project}
-          onImport={(files) => void importImages(files)}
-          onFolder={() => {
-            setFormError('');
-            setModal('folder');
-          }}
-          onRefresh={() =>
-            void scan(project.folders).then((ok) => {
-              if (!ok)
-                notify('Could not refresh a folder. Open Connect a folder to check the path.');
-            })
-          }
-          onDisconnect={(folder) =>
-            update((p) => ({ ...p, folders: p.folders.filter((f) => f !== folder) }))
-          }
-          onAdd={(a) => add(a)}
-          busy={busy}
-        />
+        <div className="left-column">
+          <Library
+            onLocate={showOnBoard}
+            onClose={() => setLibraryOpen(false)}
+            project={project}
+            onImport={(files) => void importImages(files)}
+            onFolder={() => {
+              setFormError('');
+              setModal('folder');
+            }}
+            onRefresh={() =>
+              void scan(project.folders).then((ok) => {
+                if (!ok)
+                  notify('Could not refresh a folder. Open Connect a folder to check the path.');
+              })
+            }
+            onDisconnect={(folder) =>
+              update((p) => ({ ...p, folders: p.folders.filter((f) => f !== folder) }))
+            }
+            onAdd={(a) => add(a)}
+            busy={busy}
+          />
+          <IdeasPanel
+            project={project}
+            update={update}
+            onOpenPlan={() => {
+              setViewMode('planning');
+              setLibraryOpen(false);
+            }}
+            onPlace={placeIdeaOnDrawing}
+            onScreen={(id) => setScreen({ id })}
+          />
+        </div>
         <button
           className="library-scrim"
           aria-label="Close sketch library overlay"
@@ -601,6 +662,16 @@ function Studio({
               >
                 <ListTree size={18} /> App outline
               </button>
+              <button
+                aria-pressed={viewMode === 'planning'}
+                onClick={() => {
+                  setViewMode('planning');
+                  setConnecting(null);
+                }}
+              >
+                <ListChecks size={18} /> Plan
+                {waitingIdeas > 0 && <span className="view-badge">{waitingIdeas}</span>}
+              </button>
             </div>
             <button className="button library-toggle" onClick={() => setLibraryOpen(true)}>
               <Images size={17} /> Sketch library
@@ -610,7 +681,17 @@ function Studio({
             </p>
           </div>
           <div className="board-and-review">
-            {viewMode === 'outline' ? (
+            {viewMode === 'planning' ? (
+              <Planning
+                project={project}
+                update={update}
+                onScreen={(id) => setScreen({ id })}
+                onPin={(id, pin) => setScreen({ id, pin })}
+                onPlace={placeIdeaOnDrawing}
+                onBoard={showOnBoard}
+                onPlanScreen={planScreen}
+              />
+            ) : viewMode === 'outline' ? (
               <Outline
                 project={project}
                 onScreen={(id) => setScreen({ id })}
@@ -625,6 +706,7 @@ function Studio({
                 onScreen={(id, pin) => setScreen({ id, pin })}
                 onEdge={editEdge}
                 onAdd={add}
+                onAttachDrawing={attachDrawing}
                 onConnect={connect}
                 connecting={connecting}
                 onCancelConnect={() => setConnecting(null)}
@@ -857,28 +939,33 @@ function Studio({
             {[
               [
                 '01',
-                'Bring your sketches',
-                'Connect a local folder, drop in images, or use the library’s add button.',
+                'Plan first, if you like',
+                'Open Plan, or type into the Ideas panel beside the library, and write down every idea for the app. Assign each one to a screen, even a frame you have not drawn yet. Placing an idea later turns it into a pin with its text already written.',
               ],
               [
                 '02',
-                'Make a little space',
-                'Drag a sketch onto the board and give it a title. Drag cards to arrange them, or use App outline to read the screens and paths as a directory.',
+                'Bring your sketches',
+                'Connect a folder on this computer, drop in image files, or use the library’s add button.',
               ],
               [
                 '03',
-                'Pin an intention',
-                'Click a screen, add a pin, and describe what that part of the UI should do. Choose Detail reference to attach a closer look without adding an app navigation step.',
+                'Make a little space',
+                'Drag a sketch onto the board and give it a title, or drop it onto a planned frame. A screen can hold a web drawing and a mobile drawing of the same view. Use App outline to read the screens and paths as a directory.',
               ],
               [
                 '04',
+                'Pin an intention',
+                'Click a screen, add a pin, and describe what that part of the UI should do. Place each pin on the mobile drawing too. Choose Detail reference to attach a closer look without adding an app navigation step.',
+              ],
+              [
+                '05',
                 'Follow the yarn',
                 'Click a pin on the board, then a destination screen. Click a yarn to give the connection a summary, conditions, and details. One pin can have many yarns.',
               ],
               [
-                '05',
+                '06',
                 'Check & play',
-                'Review potential dead ends and intentional one-way routes. Keep a reason for each exception. Test flow lets you choose branches and try the sketches.',
+                'Review potential dead ends and intentional one-way routes. Keep a reason for each exception. Test flow lets you choose branches, switch between web and mobile, and try the sketches.',
               ],
             ].map(([n, title, detail]) => (
               <div key={n}>
@@ -918,6 +1005,7 @@ function Studio({
           project={project}
           screenId={screen.id}
           initialPin={screen.pin}
+          initialIdea={screen.idea}
           update={update}
           onClose={() => setScreen(null)}
           onConnect={(pin) => {

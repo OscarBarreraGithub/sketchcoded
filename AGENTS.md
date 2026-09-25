@@ -7,12 +7,33 @@ This is a local screenshot flow designer. The later LLM generation/review workfl
 - `shared/model.ts`: executable versioned project schema.
 - `shared/graph.ts`: structural diagnostics and acceptance invalidation.
 - `shared/navigation.ts`: preview history semantics.
+- `shared/planning.ts`: the chat-friendly planning outline (ideas by screen, with placed/waiting/pool markers).
 - `server/`: image snapshots, local persistence, import/export, API.
 - `src/`: React application and interaction components.
 
 Run `npm run dev` for localhost:5173. `npm test` covers graph/navigation/storage. `npm run build` checks types and builds the frontend. `npm run test:ui` tests the built app on an isolated localhost:5174 server; build first. `npm run format:check` checks formatting.
 
 Preserve `.drawcode/` user data. It is ignored by Git. Do not point tests at a user's production data directory. Do not run multiple app servers against the same data directory. Keep `docs/ORIGINAL_BRIEF.md` out of formatting changes.
+
+## Planning routine
+
+The Planning view holds the functionality backlog (`project.ideas`). When the user describes functionality, add it there rather than only in chat, assigned to the screen it belongs on and with `leadsTo` when the destination is clear. When asked what belongs on a screen, answer from the backlog and move ideas on request; the board's planned frames and threads update from the same data. Use `planningOutline()` (Copy as text in the app, or the section in `flow.md`) as the shared text when discussing the plan. Placed ideas stay listed and greyed so nothing is pinned on two pages. Keep `docs/FUNCTIONALITY.md` in step with the Sketchcoded board's backlog. The user draws and connects; the agent writes down what each pin is.
+
+A screen may be a planned frame (`assetId: null`) and may carry a mobile drawing; pins are anchored on the web drawing and get a second position for mobile. Input is desktop only: image files on this computer, no phone capture.
+
+## Design rules
+
+- **Nothing on screen grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; their content scrolls inside. Selecting a different pin, tab or option must never change the size of the surrounding frame or move the rest of the page. This applies to Sketchcoded and to anything built from a Sketchcoded board.
+- Nothing overlaps: labels, pins and frames keep clear of each other, and the board leaves room to breathe.
+- Test real browser zoom (125% to 250%) after layout changes; text must stay readable and controls reachable.
+
+## Links out
+
+A pin that leaves the app for a web address is a **link pin** (`kind: "link"`). The address, and any conditions, go in the pin's description in plain words; the checker reads the first URL from it. A link pin has no yarn and no destination frame; it counts as a way onward for its screen. Do not create a screen to represent an external site. This is the expected route whenever a URL is involved.
+
+## Companion site
+
+The public landing page lives in a separate repository, `../sketchcoded-site` (static HTML, no build). Keep its copy consistent with `docs/FUNCTIONALITY.md` and the README: same name, tagline, setup prompt and feature list. Its `links.js` holds every external address in one place.
 
 Keep click targets at least 44px, fields at least 48px, and long notes readable without nested text scrolling. Preserve the board/outline alternatives and test zoomed browser layouts after layout changes. Detail references are illustrations, separate from app transitions; never count them as reachability or return paths. The Sketchcoded rename deliberately retains the `.drawcode/` storage path and legacy protocol keys.
 

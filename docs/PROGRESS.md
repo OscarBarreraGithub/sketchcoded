@@ -97,7 +97,7 @@ The preview should let the user choose among natural-language branches and show 
 
 ## Next action
 
-The original in-scope vision is complete. Start the app at http://127.0.0.1:5173 when actively using it; keep it stopped otherwise. No implementation work remains for the original brief. Future work should start from user feedback or the separately deferred agentic workflow, using docs/GRAPH.md as the data contract.
+The original in-scope vision is complete and the 2026-09-25 planning pass added the planning stage, planned frames and web + mobile layouts (see the dated section below). The next step is the user's: draw the Sketchcoded frames, starting with Home, and drop each drawing onto its planned frame. The agentic workflow remains deferred, using docs/GRAPH.md as the data contract.
 
 ## Final verification evidence
 
@@ -141,3 +141,17 @@ Next: collaborate on the user’s forthcoming sketches of Sketchcoded. The curre
 The user clarified that they are not currently using a browser or local app server. Development servers and test browsers should run only while directly needed for a task, then be closed.
 
 Stopped the leftover Sketchcoded npm/tsx watcher and server on port 5173, including its child processes. Closed the background Google Chrome session. No Playwright/Chromium test processes were left over. The project should remain stopped until the next active development or verification session. The process lifecycle rule is recorded in `AGENTS.md`.
+
+## 2026-09-25 — Planning stage, planned frames, and web + mobile layouts
+
+The user scoped input to desktop files, asked for a planning stage whose ideas become pins, two drawings per screen, and a first real board that plans Sketchcoded itself. Every point is enumerated in `docs/PLANNING_PASS.md`; decisions are in `docs/DECISIONS.md`; the functionality catalogue for the future website is `docs/FUNCTIONALITY.md`.
+
+Implemented: `ideas[]` in the schema with assignment, placement and leads-to; planned frames (`assetId: null`) that take a drawing by drop or selection; `mobileAssetId` and per-pin `mobile` positions with a side-by-side editor, board thumbnail, preview toggle and review finding; the Planning view with pool, folders, greyed placed ideas, a text outline and copy; planning and layout sections in `flow.md`; a seeded **Sketchcoded** board with ten planned frames and the backlog. Verification evidence is recorded in `docs/PLANNING_PASS.md`.
+
+## 2026-09-25 — First drawings on the Sketchcoded board
+
+The user drew the landing page, the workstation and the screen editor overlay and found the planned board unreadable. Planned frames now show an idea count instead of a list, planned threads are merged per frame pair, and the selected view tab is filled. The three drawings were imported and attached to Home, The board and Screen editor; the landing page backlog was rewritten to match the drawing; four destination frames were added (Example demo, Guide, GitHub, Science with agents); 33 pins and 10 yarns were placed as drawn. Details and evidence: `docs/PLANNING_PASS.md` (follow-up section). Next for the user: check the pin positions and text on the three drawn frames, then draw the remaining frames and drop them onto their planned cards.
+
+## 2026-09-25 — Workstation pass
+
+Built the app as drawn: New/Used library, Ideas panel with an agent box (saves ideas; no model), Plan tab, frame resizing, home markers, pin colors with a legend, a Web/Mobile toggle in the editor, a pins list with move and delete, and link pins for URLs. Recorded the no-layout-shift rule and the link route in `AGENTS.md`. Created the landing site as a separate static repository at `../sketchcoded-site`. See `docs/PLANNING_PASS.md` for the checklist and evidence.

@@ -7,11 +7,14 @@ import {
 } from 'react';
 import {
   ArrowDownRight,
+  ExternalLink,
   Flag,
   Focus,
+  Home,
   Minus,
   Plus,
   Redo2,
+  Smartphone,
   Undo2,
   X,
   MoveUpRight,
@@ -20,8 +23,12 @@ import {
   assetUrl,
   colors,
   isHistory,
+  isPlanned,
+  pinColor,
+  plannedThreads,
   screenSize,
   type Asset,
+  type Idea,
   type Project,
   type Screen,
 } from '../../shared/model';
@@ -32,6 +39,7 @@ export function Board({
   onScreen,
   onEdge,
   onAdd,
+  onAttachDrawing,
   onConnect,
   connecting,
   onCancelConnect,
@@ -48,6 +56,7 @@ export function Board({
   onScreen: (id: string, pin?: string) => void;
   onEdge: (id: string) => void;
   onAdd: (a: Asset, pos: { x: number; y: number }) => void;
+  onAttachDrawing: (screenId: string, a: Asset) => void;
   onConnect: (pinId: string, target: string) => void;
   connecting: string | null;
   onCancelConnect: () => void;
@@ -63,10 +72,11 @@ export function Board({
     [view, setView] = useState(project.viewport),
     viewRef = useRef(view),
     [moving, setMoving] = useState<{ id: string; x: number; y: number } | null>(null),
+    [resizing, setResizing] = useState<{ id: string; width: number } | null>(null),
     [space, setSpace] = useState(false);
   viewRef.current = view;
   const drag = useRef<{
-    type: 'pan' | 'screen';
+    type: 'pan' | 'screen' | 'resize';
     id?: string;
     clientX: number;
     clientY: number;
@@ -188,10 +198,29 @@ export function Board({
     el.addEventListener('wheel', wheel, { passive: false });
     return () => el.removeEventListener('wheel', wheel);
   }, []);
-  const position = (s: Screen) =>
-    moving?.id === s.id
-      ? { ...project.layout[s.id], x: moving.x, y: moving.y }
-      : (project.layout[s.id] ?? { x: 0, y: 0, width: 300 });
+  const position = (s: Screen) => {
+    const base = project.layout[s.id] ?? { x: 0, y: 0, width: 300 };
+    if (moving?.id === s.id) return { ...base, x: moving.x, y: moving.y };
+    if (resizing?.id === s.id) return { ...base, width: resizing.width };
+    return base;
+  };
+  // Drag a frame's corner to resize it; the slider in the editor does the same.
+  const startResize = (e: ReactPointerEvent, s: Screen) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    drag.current = {
+      type: 'resize',
+      id: s.id,
+      clientX: e.clientX,
+      clientY: e.clientY,
+      startX: position(s).width,
+      startY: 0,
+      dx: 0,
+      dy: 0,
+    };
+    ref.current!.setPointerCapture(e.pointerId);
+  };
   const start = (e: ReactPointerEvent, type: 'pan' | 'screen', s?: Screen) => {
     if (e.button !== 0 && e.button !== 1) return;
     e.preventDefault();
@@ -221,14 +250,26 @@ export function Board({
     d.dy = e.clientY - d.clientY;
     if (d.type === 'pan') {
       setView({ ...viewRef.current, x: d.startX + d.dx, y: d.startY + d.dy });
-    } else setMoving({ id: d.id!, x: d.startX + d.dx / view.zoom, y: d.startY + d.dy / view.zoom });
+    } else if (d.type === 'resize')
+      setResizing({
+        id: d.id!,
+        width: Math.max(160, Math.min(1000, Math.round((d.startX + d.dx / view.zoom) / 10) * 10)),
+      });
+    else setMoving({ id: d.id!, x: d.startX + d.dx / view.zoom, y: d.startY + d.dy / view.zoom });
   };
   const finish = () => {
     const d = drag.current;
     if (!d) return;
     drag.current = null;
     if (d.type === 'pan') commitView(viewRef.current);
-    else if (Math.hypot(d.dx, d.dy) < 4) onScreen(d.id!);
+    else if (d.type === 'resize') {
+      const width = resizing?.width;
+      if (width && width !== project.layout[d.id!]?.width)
+        update((p) => ({ ...p, layout: { ...p.layout, [d.id!]: { ...p.layout[d.id!], width } } }), {
+          group: `size:${d.id}`,
+        });
+      setResizing(null);
+    } else if (Math.hypot(d.dx, d.dy) < 4) onScreen(d.id!);
     else
       update((p) => ({
         ...p,
@@ -268,6 +309,34 @@ export function Board({
       y: (y1 + y2) / 2 + bend * 0.75,
     };
   };
+  // Planned threads run from a frame's foot to the destination's top until the idea becomes a pin.
+  const plannedPoints = (source: Screen, target: Screen, index: number) => {
+    const a = position(source),
+      b = position(target),
+      size = screenSize(project, source);
+    const x1 = a.x + a.width * 0.5,
+      y1 = a.y + size.height - 6,
+      x2 = b.x + b.width * 0.5,
+      y2 = b.y + 8;
+    const bend = Math.max(50, Math.abs(x2 - x1) * 0.22) + index * 40,
+      cy1 = y1 + bend,
+      cy2 = y2 + bend;
+    return {
+      d: `M ${x1} ${y1} C ${x1 + (x2 - x1) * 0.3} ${cy1}, ${x2 - (x2 - x1) * 0.2} ${cy2}, ${x2} ${y2}`,
+      x: (x1 + x2) / 2,
+      y: (y1 + y2) / 2 + bend * 0.75,
+    };
+  };
+  // One dashed thread per frame pair keeps a busy plan readable; the label counts the ideas.
+  const plannedLinks = Object.values(
+    plannedThreads(project).reduce<
+      Record<string, { source: Screen; target: Screen; ideas: Idea[] }>
+    >((links, { idea, source, target }) => {
+      const key = `${source.id}>${target.id}`;
+      (links[key] ??= { source, target, ideas: [] }).ideas.push(idea);
+      return links;
+    }, {}),
+  );
   return (
     <main
       ref={ref}
@@ -287,6 +356,7 @@ export function Board({
       onPointerCancel={() => {
         drag.current = null;
         setMoving(null);
+        setResizing(null);
       }}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes('application/drawcode-asset')) {
@@ -300,6 +370,13 @@ export function Board({
         );
         if (a) {
           e.preventDefault();
+          const frame = (e.target as HTMLElement).closest<HTMLElement>('.screen-card')?.dataset
+              .screen,
+            planned = project.screens.find((s) => s.id === frame && isPlanned(s));
+          if (planned) {
+            onAttachDrawing(planned.id, a);
+            return;
+          }
           const rect = ref.current!.getBoundingClientRect();
           onAdd(a, {
             x: (e.clientX - rect.left - view.x) / view.zoom - 150,
@@ -329,12 +406,15 @@ export function Board({
       >
         {project.screens.map((s, index) => {
           const a = project.assets.find((a) => a.id === s.assetId),
+            mobile = project.assets.find((a) => a.id === s.mobileAssetId),
+            ideas = project.ideas.filter((idea) => idea.screenId === s.id && !idea.pinId),
             pos = position(s),
             pins = project.pins.filter((pin) => pin.screenId === s.id);
           return (
             <article
               key={s.id}
-              className={`screen-card ${moving?.id === s.id ? 'moving' : ''}`}
+              data-screen={s.id}
+              className={`screen-card ${moving?.id === s.id ? 'moving' : ''} ${isPlanned(s) ? 'planned' : ''}`}
               style={
                 {
                   left: pos.x,
@@ -348,26 +428,60 @@ export function Board({
             >
               <div className="card-paper">
                 <span className={`tack tack-${index % 3}`} />
+                {s.entry && (
+                  <span className="home-marker" title="The app starts here">
+                    <Home size={13} />
+                  </span>
+                )}
                 <div className="card-image">
                   {a ? (
                     <img src={assetUrl(a)} alt={s.title} draggable={false} />
+                  ) : isPlanned(s) ? (
+                    <div className="frame-planned">
+                      <span className="eyebrow">WAITING FOR A DRAWING</span>
+                      <strong>
+                        {ideas.length
+                          ? `${ideas.length} ${ideas.length === 1 ? 'idea' : 'ideas'} planned`
+                          : 'Nothing planned yet'}
+                      </strong>
+                      <small>Drop a sketch here · open to see the ideas</small>
+                    </div>
                   ) : (
                     <div className="image-missing">Image missing</div>
                   )}
+                  {mobile && (
+                    <img
+                      className="mobile-thumb"
+                      src={assetUrl(mobile)}
+                      alt={`${s.title} on mobile`}
+                      draggable={false}
+                    />
+                  )}
                   {pins.map((pin, i) => (
                     <button
-                      className={`board-pin ${pin.kind === 'detail' ? 'reference-pin' : ''} ${connecting === pin.id ? 'selected' : ''}`}
+                      className={`board-pin ${pinColor(pin)} ${pin.kind === 'detail' ? 'reference-pin' : ''} ${pin.kind === 'link' ? 'link-pin' : ''} ${connecting === pin.id ? 'selected' : ''}`}
                       key={pin.id}
                       style={{ left: `${pin.x * 100}%`, top: `${pin.y * 100}%` }}
-                      title={`${pin.title} — ${pin.kind === 'detail' ? 'choose a detail sketch' : 'click to connect'}`}
-                      aria-label={`Connect ${pin.title}`}
+                      title={`${pin.title} — ${pin.kind === 'detail' ? 'choose a detail sketch' : pin.kind === 'link' ? 'links out; click to edit' : 'click to connect'}`}
+                      aria-label={
+                        pin.kind === 'link' ? `Edit link ${pin.title}` : `Connect ${pin.title}`
+                      }
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onConnect(pin.id, '');
+                        if (pin.kind === 'link') onScreen(s.id, pin.id);
+                        else onConnect(pin.id, '');
                       }}
                     >
-                      <span>{pin.kind === 'detail' ? <Focus size={14} /> : i + 1}</span>
+                      <span>
+                        {pin.kind === 'detail' ? (
+                          <Focus size={14} />
+                        ) : pin.kind === 'link' ? (
+                          <ExternalLink size={13} />
+                        ) : (
+                          i + 1
+                        )}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -383,6 +497,11 @@ export function Board({
                           : s.role === 'terminal'
                             ? 'ENDING'
                             : 'SCREEN'}
+                    {mobile && (
+                      <i className="layout-flag" title="Has a mobile layout">
+                        <Smartphone size={11} />
+                      </i>
+                    )}
                   </span>
                   <button
                     className="icon-button"
@@ -393,6 +512,13 @@ export function Board({
                     <MoveUpRight size={14} />
                   </button>
                 </div>
+                <button
+                  className="resize-handle"
+                  aria-label={`Resize ${s.title}`}
+                  title="Drag to resize"
+                  onPointerDown={(e) => startResize(e, s)}
+                  onClick={(e) => e.stopPropagation()}
+                />
               </div>
               <button
                 className="paper-title"
@@ -445,6 +571,13 @@ export function Board({
               </marker>
             ))}
           </defs>
+          {plannedLinks.map(({ source, target }, i) => (
+            <path
+              key={`${source.id}>${target.id}`}
+              d={plannedPoints(source, target, i).d}
+              className="planned-thread"
+            />
+          ))}
           {project.pins
             .filter((pin) => pin.kind === 'detail' && pin.detailTarget)
             .map((pin) => {
@@ -489,6 +622,26 @@ export function Board({
               </button>
             ) : null;
           })}
+        {plannedLinks.map(({ source, target, ideas }, i) => {
+          const p = plannedPoints(source, target, i);
+          const single = ideas.length === 1;
+          return (
+            <button
+              key={`${source.id}>${target.id}`}
+              className="yarn-label-button planned-label"
+              style={{ left: p.x, top: p.y }}
+              aria-label={
+                single
+                  ? `Planned: ${ideas[0].title} leads to ${target.title}`
+                  : `Planned: ${ideas.length} ideas lead from ${source.title} to ${target.title}`
+              }
+              title={`${ideas.map((idea) => idea.title).join(' · ')}. Place the idea as a pin to tie the real yarn.`}
+              onClick={() => onScreen(source.id)}
+            >
+              {single ? ideas[0].title : `${ideas.length} planned`}
+            </button>
+          );
+        })}
         {project.screens.map((s) => {
           const history = project.transitions.filter(
               (t) =>
@@ -567,6 +720,11 @@ export function Board({
       </div>
       <div className="board-legend">
         <span className="legend-line" /> A thread of an idea
+        {plannedLinks.length > 0 && (
+          <>
+            <span className="legend-line planned" /> Planned, not drawn yet
+          </>
+        )}
       </div>
     </main>
   );

@@ -1,4 +1,4 @@
-import { isHistory, type Project, type Review, type Transition } from './model';
+import { isHistory, isPlanned, pinUrl, type Project, type Review, type Transition } from './model';
 
 export type Issue = {
   id: string;
@@ -69,6 +69,7 @@ export function analyze(p: Project): Issue[] {
     (t) =>
       pinById.has(t.pinId) &&
       pinById.get(t.pinId)?.kind !== 'detail' &&
+      pinById.get(t.pinId)?.kind !== 'link' &&
       screenById.get(pinById.get(t.pinId)!.screenId)?.role !== 'detail' &&
       (isHistory(t) ||
         (t.target && screenById.has(t.target) && screenById.get(t.target)?.role !== 'detail')),
@@ -164,7 +165,7 @@ export function analyze(p: Project): Issue[] {
     );
   const reachable = reach(entries);
   for (const s of p.screens) {
-    if (!assets.has(s.assetId))
+    if (s.assetId && !assets.has(s.assetId))
       add(
         'missing-image',
         'error',
@@ -172,6 +173,24 @@ export function analyze(p: Project): Issue[] {
         `${s.title}: missing image`,
         'This screen references an image that is not in the project.',
         s.assetId,
+      );
+    if (s.mobileAssetId && !assets.has(s.mobileAssetId))
+      add(
+        'missing-mobile-image',
+        'error',
+        [s.id],
+        `${s.title}: missing mobile drawing`,
+        'This screen references a mobile drawing that is not in the project.',
+        s.mobileAssetId,
+      );
+    if (isPlanned(s))
+      add(
+        'needs-drawing',
+        'warning',
+        [s.id],
+        `${s.title} is waiting for a drawing`,
+        'This frame was planned before it was drawn. Drop a sketch onto it on the board, or choose one in its editor. Its interactions and paths are checked once it has a drawing.',
+        s.id,
       );
     if (!p.layout[s.id])
       add(
@@ -224,7 +243,7 @@ export function analyze(p: Project): Issue[] {
         );
       continue;
     }
-    if (entries.length && !reachable.has(s.id))
+    if (entries.length && !reachable.has(s.id) && !isPlanned(s))
       add(
         'unreachable',
         'warning',
@@ -242,7 +261,13 @@ export function analyze(p: Project): Issue[] {
         'Describe why this is a legitimate final screen. A terminal label alone does not explain the intended behavior.',
         s,
       );
-    if (!outgoing(s.id).length && !(s.role === 'terminal' && s.purpose.trim()))
+    const linksOut = p.pins.some((pin) => pin.screenId === s.id && pin.kind === 'link');
+    if (
+      !isPlanned(s) &&
+      !outgoing(s.id).length &&
+      !linksOut &&
+      !(s.role === 'terminal' && s.purpose.trim())
+    )
       add(
         'dead-end',
         'warning',
@@ -272,6 +297,15 @@ export function analyze(p: Project): Issue[] {
         { title: pin.title, description: pin.description },
       );
     const branches = byPin.get(pin.id) ?? [];
+    if (screenById.get(pin.screenId)?.mobileAssetId && !pin.mobile)
+      add(
+        'mobile-pin-missing',
+        'warning',
+        [pin.id],
+        `${pin.title || 'A pin'} is not on the mobile layout`,
+        'This screen has a mobile drawing. Place the pin on it in the screen editor, or accept that this interaction is web only.',
+        { title: pin.title, screenId: pin.screenId },
+      );
     if (screenById.get(pin.screenId)?.role === 'detail' && pin.kind !== 'detail')
       add(
         'detail-interaction',
@@ -299,6 +333,18 @@ export function analyze(p: Project): Issue[] {
           'A detail reference has no valid target',
           'Choose another existing sketch to show the detail.',
           pin.detailTarget,
+        );
+      continue;
+    }
+    if (pin.kind === 'link') {
+      if (!pinUrl(pin))
+        add(
+          'link-address',
+          'warning',
+          [pin.id],
+          `${pin.title || 'This link'} needs a web address`,
+          'Write the address in the pin description, with any conditions. The pin is the exit; no yarn is needed.',
+          { title: pin.title, description: pin.description },
         );
       continue;
     }
@@ -348,6 +394,17 @@ export function analyze(p: Project): Issue[] {
   for (const t of p.transitions) {
     const pin = pinById.get(t.pinId),
       source = pin && screenById.get(pin.screenId);
+    if (pin?.kind === 'link') {
+      add(
+        'link-navigation',
+        'error',
+        [t.id],
+        'A link pin has yarn',
+        'A link pin leaves the app on its own. Remove the yarn, or make the pin an app interaction.',
+        semantics(t),
+      );
+      continue;
+    }
     if (
       pin?.kind === 'detail' ||
       source?.role === 'detail' ||

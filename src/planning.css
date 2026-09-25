@@ -1,0 +1,589 @@
+/* Planning stage, planned frames, and web + mobile layouts. Loaded after usability.css so the
+   same 44px controls and 48px fields apply here. */
+
+/* The selected view reads as a filled tab, so it is obvious which one is showing. */
+.view-switch button[aria-pressed='true'] {
+  background: var(--green);
+  color: #fffef8;
+  box-shadow: 0 1px 4px #24332633;
+}
+.view-switch button[aria-pressed='true'] .view-badge {
+  background: #fffef8;
+  color: var(--green);
+}
+.layout-toggle button[aria-pressed='true'] {
+  background: var(--green);
+  color: #fffef8;
+}
+
+/* View switch badge for ideas waiting to be placed */
+.view-badge {
+  border-radius: 4px;
+  background: #ede6d6;
+  color: #a78a59;
+  padding: 2px 6px;
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+/* Planning view */
+.planning-view {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 28px;
+  background: #f2f1e8;
+}
+.planning-intro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px 32px;
+  flex-wrap: wrap;
+}
+.planning-intro h2 {
+  font: 400 30px var(--serif);
+  margin: 10px 0;
+}
+.planning-intro p {
+  color: #6b7563;
+  max-width: 560px;
+  line-height: 1.7;
+}
+.planning-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  font-size: 13px;
+  color: #55604f;
+  padding-top: 6px;
+}
+.planning-summary > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.planning-summary > div {
+  display: flex;
+  gap: 8px;
+  flex-basis: 100%;
+}
+.idea-form,
+.plan-frame-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px 16px;
+  align-items: end;
+  background: #fffef8;
+  border: 1px solid #dce0d0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-top: 22px;
+}
+.idea-form label,
+.plan-frame-form label,
+.idea-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+.idea-form input,
+.idea-form select,
+.idea-form textarea,
+.plan-frame-form input,
+.plan-frame-form textarea,
+.idea-controls select {
+  margin: 0;
+}
+.idea-form-title,
+.idea-form-detail,
+.plan-frame-form > div,
+.plan-frame-form .field-help {
+  grid-column: 1 / -1;
+}
+.idea-form .auto-textarea,
+.plan-frame-form .auto-textarea {
+  min-height: 96px;
+}
+.idea-form > .button,
+.plan-frame-form > .button {
+  min-height: 48px;
+}
+.plan-frame-form {
+  background: #eef0e4;
+  border-color: #dfe3d4;
+  margin-top: 26px;
+}
+.plan-frame-form h3 {
+  font: 400 22px var(--serif);
+  margin: 6px 0;
+}
+.plan-frame-form p {
+  color: #6b7563;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.plan-frame-form .field-help {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.planning-view .outline-search {
+  margin-bottom: 0;
+}
+.planning-folder {
+  background: #fffef8;
+  border: 1px solid #dce0d0;
+  border-radius: 12px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 4px #49573706;
+}
+.planning-folder.pool {
+  background: #f7f6ec;
+  border-style: dashed;
+}
+.folder-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.folder-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #e6ebdc;
+  color: #3d5144;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.folder-heading > div:not(.folder-actions) {
+  flex: 1;
+  min-width: 200px;
+}
+.folder-heading h3 {
+  font: 400 21px var(--serif);
+}
+.folder-heading p {
+  color: #707a65;
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.6;
+}
+.folder-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.folder-empty {
+  color: #8a927f;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.idea-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.idea-list:empty {
+  display: none;
+}
+.idea-card {
+  border: 1px solid #dfe3d4;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #fffdf5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.idea-card.placed {
+  background: #f1f1e9;
+  border-style: dashed;
+  color: #7d8574;
+}
+.idea-card.placed h4,
+.idea-card.placed p {
+  color: #858d7c;
+}
+.idea-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.idea-heading small {
+  color: #9aa190;
+}
+.idea-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+.idea-status.placed {
+  background: #e3ebdb;
+  color: #3d5144;
+}
+.idea-status.assigned {
+  background: #f3e9d7;
+  color: #98783e;
+}
+.idea-status.pool {
+  background: #e9e9e1;
+  color: #6b7563;
+}
+.idea-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.idea-card p {
+  color: #5d675a;
+  line-height: 1.6;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+.idea-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.idea-controls label {
+  font-size: 11px;
+}
+.idea-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+.planning-text {
+  background: #fffef8;
+  border: 1px solid #dce0d0;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-top: 22px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    13px/1.65 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  color: var(--ink);
+}
+
+/* Planned frames on the board */
+.screen-card.planned .card-paper {
+  background: #fbf8ee;
+}
+.frame-planned {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 26px 14px;
+  min-height: 170px;
+  color: #6f7767;
+  font-size: 12px;
+  border: 2px dashed #cfc8a9;
+  border-radius: 6px;
+  background: repeating-linear-gradient(0deg, transparent 0 23px, #efebdc 23px 24px);
+}
+.frame-planned .eyebrow {
+  color: #a08c5a;
+}
+.frame-planned strong {
+  font: 400 21px var(--serif);
+  color: #4c5648;
+}
+.frame-planned ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: var(--hand);
+  font-size: 18px;
+  line-height: 1.25;
+  color: #4c5648;
+}
+.frame-planned p {
+  font-style: italic;
+}
+.frame-planned small {
+  font-size: 10px;
+  color: #9aa58d;
+  letter-spacing: 0.6px;
+}
+.mobile-thumb {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 22%;
+  max-width: 90px;
+  height: auto;
+  border: 2px solid #fffef5;
+  border-radius: 6px;
+  box-shadow: 1px 3px 8px #40361f40;
+  background: #fff;
+  pointer-events: none;
+}
+.layout-flag {
+  display: inline-flex;
+  margin-left: 6px;
+  color: #7d8a6f;
+  vertical-align: middle;
+}
+.planned-thread {
+  fill: none;
+  stroke: #a89c74;
+  stroke-width: 2;
+  stroke-dasharray: 6 7;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.planned-label {
+  border-style: dashed;
+  color: #8a7a4b;
+  background: #fbf6e8e6;
+  font-size: 9px;
+  padding: 4px 8px;
+  min-height: 0;
+  opacity: 0.9;
+}
+.planned-label:hover,
+.planned-label:focus-visible {
+  opacity: 1;
+  z-index: 3;
+}
+.legend-line.planned {
+  background: none;
+  height: 0;
+  border-top: 2px dashed #a89c74;
+  margin-left: 14px;
+}
+
+/* Screen editor: two layouts side by side */
+.layout-stages {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+}
+.layout-stages .sketch-stage {
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px 20px;
+  min-width: 0;
+}
+.layout-stages.two .sketch-stage.mobile {
+  flex: 0 1 36%;
+}
+.layout-caption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #7d8872;
+}
+.layout-caption span {
+  margin-left: auto;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #9aa58d;
+}
+.editable-image.empty {
+  box-shadow: none;
+  background: transparent;
+}
+.editable-image .frame-planned {
+  position: absolute;
+  inset: 0;
+  padding: 20px;
+  background: #f7f5ea;
+  border-radius: 8px;
+}
+.editable-image .frame-planned label {
+  width: 100%;
+  max-width: 320px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+.editable-image .frame-planned select {
+  margin: 0;
+}
+.editable-image .frame-planned strong {
+  font-size: 14px;
+}
+/* The bezel is an outline so pin percentages still measure the drawing itself. */
+.mobile-frame {
+  outline: 10px solid #2f3330;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px #2f333040;
+}
+.mobile-frame > img {
+  border-radius: 10px;
+}
+.unplaced-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  font-size: 11px;
+  color: #7d8872;
+}
+.idea-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e2e5d8;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.idea-row > span {
+  flex: 1;
+}
+.idea-row.placed {
+  color: #8f978a;
+}
+.quick-idea {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.quick-idea input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.quick-idea .button.small {
+  min-height: 48px;
+  min-width: 48px;
+  justify-content: center;
+}
+.linked-idea {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #3d5144;
+}
+
+/* Preview: layout toggle and planned frames */
+.preview-toolbar {
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+.layout-toggle {
+  display: flex;
+  background: #e9ecdf;
+  padding: 3px;
+  border-radius: 9px;
+  gap: 3px;
+}
+.layout-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 7px;
+  font-size: 13px;
+  min-height: 40px;
+}
+.layout-toggle button[aria-pressed='true'] {
+  background: #fffef7;
+  box-shadow: 0 1px 4px #42523420;
+  color: #344b32;
+}
+.preview-image.mobile-frame {
+  margin-top: 12px;
+}
+.preview-unplaced {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 12px;
+  color: #7d8872;
+}
+.preview-planned {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  border: 2px dashed #cfc8a9;
+  border-radius: 10px;
+  background: #f7f5ea;
+  color: #5d675a;
+  font-size: 14px;
+}
+.preview-planned ul {
+  list-style: none;
+  font-family: var(--hand);
+  font-size: 21px;
+  line-height: 1.3;
+  color: #4c5648;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Outline badges */
+.outline-count.planned {
+  background: #f3e9d7;
+  color: #98783e;
+}
+
+@media (max-width: 960px) {
+  .idea-form,
+  .plan-frame-form {
+    grid-template-columns: 1fr;
+  }
+  .idea-form > .button,
+  .plan-frame-form > .button {
+    justify-self: start;
+  }
+  .idea-controls {
+    grid-template-columns: 1fr;
+  }
+  .layout-stages {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .layout-stages.two .sketch-stage.mobile {
+    flex: initial;
+  }
+}

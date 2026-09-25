@@ -37,3 +37,38 @@ User delegated implementation choices and requested that significant decisions b
 ## 2026-09-08 — No idle servers or browsers
 
 User preference: do not leave local development servers or Chrome/test-browser processes running between tasks. Start only when directly needed, close browsers and stop servers in cleanup paths, and verify that their children and listeners have exited before handoff. Keep a process running only when the user explicitly requests it. The previously retained Sketchcoded development server has been stopped; saved projects remain on disk.
+
+## 2026-09-25 — Planning stage, planned frames, and web + mobile layouts
+
+The user asked for a desktop-only scope, a planning stage that feeds the drawings, two layouts per screen, and a first real board that plans Sketchcoded itself. Details are in `docs/PLANNING_PASS.md`.
+
+- **Desktop only:** Input is image files on this computer. No phone capture; the HEIC question is closed. The compact layout for narrow browser windows stays.
+- **Ideas are project data:** `ideas[]` joins the version-1 schema as an optional array (legacy files parse with an empty list). An idea records a title, details, the screen it belongs on, the pin it became, and the screen it leads to. Placing an idea creates the pin from its text and, when it leads somewhere, a draft `push` (or `modal`) transition. Moving a placed idea removes its pin, undoably, so the idea can be placed again. Deleting a pin or screen unlinks its ideas instead of deleting them.
+- **Planned frames:** A screen may have `assetId: null` until it is drawn. It keeps a layout, purpose, type and ideas, appears as dashed paper listing its ideas, and takes a drawing by drop or by choosing one in its editor. The checker reports `needs-drawing` and skips dead-end and reachability findings for it until then; other errors still apply. Pins need a web drawing.
+- **Two drawings per screen:** `mobileAssetId` on the screen and `mobile: {x, y}` on the pin. Pins are anchored on the web drawing first; the mobile position is a second placement of the same pin, so yarn is authored once. `mobile-pin-missing` is a waivable warning. The editor shows both drawings side by side; the board card shows a phone thumbnail; Test flow toggles layouts and lists pins not yet on mobile so a path is never lost.
+- **Two readings of the plan:** The Planning view (cards, folders per screen, a pool) and `planningOutline()` (markdown with `[x]`, `[ ]`, `( )` markers and planned threads). The outline is copyable in the app and included in `flow.md`, so a conversation about the plan and the export use the same text.
+- **Dogfooding:** The first real board is `Sketchcoded`, seeded with ten planned frames and the functionality backlog from the brief, the README and the conversation. `docs/FUNCTIONALITY.md` mirrors that backlog for the future website.
+- **Agent routine for planning:** keep the backlog current from the user’s ideas, propose screen assignments when asked, move ideas on request, and read or share the plan through the outline. Recorded in `AGENTS.md`.
+
+## 2026-09-25 — Readability on a planned board
+
+The first real board (Sketchcoded, ten planned frames and seventy ideas) was unreadable: every planned frame listed its ideas in handwriting and every planned idea drew its own dashed thread and label.
+
+- **Cards summarize, editors list.** A planned frame shows only how many ideas it holds. The ideas themselves live in the frame’s editor, in Planning and in the outline, where there is room to read them.
+- **One planned thread per frame pair.** Threads are grouped by source and destination; the label shows the idea title for a single idea or a count, with the titles in the tooltip. The real yarn is unchanged.
+- **The selected view is filled.** The active tab in the Board / App outline / Planning switch uses the green fill so the current view is obvious at a glance.
+- **External links are endings.** A landing-page button that leaves the site (GitHub, another project) is modeled as a terminal frame with a purpose, so the review understands the exit instead of flagging a dead end.
+
+## 2026-09-25 — Workstation pass: the app as drawn
+
+The user's second drawing is the workstation itself, and the third is the screen editor. Both are direct feedback on the app, so they were built rather than only planned.
+
+- **Library in two sections.** New sketches first, Used below; a sketch moves to Used the moment it lands on a frame. The usage filter is gone.
+- **Ideas beside the library.** A compact panel of what is still left to do, grouped by screen, with an agent box. No model is connected; anything typed there is saved as an idea in the plan and the panel says so. The Plan tab keeps the full view.
+- **One drawing at a time in the editor.** A Web / Mobile toggle swaps the image, as drawn, replacing the side-by-side stages. Pins not yet on mobile wait in a strip under the mobile drawing.
+- **Pins list, colors and labels.** The screen details list every pin with move and delete; a pin has one of four colors and the board says what each color means.
+- **Resize on the board.** Drag a frame's corner; the slider in the editor still works.
+- **Home marker.** Entry frames carry a small house so the start of the flow is visible.
+- **Links are pins.** An external destination is a link pin with the address in its description, never a frame. GitHub and the projects link on the landing page were converted, and the two external frames removed.
+- **Layout stability is a rule.** Dialogs keep a fixed size while their content scrolls; selecting a pin no longer changes the editor's height. Recorded in `AGENTS.md` so it applies to everything built from a board.
+- **The landing page is its own repository.** `../sketchcoded-site` is static HTML with the copy from the drawing, a guide page, and one file of external addresses. Publishing to GitHub needs the user's choice of name and visibility.

@@ -1,15 +1,17 @@
 import { useRef, useState } from 'react';
 import {
+  ArrowUpRight,
+  ChevronDown,
+  FileImage,
   FolderOpen,
   ImagePlus,
   Plus,
-  Search,
-  ArrowUpRight,
   RefreshCw,
+  Search,
   X,
-  FileImage,
 } from 'lucide-react';
 import { assetUrl, type Asset, type Project } from '../../shared/model';
+/** The sketch library: New sketches wait at the top; a sketch moves to Used when it lands on the board. */
 export function Library({
   project,
   onImport,
@@ -34,14 +36,81 @@ export function Library({
   const input = useRef<HTMLInputElement>(null),
     [query, setQuery] = useState(''),
     [drag, setDrag] = useState(false),
-    [usage, setUsage] = useState('all'),
-    [expandedAsset, setExpandedAsset] = useState<string | null>(null);
-  const assets = project.assets.filter(
-    (a) =>
-      a.name.toLowerCase().includes(query.toLowerCase()) &&
-      (usage === 'all' ||
-        (project.screens.some((s) => s.assetId === a.id) ? usage === 'used' : usage === 'unused')),
-  );
+    [expandedAsset, setExpandedAsset] = useState<string | null>(null),
+    [openNew, setOpenNew] = useState(true),
+    [openUsed, setOpenUsed] = useState<boolean | null>(null);
+  const usedBy = (a: Asset) =>
+    project.screens.filter((s) => s.assetId === a.id || s.mobileAssetId === a.id);
+  const matches = (a: Asset) => a.name.toLowerCase().includes(query.toLowerCase());
+  const fresh = project.assets.filter((a) => matches(a) && !usedBy(a).length),
+    used = project.assets.filter((a) => matches(a) && usedBy(a).length);
+  const usedOpen = openUsed ?? fresh.length === 0;
+  const card = (a: Asset, index: number) => {
+    const placements = usedBy(a);
+    return (
+      <div
+        className="asset"
+        draggable
+        key={a.id}
+        onDragStart={(e) => {
+          e.dataTransfer.setData('application/drawcode-asset', a.id);
+          e.dataTransfer.effectAllowed = 'copy';
+        }}
+      >
+        <button
+          className="asset-preview"
+          onClick={() => onAdd(a)}
+          title="Add this sketch to the board"
+          aria-label={`Add ${a.name} to board`}
+        >
+          <img src={assetUrl(a)} alt={a.name} draggable={false} loading="lazy" />
+          <span className="asset-add">
+            <Plus size={18} />
+          </span>
+          {placements.length > 0 && (
+            <span className="asset-used">
+              ✓ Used {placements.length > 1 ? `${placements.length} times` : ''}
+            </span>
+          )}
+        </button>
+        <div className="asset-caption">
+          <span className="asset-number">{String(index + 1).padStart(2, '0')}</span>
+          <span title={a.name}>
+            {a.name
+              .replace(/\.[^.]+$/, '')
+              .replace(/^\d+[-_]/, '')
+              .replace(/[-_]/g, ' ')}
+          </span>
+          <FileImage size={13} />
+        </div>
+        {placements.length ? (
+          <>
+            <button
+              className="asset-usage"
+              aria-expanded={expandedAsset === a.id}
+              onClick={() => setExpandedAsset(expandedAsset === a.id ? null : a.id)}
+            >
+              ✓ Used in {placements.length} {placements.length === 1 ? 'screen' : 'screens'}{' '}
+              <span>{expandedAsset === a.id ? '−' : 'View'}</span>
+            </button>
+            {expandedAsset === a.id && (
+              <div className="asset-placements">
+                {placements.map((s) => (
+                  <button key={s.id} onClick={() => onLocate(s.id)}>
+                    {s.title}
+                    {s.mobileAssetId === a.id && s.assetId !== a.id ? ' (mobile)' : ''}
+                    <ArrowUpRight size={16} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <span className="asset-unused">Not used yet · drag it onto the board</span>
+        )}
+      </div>
+    );
+  };
   return (
     <aside
       className={`library ${drag ? 'drop-active' : ''}`}
@@ -146,99 +215,45 @@ export function Library({
         />
         <kbd>⌕</kbd>
       </label>
-      <label className="library-filter">
-        Show sketches
-        <select
-          aria-label="Filter sketch usage"
-          value={usage}
-          onChange={(e) => setUsage(e.target.value)}
-        >
-          <option value="all">All sketches</option>
-          <option value="unused">Not used yet</option>
-          <option value="used">Already on the board</option>
-        </select>
-      </label>
       <div className="library-scroll">
-        <div className="library-section">
-          <span>ALL SKETCHES</span>
-          <span>↕</span>
-        </div>
-        <div className="asset-list">
-          {assets.map((a, index) => {
-            const used = project.screens.filter((s) => s.assetId === a.id).length;
-            return (
-              <div
-                className="asset"
-                draggable
-                key={a.id}
-                onDragStart={(e) => {
-                  e.dataTransfer.setData('application/drawcode-asset', a.id);
-                  e.dataTransfer.effectAllowed = 'copy';
-                }}
-              >
-                <button
-                  className="asset-preview"
-                  onClick={() => onAdd(a)}
-                  title="Add this sketch to the board"
-                  aria-label={`Add ${a.name} to board`}
-                >
-                  <img src={assetUrl(a)} alt={a.name} draggable={false} loading="lazy" />
-                  <span className="asset-add">
-                    <Plus size={18} />
-                  </span>
-                  {used > 0 && (
-                    <span className="asset-used">✓ Used {used > 1 ? `${used} times` : ''}</span>
-                  )}
-                </button>
-                <div className="asset-caption">
-                  <span className="asset-number">{String(index + 1).padStart(2, '0')}</span>
-                  <span title={a.name}>
-                    {a.name
-                      .replace(/\.[^.]+$/, '')
-                      .replace(/^\d+[-_]/, '')
-                      .replace(/[-_]/g, ' ')}
-                  </span>
-                  <FileImage size={13} />
-                </div>
-                {used ? (
-                  <>
-                    <button
-                      className="asset-usage"
-                      aria-expanded={expandedAsset === a.id}
-                      onClick={() => setExpandedAsset(expandedAsset === a.id ? null : a.id)}
-                    >
-                      ✓ Used in {used} {used === 1 ? 'screen' : 'screens'}{' '}
-                      <span>{expandedAsset === a.id ? '−' : 'View'}</span>
-                    </button>
-                    {expandedAsset === a.id && (
-                      <div className="asset-placements">
-                        {project.screens
-                          .filter((s) => s.assetId === a.id)
-                          .map((s) => (
-                            <button key={s.id} onClick={() => onLocate(s.id)}>
-                              {s.title}
-                              <ArrowUpRight size={16} />
-                            </button>
-                          ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <span className="asset-unused">Not used yet</span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        {!assets.length && (
-          <div className="empty-library">
-            <FileImage size={30} />
-            <p>{query ? 'No matching sketches.' : 'Every idea starts somewhere.'}</p>
-            <small>
-              {query ? 'Try another name.' : 'Connect a folder or drop your images here.'}
-            </small>
-          </div>
-        )}
+        <details
+          className="library-group new"
+          open={openNew}
+          onToggle={(e) => setOpenNew(e.currentTarget.open)}
+        >
+          <summary>
+            <ChevronDown className="disclosure-arrow" size={16} />
+            New <span>{fresh.length}</span>
+          </summary>
+          <div className="asset-list">{fresh.map(card)}</div>
+          {!fresh.length && (
+            <p className="library-note">
+              {query
+                ? 'No new sketches match.'
+                : project.assets.length
+                  ? 'Every sketch is on the board. Drop more below.'
+                  : 'Connect a folder or drop your images below.'}
+            </p>
+          )}
+        </details>
+        <details
+          className="library-group used"
+          open={usedOpen}
+          onToggle={(e) => setOpenUsed(e.currentTarget.open)}
+        >
+          <summary>
+            <ChevronDown className="disclosure-arrow" size={16} />
+            Used <span>{used.length}</span>
+          </summary>
+          <div className="asset-list">{used.map(card)}</div>
+          {!used.length && (
+            <p className="library-note">
+              {query
+                ? 'No used sketches match.'
+                : 'Sketches move here when they land on the board.'}
+            </p>
+          )}
+        </details>
       </div>
       <button className="import-zone" disabled={busy} onClick={() => input.current?.click()}>
         <ImagePlus size={20} />

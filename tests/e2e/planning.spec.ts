@@ -1,0 +1,176 @@
+import { test, expect, type Page } from '@playwright/test';
+import { strFromU8, unzipSync } from 'fflate';
+const headers = { 'X-Drawcode-Client': 'local' };
+async function fresh(page: Page) {
+  const response = await page.request.post('/api/projects', {
+    headers,
+    data: { name: 'Planning check', demo: true },
+  });
+  expect(response.ok()).toBeTruthy();
+  const project = await response.json();
+  await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
+  return project as { id: string; name: string };
+}
+async function addIdea(page: Page, title: string, detail: string, screen: string, leads: string) {
+  await page.getByLabel('New idea').fill(title);
+  await page.getByLabel('Details').first().fill(detail);
+  await page.getByLabel('Belongs on').first().selectOption({ label: screen });
+  await page.getByLabel('Leads to').first().selectOption({ label: leads });
+  await page.getByRole('button', { name: 'Add idea', exact: true }).click();
+}
+const close = (page: Page) =>
+  page.getByRole('button', { name: 'Close dialog', exact: true }).last().click();
+
+test('planning: plan a frame, add ideas, place one as a pin with its yarn, and keep it greyed out', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await fresh(page);
+  await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
+  await page.getByLabel('Frame title').fill('Settings');
+  await page.getByLabel('What is this frame for?').fill('Account and notification preferences.');
+  await page.getByRole('button', { name: 'Add planned frame', exact: true }).click();
+  await addIdea(page, 'Sign out', 'Ends the session.', 'Settings', 'A warm welcome');
+  await addIdea(
+    page,
+    'Search people',
+    'Find a friend by name.',
+    'Your people',
+    'A little conversation',
+  );
+  const search = page.locator('.idea-card', { hasText: 'Search people' });
+  await expect(search.getByText('Waiting for the drawing')).toBeVisible();
+  await expect(page.locator('.view-switch').getByRole('button', { name: /^Plan/ })).toContainText(
+    '2',
+  );
+  // A planned frame cannot take pins until it has a drawing.
+  await expect(
+    page
+      .locator('.idea-card', { hasText: 'Sign out' })
+      .getByRole('button', { name: 'Needs a drawing first' }),
+  ).toBeVisible();
+  // Placing writes the pin's name and intent and ties the planned yarn.
+  await search.getByRole('button', { name: 'Place on the drawing', exact: true }).click();
+  await expect(
+    page.getByText('Click the web drawing where “Search people” belongs.'),
+  ).toBeVisible();
+  const image = page.locator('.layout-stage.web .editable-image');
+  const box = await image.boundingBox();
+  await image.click({ position: { x: box!.width * 0.3, y: box!.height * 0.28 } });
+  await expect(page.getByLabel('Pin name', { exact: true })).toHaveValue('Search people');
+  await expect(page.getByRole('textbox', { name: /^The idea/ })).toHaveValue(
+    'Find a friend by name.',
+  );
+  await expect(page.getByText('Planned as “Search people” in the plan.')).toBeVisible();
+  await expect(page.locator('.connection-row', { hasText: 'Search people' })).toContainText(
+    'A little conversation',
+  );
+  await close(page);
+  await expect(search).toHaveClass(/placed/);
+  await expect(search.getByText('Pinned as pin 2')).toBeVisible();
+  await expect(search.getByRole('button', { name: 'Place on the drawing' })).toHaveCount(0);
+  // The board shows the empty frame with its ideas and the planned thread.
+  await page.getByRole('button', { name: 'Board', exact: true }).click();
+  const frame = page.getByRole('article', { name: 'Screen: Settings', exact: true });
+  await expect(frame).toHaveClass(/planned/);
+  await expect(frame.getByText('1 idea planned')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Planned: Sign out leads to A warm welcome', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Edit connection: Search people', exact: true }),
+  ).toBeVisible();
+  // Everything persists and reads as text.
+  await expect(page.getByText('All changes saved', { exact: true })).toBeVisible();
+  await page.reload();
+  await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
+  await expect(page.locator('.idea-card', { hasText: 'Sign out' })).toHaveClass(/assigned/);
+  await page.getByRole('button', { name: 'Show as text', exact: true }).click();
+  const text = page.getByLabel('Planning outline');
+  await expect(text).toContainText('## Settings (no drawing yet)');
+  await expect(text).toContainText('- [ ] Sign out → A warm welcome');
+  await expect(text).toContainText('- [x] Search people → A little conversation (pin 2)');
+  expect(errors).toEqual([]);
+});
+
+test('layouts: a mobile drawing, pins placed on it, review, preview toggle and export', async ({
+  page,
+}) => {
+  const project = await fresh(page);
+  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByLabel('Mobile drawing').selectOption({ index: 3 });
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Mobile/ })
+    .click();
+  const mobile = page.locator('.layout-stage.mobile');
+  await expect(mobile).toBeVisible();
+  await expect(page.getByText('Not on mobile yet:')).toBeVisible();
+  await close(page);
+  await page.getByRole('button', { name: /^Review flow/ }).click();
+  await expect(page.getByText('Open a recent chat is not on the mobile layout')).toBeVisible();
+  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Pin 1: Open a recent chat', exact: true }).click();
+  await page.getByRole('button', { name: 'Place on the mobile drawing', exact: true }).click();
+  const phone = page.locator('.mobile-frame');
+  const box = await phone.boundingBox();
+  await phone.click({ position: { x: box!.width * 0.5, y: box!.height * 0.4 } });
+  await expect(
+    page.getByRole('button', { name: 'Pin 1: Open a recent chat (mobile)' }),
+  ).toBeVisible();
+  await expect(page.getByText('Not on mobile yet:')).toHaveCount(0);
+  await close(page);
+  await expect(page.getByText('Open a recent chat is not on the mobile layout')).toHaveCount(0);
+  // Preview follows the same pin on either layout.
+  await page.getByRole('button', { name: 'Test flow', exact: true }).click();
+  await page.getByRole('button', { name: 'Try Let me in', exact: true }).click();
+  await page.getByRole('button', { name: 'Mobile', exact: true }).click();
+  await expect(page.getByAltText('Preview: Your people (mobile)', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Try Open a recent chat', exact: true }).click();
+  await expect(page.getByText('CHOOSE THE SCENARIO', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Web', exact: true }).click();
+  await expect(page.getByAltText('Preview: Your people', { exact: true })).toBeVisible();
+  await close(page);
+  await expect(page.getByText('All changes saved', { exact: true })).toBeVisible();
+  // The export names both drawings and both positions.
+  const saved = await (await page.request.get(`/api/projects/${project.id}`)).json();
+  const zip = await page.request.post('/api/export', { headers, data: saved });
+  expect(zip.ok()).toBeTruthy();
+  const files = unzipSync(new Uint8Array(await zip.body()));
+  const flow = strFromU8(files['flow.md']);
+  expect(flow).toContain('Mobile drawing: [');
+  expect(flow).toMatch(/Mobile coordinate: \(0\.\d+, 0\.\d+\)/);
+  expect(JSON.parse(strFromU8(files['project.json'])).pins[1].mobile).toBeTruthy();
+});
+
+test('a sketch dropped onto a planned frame fills it and its ideas become placeable', async ({
+  page,
+}) => {
+  await fresh(page);
+  await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
+  await page.getByLabel('Frame title').fill('Settings');
+  await page.getByRole('button', { name: 'Add planned frame', exact: true }).click();
+  await addIdea(page, 'Sign out', 'Ends the session.', 'Settings', 'A warm welcome');
+  await page.getByRole('button', { name: 'Board', exact: true }).click();
+  await page.getByRole('button', { name: 'Fit board', exact: true }).click();
+  const frame = page.getByRole('article', { name: 'Screen: Settings', exact: true });
+  await expect(frame).toHaveClass(/planned/);
+  const sketch = page.locator('.asset').filter({
+    has: page.getByRole('button', { name: 'Add 04-blocked.svg to board', exact: true }),
+  });
+  await sketch.dragTo(frame, { targetPosition: { x: 60, y: 90 } });
+  await expect(frame).not.toHaveClass(/planned/);
+  await expect(frame.locator('img').first()).toBeVisible();
+  await expect(
+    page.getByText('Drawing added. Open the frame to place its planned ideas as pins.'),
+  ).toBeVisible();
+  await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
+  await expect(
+    page
+      .locator('.idea-card', { hasText: 'Sign out' })
+      .getByRole('button', { name: 'Place on the drawing' }),
+  ).toBeEnabled();
+});

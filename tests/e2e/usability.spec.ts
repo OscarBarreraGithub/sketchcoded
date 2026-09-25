@@ -160,9 +160,11 @@ test('library shows usage, filters unused images and locates an existing placeme
 }) => {
   await fresh(page);
   await expect(page.locator('.asset-usage')).toHaveCount(4);
-  await page.getByRole('combobox', { name: 'Filter sketch usage' }).selectOption('unused');
-  await expect(page.locator('.asset')).toHaveCount(0);
-  await page.getByRole('combobox', { name: 'Filter sketch usage' }).selectOption('used');
+  await expect(page.locator('.library-group.new .asset')).toHaveCount(0);
+  await expect(page.locator('.library-group.used .asset')).toHaveCount(4);
+  const used = page.locator('.library-group.used');
+  if (!(await used.evaluate((el) => (el as HTMLDetailsElement).open)))
+    await used.locator('summary').click();
   await page.locator('.asset-usage').first().click();
   await page.locator('.asset-placements button').first().click();
   await expect(
@@ -281,7 +283,7 @@ test('actual browser zoom retains navigation, large fields, readable long text a
       await page.getByRole('button', { name: 'Close flow review', exact: true }).click();
       if (factor >= 1.5) {
         await page.getByRole('button', { name: 'Sketch library', exact: true }).click();
-        await expect(page.getByRole('combobox', { name: 'Filter sketch usage' })).toBeVisible();
+        await expect(page.locator('.library-group.new > summary')).toBeVisible();
         await page.getByRole('button', { name: 'Close sketch library', exact: true }).click();
       }
       await page.getByRole('button', { name: 'Board', exact: true }).click();

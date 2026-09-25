@@ -1,5 +1,6 @@
-import { isHistory, type Project } from './model';
+import { isHistory, isPlanned, pinUrl, type Project } from './model';
 import { analyze, decisionFor } from './graph';
+import { planningOutline } from './planning';
 // A companion reading order for humans and future agents; project.json remains authoritative.
 export function flowDocument(p: Project): string {
   const lines = [
@@ -9,22 +10,35 @@ export function flowDocument(p: Project): string {
     '',
     'Branch conditions are natural language, not executable predicates. Reachability describes possible structural paths, not a proof that every state is safe. Preview rewind is not app navigation.',
     '',
+    'A screen may hold two drawings of the same view: a web layout and a mobile layout. Pins list a position on each. A frame without a drawing is planned but not yet drawn; its intended interactions are in the planning backlog at the end.',
+    '',
     '## Entry points',
     '',
     ...p.screens.filter((s) => s.entry && s.role !== 'detail').map((s) => `- ${s.title} (${s.id})`),
     '',
   ];
   for (const screen of p.screens) {
-    const asset = p.assets.find((a) => a.id === screen.assetId);
+    const asset = p.assets.find((a) => a.id === screen.assetId),
+      mobile = p.assets.find((a) => a.id === screen.mobileAssetId);
     lines.push(
       `## ${screen.title}`,
       '',
       `Screen ID: ${screen.id} · Type: ${screen.role} · Entry: ${screen.entry ? 'yes' : 'no'}`,
       '',
     );
+    if (isPlanned(screen))
+      lines.push(
+        '_No drawing yet. This frame is planned; its intended interactions are listed in the planning backlog._',
+        '',
+      );
     if (asset)
       lines.push(
-        `Visual reference: [${asset.name}](assets/${asset.file}) (${asset.width} × ${asset.height})`,
+        `Web drawing: [${asset.name}](assets/${asset.file}) (${asset.width} × ${asset.height})`,
+        '',
+      );
+    if (mobile)
+      lines.push(
+        `Mobile drawing: [${mobile.name}](assets/${mobile.file}) (${mobile.width} × ${mobile.height})`,
         '',
       );
     lines.push(screen.purpose || '_Screen purpose has not been described._', '');
@@ -33,14 +47,28 @@ export function flowDocument(p: Project): string {
     const pins = p.pins.filter((pin) => pin.screenId === screen.id);
     if (!pins.length) lines.push('_No interaction pins._', '');
     for (const pin of pins) {
+      const mobilePosition = screen.mobileAssetId
+        ? ` · Mobile coordinate: ${pin.mobile ? `(${pin.mobile.x}, ${pin.mobile.y})` : 'not placed yet'}`
+        : '';
       lines.push(
         `### ${pin.title || 'Unnamed interaction'}`,
         '',
-        `Pin ID: ${pin.id} · Image coordinate: (${pin.x}, ${pin.y}), normalized from the top-left`,
+        `Pin ID: ${pin.id} · Web coordinate: (${pin.x}, ${pin.y})${mobilePosition}, normalized from the top-left`,
         '',
         pin.description || '_Interaction intent is missing._',
         '',
       );
+      const idea = p.ideas.find((idea) => idea.pinId === pin.id);
+      if (idea) lines.push(`Planned as idea: ${idea.title} (${idea.id})`, '');
+      if (pin.kind === 'link') {
+        lines.push(
+          `External link: ${pinUrl(pin) ?? 'address not written yet'}`,
+          '',
+          'This pin leaves the app for a web address. It has no yarn and no destination screen.',
+          '',
+        );
+        continue;
+      }
       if (pin.kind === 'detail') {
         lines.push(
           `Detail reference: ${p.screens.find((s) => s.id === pin.detailTarget)?.title ?? 'NOT ATTACHED'} (${pin.detailTarget ?? 'none'})`,
@@ -76,6 +104,12 @@ export function flowDocument(p: Project): string {
       }
     }
   }
+  if (p.ideas.length)
+    lines.push(
+      planningOutline(p, 2),
+      'Placed ideas became the pins above. Assigned ideas describe interactions the drawing should include. Pool ideas have no screen yet.',
+      '',
+    );
   lines.push(
     '## Flow review',
     '',

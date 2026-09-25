@@ -10,6 +10,8 @@ import '@fontsource/newsreader/400.css';
 import App from './App';
 import './styles.css';
 import './usability.css';
+import './planning.css';
+import './workstation.css';
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: boolean }> {
   state = { error: false };
   static getDerivedStateFromError() {

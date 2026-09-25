@@ -1,6 +1,16 @@
 import { useRef, useState } from 'react';
-import { ArrowRight, ChevronDown, Flag, Focus, Layers, MapPin, Pencil, Search } from 'lucide-react';
-import { isHistory, type Project, type Screen } from '../../shared/model';
+import {
+  ArrowRight,
+  ChevronDown,
+  ExternalLink,
+  Flag,
+  Focus,
+  Layers,
+  MapPin,
+  Pencil,
+  Search,
+} from 'lucide-react';
+import { isHistory, isPlanned, pinUrl, type Project, type Screen } from '../../shared/model';
 
 export function Outline({
   project,
@@ -139,6 +149,8 @@ export function Outline({
                       <Layers size={18} />
                     )}
                     <strong>{s.title || 'Untitled screen'}</strong>
+                    {isPlanned(s) && <span className="outline-count planned">no drawing yet</span>}
+                    {s.mobileAssetId && <span className="outline-count">web + mobile</span>}
                     <span className="outline-count">
                       {pins.length} {pins.length === 1 ? 'pin' : 'pins'}
                     </span>
@@ -155,6 +167,15 @@ export function Outline({
                         </button>
                       </div>
                     </div>
+                    {project.ideas.some((idea) => idea.screenId === s.id && !idea.pinId) && (
+                      <p className="outline-arrivals">
+                        Ideas waiting for the drawing:{' '}
+                        {project.ideas
+                          .filter((idea) => idea.screenId === s.id && !idea.pinId)
+                          .map((idea) => idea.title)
+                          .join(', ')}
+                      </p>
+                    )}
                     {incoming.length > 0 && (
                       <p className="outline-arrivals">
                         Reached from{' '}
@@ -196,7 +217,9 @@ export function Outline({
                             <span className="outline-count">
                               {pin.kind === 'detail'
                                 ? 'Detail reference'
-                                : `${branches.length} ${branches.length === 1 ? 'path' : 'paths'}`}
+                                : pin.kind === 'link'
+                                  ? 'Link out'
+                                  : `${branches.length} ${branches.length === 1 ? 'path' : 'paths'}`}
                             </span>
                           </summary>
                           <div className="outline-pin-content">
@@ -206,7 +229,15 @@ export function Outline({
                                 <MapPin size={15} /> Edit pin
                               </button>
                             </div>
-                            {pin.kind === 'detail' ? (
+                            {pin.kind === 'link' ? (
+                              <div className="outline-route reference">
+                                <span>
+                                  <ExternalLink size={17} /> Opens{' '}
+                                  {pinUrl(pin) ?? 'a web address (not written yet)'} · leaves the
+                                  app
+                                </span>
+                              </div>
+                            ) : pin.kind === 'detail' ? (
                               pin.detailTarget ? (
                                 <div className="outline-route reference">
                                   <span>
