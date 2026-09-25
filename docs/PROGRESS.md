@@ -97,7 +97,7 @@ The preview should let the user choose among natural-language branches and show 
 
 ## Next action
 
-The original in-scope vision is complete and the 2026-09-25 planning pass added the planning stage, planned frames and web + mobile layouts (see the dated section below). The next step is the user's: draw the Sketchcoded frames, starting with Home, and drop each drawing onto its planned frame. The agentic workflow remains deferred, using docs/GRAPH.md as the data contract.
+The original in-scope vision is complete; the 2026-09-25 passes added the planning stage, planned frames, web + mobile layouts, the workstation as drawn, link pins and the companion landing site (see the dated sections below). Next, for the user: check the three drawn frames, draw the nine frames still waiting (Boards, App outline, Planning, Connection editor, Review flow, Test flow, How it works, Example demo, Guide) and drop each onto its planned card; decide the web/mobile toggle question flagged in gold on the Screen editor frame; publish the two repositories to GitHub and confirm the address in the site's `links.js`. The agentic workflow remains deferred, using docs/GRAPH.md as the data contract.
 
 ## Final verification evidence
 
