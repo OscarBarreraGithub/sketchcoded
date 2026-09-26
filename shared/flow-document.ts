@@ -1,4 +1,4 @@
-import { isHistory, isPlanned, pinUrl, type Project } from './model';
+import { isHistory, isLeftToAi, isPlanned, pinUrl, type Project } from './model';
 import { analyze, decisionFor } from './graph';
 import { planningOutline } from './planning';
 // A companion reading order for humans and future agents; project.json remains authoritative.
@@ -26,7 +26,12 @@ export function flowDocument(p: Project): string {
       `Screen ID: ${screen.id} · Type: ${screen.role} · Entry: ${screen.entry ? 'yes' : 'no'}`,
       '',
     );
-    if (isPlanned(screen))
+    if (isLeftToAi(screen))
+      lines.push(
+        '**Leave it up to the AI.** This frame wears the post-it: build a standard, conventional page for it from its title, purpose, the ideas in the planning section and the yarn in and out. No drawing is expected; everything else on the board is built as drawn.',
+        '',
+      );
+    else if (isPlanned(screen))
       lines.push(
         '_No drawing yet. This frame is planned; its intended interactions are listed in the planning backlog._',
         '',

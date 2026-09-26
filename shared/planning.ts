@@ -1,4 +1,11 @@
-import { ideaStatus, isPlanned, plannedThreads, type Idea, type Project } from './model';
+import {
+  ideaStatus,
+  isLeftToAi,
+  isPlanned,
+  plannedThreads,
+  type Idea,
+  type Project,
+} from './model';
 
 /**
  * A chat-friendly outline of the planning backlog: the same information the board shows as frames,
@@ -31,7 +38,7 @@ export function planningOutline(p: Project, level = 1): string {
     const flags = [
       screen.entry ? 'entry' : null,
       screen.role !== 'screen' ? screen.role : null,
-      isPlanned(screen) ? 'no drawing yet' : null,
+      isLeftToAi(screen) ? 'left to the AI' : isPlanned(screen) ? 'no drawing yet' : null,
       screen.mobileAssetId ? 'web + mobile' : null,
     ].filter(Boolean);
     lines.push(

@@ -10,7 +10,14 @@ import {
   Pencil,
   Search,
 } from 'lucide-react';
-import { isHistory, isPlanned, pinUrl, type Project, type Screen } from '../../shared/model';
+import {
+  isHistory,
+  isLeftToAi,
+  isPlanned,
+  pinUrl,
+  type Project,
+  type Screen,
+} from '../../shared/model';
 
 export function Outline({
   project,
@@ -149,7 +156,11 @@ export function Outline({
                       <Layers size={18} />
                     )}
                     <strong>{s.title || 'Untitled screen'}</strong>
-                    {isPlanned(s) && <span className="outline-count planned">no drawing yet</span>}
+                    {isLeftToAi(s) ? (
+                      <span className="outline-count left-to-ai">left to the AI</span>
+                    ) : (
+                      isPlanned(s) && <span className="outline-count planned">no drawing yet</span>
+                    )}
                     {s.mobileAssetId && <span className="outline-count">web + mobile</span>}
                     <span className="outline-count">
                       {pins.length} {pins.length === 1 ? 'pin' : 'pins'}

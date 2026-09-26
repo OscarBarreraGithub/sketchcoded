@@ -549,11 +549,12 @@ function Studio({
             <span>Export project</span>
           </button>
           <button
-            className="button primary"
+            className="button primary test-button"
+            aria-label="Test flow"
             disabled={!project.screens.some((s) => s.role !== 'detail')}
             onClick={() => setPreview(true)}
           >
-            <Play size={15} fill="currentColor" /> Test flow
+            <Play size={15} fill="currentColor" /> <span>Test flow</span>
           </button>
         </div>
       </header>

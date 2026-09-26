@@ -1,4 +1,12 @@
-import { isHistory, isPlanned, pinUrl, type Project, type Review, type Transition } from './model';
+import {
+  isHistory,
+  isLeftToAi,
+  isPlanned,
+  pinUrl,
+  type Project,
+  type Review,
+  type Transition,
+} from './model';
 
 export type Issue = {
   id: string;
@@ -183,7 +191,7 @@ export function analyze(p: Project): Issue[] {
         'This screen references a mobile drawing that is not in the project.',
         s.mobileAssetId,
       );
-    if (isPlanned(s))
+    if (isPlanned(s) && !isLeftToAi(s))
       add(
         'needs-drawing',
         'warning',

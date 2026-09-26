@@ -18,6 +18,7 @@ import {
 import {
   assignIdea,
   ideaStatus,
+  isLeftToAi,
   isPlanned,
   newIdea,
   type Idea,
@@ -237,7 +238,7 @@ export function Planning({
                       : screen.role === 'terminal'
                         ? 'Ending'
                         : null,
-                isPlanned(screen) ? 'No drawing yet' : null,
+                isLeftToAi(screen) ? 'Left to the AI' : isPlanned(screen) ? 'No drawing yet' : null,
                 screen.mobileAssetId ? 'Web + mobile' : null,
                 `${waiting.length} waiting`,
                 `${placed.length} pinned`,

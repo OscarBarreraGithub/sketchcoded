@@ -1,5 +1,5 @@
 import { DetailView } from './DetailView';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,6 +23,7 @@ import {
 } from '../../shared/model';
 import { follow, startPreview, type PreviewState } from '../../shared/navigation';
 import { Modal } from './Modal';
+import { ScrollHints } from './ScrollHints';
 export function Preview({ project, onClose }: { project: Project; onClose: () => void }) {
   const appScreens = project.screens.filter((s) => s.role !== 'detail');
   const initial = appScreens.find((s) => s.entry)?.id ?? appScreens[0]?.id;
@@ -98,6 +99,27 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
   };
   const last = project.transitions.find((t) => t.id === state.trail.at(-1));
   const unplaced = showingMobile ? pins.filter((p) => !p.mobile) : [];
+  // Rule (2026-09-26): every view works at every zoom. The drawing is sized to the stage in both
+  // directions so every pin is in view without scrolling, however small the dialog.
+  const stageRef = useRef<HTMLDivElement>(null),
+    sideRef = useRef<HTMLDivElement>(null),
+    [fit, setFit] = useState<{ width: number; height: number } | null>(null);
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const measure = () => {
+      const next = { width: el.clientWidth, height: el.clientHeight };
+      setFit((f) => (f && f.width === next.width && f.height === next.height ? f : next));
+    };
+    measure();
+    const sizes = new ResizeObserver(measure);
+    sizes.observe(el);
+    return () => sizes.disconnect();
+  }, []);
+  const aspect = asset ? asset.width / asset.height : 4 / 3;
+  const fitWidth = fit
+    ? Math.max(120, Math.floor(Math.min(fit.width, (fit.height - 6) * aspect)))
+    : undefined;
   return (
     <Modal title="Take your idea for a walk." onClose={onClose} className="preview-modal">
       <div className="preview-toolbar">
@@ -128,12 +150,16 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
           </div>
         )}
         <div>
-          <button className="text-button" onClick={() => setShowPins(!showPins)}>
+          <button
+            className="text-button"
+            aria-label={showPins ? 'Hide pins' : 'Show pins'}
+            onClick={() => setShowPins(!showPins)}
+          >
             <MapPin size={15} />
-            {showPins ? 'Hide pins' : 'Show pins'}
+            <span>{showPins ? 'Hide pins' : 'Show pins'}</span>
           </button>
-          <button className="text-button" onClick={() => reset()}>
-            <RotateCcw size={15} /> Restart
+          <button className="text-button" aria-label="Restart" onClick={() => reset()}>
+            <RotateCcw size={15} /> <span>Restart</span>
           </button>
         </div>
       </div>
@@ -144,57 +170,60 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             {current.kind === 'modal' && <span className="badge">DIALOG</span>}
             {showingMobile && <span className="badge">MOBILE</span>}
           </div>
-          <div
-            className={`preview-image ${showingMobile ? 'mobile-frame' : ''}`}
-            style={{
-              aspectRatio: asset ? `${asset.width}/${asset.height}` : '4/3',
-              maxWidth: asset ? `min(100%, calc(58vh * ${asset.width / asset.height}))` : '100%',
-            }}
-          >
-            {asset ? (
-              <img
-                src={assetUrl(asset)}
-                alt={`Preview: ${screen?.title}${showingMobile ? ' (mobile)' : ''}`}
-                draggable={false}
-              />
-            ) : screen && isPlanned(screen) ? (
-              <div className="preview-planned">
-                <strong>{screen.title} has no drawing yet.</strong>
-                {ideas.length ? (
-                  <>
-                    <span>Planned for this screen:</span>
-                    <ul>
-                      {ideas.map((idea) => (
-                        <li key={idea.id}>{idea.title}</li>
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <span>Add a drawing and some pins to try it here.</span>
-                )}
-              </div>
-            ) : (
-              <p>This screen’s image is missing.</p>
-            )}
-            {asset &&
-              pins
-                .filter((p) => !showingMobile || p.mobile)
-                .map((p) => {
-                  const pos = showingMobile ? p.mobile! : p,
-                    i = pins.indexOf(p);
-                  return (
-                    <button
-                      key={p.id}
-                      className={`preview-pin ${pinColor(p)} ${p.kind === 'link' ? 'link-pin' : ''} ${showPins ? '' : 'invisible-pin'}`}
-                      style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
-                      aria-label={`Try ${p.title || `interaction ${i + 1}`}`}
-                      title={p.title}
-                      onClick={() => tryPin(p)}
-                    >
-                      {i + 1}
-                    </button>
-                  );
-                })}
+          <div className="stage-fit" ref={stageRef}>
+            <div
+              className={`preview-image ${showingMobile ? 'mobile-frame' : ''}`}
+              style={{
+                aspectRatio: `${aspect}`,
+                width: fitWidth === undefined ? undefined : `${fitWidth}px`,
+                maxWidth: '100%',
+              }}
+            >
+              {asset ? (
+                <img
+                  src={assetUrl(asset)}
+                  alt={`Preview: ${screen?.title}${showingMobile ? ' (mobile)' : ''}`}
+                  draggable={false}
+                />
+              ) : screen && isPlanned(screen) ? (
+                <div className="preview-planned">
+                  <strong>{screen.title} has no drawing yet.</strong>
+                  {ideas.length ? (
+                    <>
+                      <span>Planned for this screen:</span>
+                      <ul>
+                        {ideas.map((idea) => (
+                          <li key={idea.id}>{idea.title}</li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <span>Add a drawing and some pins to try it here.</span>
+                  )}
+                </div>
+              ) : (
+                <p>This screen’s image is missing.</p>
+              )}
+              {asset &&
+                pins
+                  .filter((p) => !showingMobile || p.mobile)
+                  .map((p) => {
+                    const pos = showingMobile ? p.mobile! : p,
+                      i = pins.indexOf(p);
+                    return (
+                      <button
+                        key={p.id}
+                        className={`preview-pin ${pinColor(p)} ${p.kind === 'link' ? 'link-pin' : ''} ${showPins ? '' : 'invisible-pin'}`}
+                        style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
+                        aria-label={`Try ${p.title || `interaction ${i + 1}`}`}
+                        title={p.title}
+                        onClick={() => tryPin(p)}
+                      >
+                        {i + 1}
+                      </button>
+                    );
+                  })}
+            </div>
           </div>
           {layout === 'mobile' && !mobileAsset && screen && !isPlanned(screen) && (
             <p className="preview-hint">
@@ -227,83 +256,86 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
           )}
         </div>
         <aside className="preview-sidebar">
-          {choice ? (
-            <>
-              <span className="eyebrow">CHOOSE THE SCENARIO</span>
-              <h3>{pin?.title || 'This interaction'}</h3>
-              <p>{pin?.description}</p>
-              {transitions.length ? (
-                transitions.map((t) => (
-                  <button className="branch-choice" key={t.id} onClick={() => take(t)}>
-                    <span>
-                      {t.summary || 'Unnamed branch'}
-                      <ArrowRight size={16} />
-                    </span>
-                    <small>{t.condition || 'No condition specified.'}</small>
-                    <em>
-                      {t.target
-                        ? project.screens.find((s) => s.id === t.target)?.title
-                        : t.navigation === 'back'
-                          ? 'Previous screen'
-                          : 'Dialog caller'}
-                      {t.fallback ? ' · fallback' : ''}
-                    </em>
-                  </button>
-                ))
-              ) : (
-                <div className="preview-notice">
-                  This pin has no yarn yet. Return to the board and connect it to a screen or add a
-                  history action.
-                </div>
-              )}
-              <button className="text-button" onClick={() => setChoice(null)}>
-                <ArrowLeft size={14} /> Back to the sketch
-              </button>
-              <div className="preview-prose-note">
-                You’re choosing a scenario. Conditions written in words are not automatically
-                evaluated.
-              </div>
-            </>
-          ) : (
-            <>
-              <span className="eyebrow">PLAYING YOUR SKETCHES</span>
-              <h3>Follow your curiosity.</h3>
-              <p>
-                Try the little pins on your sketch. At a fork in the flow, you get to choose what
-                happens.
-              </p>
-              <div className="preview-route">
-                <span>
-                  <Flag size={14} />
-                  {project.screens.find((s) => s.id === start)?.title}
-                </span>
-                {state.trail.map((id, i) => {
-                  const t = project.transitions.find((t) => t.id === id);
-                  return (
-                    <div key={`${id}-${i}`}>
-                      <span className="route-line" />
-                      <small>{t?.summary || 'Removed connection'}</small>
-                    </div>
-                  );
-                })}
-              </div>
-              {last && (
-                <div className="last-branch">
-                  <span className="eyebrow">LAST CONNECTION</span>
-                  <strong>{last.summary}</strong>
-                  {last.condition && <p>{last.condition}</p>}
-                  {last.context && <small>Data or information: {last.context}</small>}
-                </div>
-              )}
-              {screen?.role === 'terminal' && (
+          <div className="preview-sidebar-scroll" ref={sideRef}>
+            {choice ? (
+              <>
+                <span className="eyebrow">CHOOSE THE SCENARIO</span>
+                <h3>{pin?.title || 'This interaction'}</h3>
+                <p>{pin?.description}</p>
+                {transitions.length ? (
+                  transitions.map((t) => (
+                    <button className="branch-choice" key={t.id} onClick={() => take(t)}>
+                      <span>
+                        {t.summary || 'Unnamed branch'}
+                        <ArrowRight size={16} />
+                      </span>
+                      <small>{t.condition || 'No condition specified.'}</small>
+                      <em>
+                        {t.target
+                          ? project.screens.find((s) => s.id === t.target)?.title
+                          : t.navigation === 'back'
+                            ? 'Previous screen'
+                            : 'Dialog caller'}
+                        {t.fallback ? ' · fallback' : ''}
+                      </em>
+                    </button>
+                  ))
+                ) : (
+                  <div className="preview-notice">
+                    This pin has no yarn yet. Return to the board and connect it to a screen or add
+                    a history action.
+                  </div>
+                )}
+                <button className="text-button" onClick={() => setChoice(null)}>
+                  <ArrowLeft size={14} /> Back to the sketch
+                </button>
                 <div className="preview-prose-note">
-                  <strong>An intentional ending.</strong>
-                  <br />
-                  {screen.purpose}
+                  You’re choosing a scenario. Conditions written in words are not automatically
+                  evaluated.
                 </div>
-              )}
-            </>
-          )}
+              </>
+            ) : (
+              <>
+                <span className="eyebrow">PLAYING YOUR SKETCHES</span>
+                <h3>Follow your curiosity.</h3>
+                <p>
+                  Try the little pins on your sketch. At a fork in the flow, you get to choose what
+                  happens.
+                </p>
+                <div className="preview-route">
+                  <span>
+                    <Flag size={14} />
+                    {project.screens.find((s) => s.id === start)?.title}
+                  </span>
+                  {state.trail.map((id, i) => {
+                    const t = project.transitions.find((t) => t.id === id);
+                    return (
+                      <div key={`${id}-${i}`}>
+                        <span className="route-line" />
+                        <small>{t?.summary || 'Removed connection'}</small>
+                      </div>
+                    );
+                  })}
+                </div>
+                {last && (
+                  <div className="last-branch">
+                    <span className="eyebrow">LAST CONNECTION</span>
+                    <strong>{last.summary}</strong>
+                    {last.condition && <p>{last.condition}</p>}
+                    {last.context && <small>Data or information: {last.context}</small>}
+                  </div>
+                )}
+                {screen?.role === 'terminal' && (
+                  <div className="preview-prose-note">
+                    <strong>An intentional ending.</strong>
+                    <br />
+                    {screen.purpose}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+          <ScrollHints target={sideRef} label="More" />
         </aside>
       </div>
       <div className="preview-footer">

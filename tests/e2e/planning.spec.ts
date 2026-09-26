@@ -72,14 +72,13 @@ test('planning: plan a frame, add ideas, place one as a pin with its yarn, and k
   await expect(search).toHaveClass(/placed/);
   await expect(search.getByText('Pinned as pin 2')).toBeVisible();
   await expect(search.getByRole('button', { name: 'Place on the drawing' })).toHaveCount(0);
-  // The board shows the empty frame with its ideas and the planned thread.
+  // The board shows the empty frame with its idea count. Planned connections are read in the plan
+  // and the outline, never drawn as a second kind of line (rule of 2026-09-26).
   await page.getByRole('button', { name: 'Board', exact: true }).click();
   const frame = page.getByRole('article', { name: 'Screen: Settings', exact: true });
   await expect(frame).toHaveClass(/planned/);
   await expect(frame.getByText('1 idea planned')).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: 'Planned: Sign out leads to A warm welcome', exact: true }),
-  ).toBeVisible();
+  await expect(page.locator('.planned-thread, .planned-label')).toHaveCount(0);
   await expect(
     page.getByRole('button', { name: 'Edit connection: Search people', exact: true }),
   ).toBeVisible();
@@ -173,4 +172,37 @@ test('a sketch dropped onto a planned frame fills it and its ideas become placea
       .locator('.idea-card', { hasText: 'Sign out' })
       .getByRole('button', { name: 'Place on the drawing' }),
   ).toBeEnabled();
+});
+
+test('a frame left to the AI wears its post-it on the board, in the outline and in the review', async ({
+  page,
+}) => {
+  await fresh(page);
+  await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
+  await page.getByLabel('Frame title').fill('Guide');
+  await page.getByRole('button', { name: 'Add planned frame', exact: true }).click();
+  await page.getByRole('button', { name: 'App outline', exact: true }).click();
+  await page.getByRole('button', { name: 'Expand screens', exact: true }).click();
+  const guide = page
+    .locator('.outline-screen')
+    .filter({ has: page.locator('summary strong', { hasText: 'Guide' }) })
+    .first();
+  await expect(guide.getByText('no drawing yet')).toBeVisible();
+  await guide.getByRole('button', { name: 'Edit screen', exact: true }).click();
+  await expect(page.getByText('Waiting for a drawing.')).toBeVisible();
+  await page.getByRole('checkbox', { name: /Leave it up to the AI/ }).check();
+  await expect(page.getByText('Left to the AI: a standard page, no drawing needed.')).toBeVisible();
+  await close(page);
+  await expect(guide.getByText('left to the AI')).toBeVisible();
+  await page.getByRole('button', { name: 'Board', exact: true }).click();
+  const frame = page.getByRole('article', { name: 'Screen: Guide', exact: true });
+  await expect(frame.locator('.post-it')).toHaveText('Leave it up to the AI');
+  await expect(frame.getByText('A standard page')).toBeVisible();
+  // The review no longer asks for a drawing; the plan says the frame is left to the AI.
+  await page.locator('.review-button').click();
+  await expect(page.getByText('Guide is waiting for a drawing')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Close flow review', exact: true }).click();
+  await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
+  await page.getByRole('button', { name: 'Show as text', exact: true }).click();
+  await expect(page.getByLabel('Planning outline')).toContainText('## Guide (left to the AI)');
 });

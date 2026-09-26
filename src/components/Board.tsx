@@ -23,16 +23,16 @@ import {
   assetUrl,
   colors,
   isHistory,
+  isLeftToAi,
   isPlanned,
   pinColor,
-  plannedThreads,
   screenSize,
   type Asset,
-  type Idea,
   type Project,
   type Screen,
 } from '../../shared/model';
 import type { Update } from '../useProject';
+import { clampView, frameRects } from '../boardView';
 export function Board({
   project,
   update,
@@ -87,11 +87,40 @@ export function Board({
   } | null>(null);
   const projectRef = useRef(project);
   projectRef.current = project;
-  const commitView = (next: typeof view) => {
+  // Rule (2026-09-26): the board never pans out of sight of its content. Every view change, from a
+  // drag, the wheel, the zoom controls or a window resize, is clamped so part of a frame stays on
+  // the board.
+  const clamp = (next: typeof view) =>
+    ref.current
+      ? clampView(next, frameRects(projectRef.current), {
+          width: ref.current.clientWidth,
+          height: ref.current.clientHeight,
+        })
+      : next;
+  const commitView = (raw: typeof view) => {
+    const next = clamp(raw);
     viewRef.current = next;
     setView(next);
     update((p) => ({ ...p, viewport: next }), { history: false });
   };
+  const keepContentInView = () => {
+    const next = clamp(viewRef.current);
+    if (Math.abs(next.x - viewRef.current.x) > 0.5 || Math.abs(next.y - viewRef.current.y) > 0.5)
+      commitView(next);
+  };
+  const keepRef = useRef(keepContentInView);
+  keepRef.current = keepContentInView;
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    keepRef.current();
+    const sizes = new ResizeObserver(() => keepRef.current());
+    sizes.observe(el);
+    return () => sizes.disconnect();
+  }, []);
+  useEffect(() => {
+    keepRef.current();
+  }, [project.screens, project.layout, project.assets]);
   const fit = () => {
     if (!ref.current) return;
     const p = projectRef.current;
@@ -249,7 +278,7 @@ export function Board({
     d.dx = e.clientX - d.clientX;
     d.dy = e.clientY - d.clientY;
     if (d.type === 'pan') {
-      setView({ ...viewRef.current, x: d.startX + d.dx, y: d.startY + d.dy });
+      setView(clamp({ ...viewRef.current, x: d.startX + d.dx, y: d.startY + d.dy }));
     } else if (d.type === 'resize')
       setResizing({
         id: d.id!,
@@ -309,38 +338,10 @@ export function Board({
       y: (y1 + y2) / 2 + bend * 0.75,
     };
   };
-  // Planned threads run from a frame's foot to the destination's top until the idea becomes a pin.
-  const plannedPoints = (source: Screen, target: Screen, index: number) => {
-    const a = position(source),
-      b = position(target),
-      size = screenSize(project, source);
-    const x1 = a.x + a.width * 0.5,
-      y1 = a.y + size.height - 6,
-      x2 = b.x + b.width * 0.5,
-      y2 = b.y + 8;
-    const bend = Math.max(50, Math.abs(x2 - x1) * 0.22) + index * 40,
-      cy1 = y1 + bend,
-      cy2 = y2 + bend;
-    return {
-      d: `M ${x1} ${y1} C ${x1 + (x2 - x1) * 0.3} ${cy1}, ${x2 - (x2 - x1) * 0.2} ${cy2}, ${x2} ${y2}`,
-      x: (x1 + x2) / 2,
-      y: (y1 + y2) / 2 + bend * 0.75,
-    };
-  };
-  // One dashed thread per frame pair keeps a busy plan readable; the label counts the ideas.
-  const plannedLinks = Object.values(
-    plannedThreads(project).reduce<
-      Record<string, { source: Screen; target: Screen; ideas: Idea[] }>
-    >((links, { idea, source, target }) => {
-      const key = `${source.id}>${target.id}`;
-      (links[key] ??= { source, target, ideas: [] }).ideas.push(idea);
-      return links;
-    }, {}),
-  );
   return (
     <main
       ref={ref}
-      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''}`}
+      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''} ${view.zoom < 0.4 ? 'zoomed-out' : ''}`}
       style={{ '--board-zoom': view.zoom } as CSSProperties}
       aria-label="Design board"
       onPointerDown={(e) => {
@@ -433,9 +434,24 @@ export function Board({
                     <Home size={13} />
                   </span>
                 )}
+                {isLeftToAi(s) && (
+                  <span className="post-it" title="A standard page, generated from the plan">
+                    Leave it up to the AI
+                  </span>
+                )}
                 <div className="card-image">
                   {a ? (
                     <img src={assetUrl(a)} alt={s.title} draggable={false} />
+                  ) : isLeftToAi(s) ? (
+                    <div className="frame-planned left-to-ai">
+                      <span className="eyebrow">LEFT TO THE AI</span>
+                      <strong>
+                        {ideas.length
+                          ? `A standard page with ${ideas.length} ${ideas.length === 1 ? 'idea' : 'ideas'}`
+                          : 'A standard page'}
+                      </strong>
+                      <small>No drawing needed · open to see the ideas</small>
+                    </div>
                   ) : isPlanned(s) ? (
                     <div className="frame-planned">
                       <span className="eyebrow">WAITING FOR A DRAWING</span>
@@ -571,13 +587,6 @@ export function Board({
               </marker>
             ))}
           </defs>
-          {plannedLinks.map(({ source, target }, i) => (
-            <path
-              key={`${source.id}>${target.id}`}
-              d={plannedPoints(source, target, i).d}
-              className="planned-thread"
-            />
-          ))}
           {project.pins
             .filter((pin) => pin.kind === 'detail' && pin.detailTarget)
             .map((pin) => {
@@ -622,26 +631,6 @@ export function Board({
               </button>
             ) : null;
           })}
-        {plannedLinks.map(({ source, target, ideas }, i) => {
-          const p = plannedPoints(source, target, i);
-          const single = ideas.length === 1;
-          return (
-            <button
-              key={`${source.id}>${target.id}`}
-              className="yarn-label-button planned-label"
-              style={{ left: p.x, top: p.y }}
-              aria-label={
-                single
-                  ? `Planned: ${ideas[0].title} leads to ${target.title}`
-                  : `Planned: ${ideas.length} ideas lead from ${source.title} to ${target.title}`
-              }
-              title={`${ideas.map((idea) => idea.title).join(' · ')}. Place the idea as a pin to tie the real yarn.`}
-              onClick={() => onScreen(source.id)}
-            >
-              {single ? ideas[0].title : `${ideas.length} planned`}
-            </button>
-          );
-        })}
         {project.screens.map((s) => {
           const history = project.transitions.filter(
               (t) =>
@@ -720,11 +709,7 @@ export function Board({
       </div>
       <div className="board-legend">
         <span className="legend-line" /> A thread of an idea
-        {plannedLinks.length > 0 && (
-          <>
-            <span className="legend-line planned" /> Planned, not drawn yet
-          </>
-        )}
+        {view.zoom < 0.4 && <span className="legend-note">Zoom in for pins and labels</span>}
       </div>
     </main>
   );

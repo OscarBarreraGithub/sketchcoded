@@ -56,7 +56,7 @@ npm start
 
 - **Add an idea any time.** A title, details, the screen it belongs on, and the screen it leads to. Ideas without a screen wait in a pool; each screen has a folder.
 - **Plan a frame before drawing it.** Give it a title and purpose. It appears on the board as an empty dashed frame listing its ideas. Drop a sketch onto it, or choose a drawing in its editor, and it becomes a normal screen with its ideas ready to place.
-- **Place an idea.** Choose **Place on the drawing**, click the spot on the sketch, and the pin is created with the idea’s name and description. If the idea leads somewhere, the yarn is tied as a draft you can refine. Until then, the board shows a dashed planned thread between the frames.
+- **Place an idea.** Choose **Place on the drawing**, click the spot on the sketch, and the pin is created with the idea’s name and description. If the idea leads somewhere, the yarn is tied as a draft you can refine. Until then, the planned connection is listed in the plan and in the text outline; the board draws only real yarn.
 - **Nothing lands twice.** Placed ideas stay in the list, greyed out with their pin number. Moving a placed idea to another screen removes its pin, undoably, so it can be placed again.
 - **Talk about it.** **Copy as text** or **Show as text** gives a markdown outline with `[x]` placed, `[ ]` waiting, and `( )` unassigned markers plus the planned threads. The same outline is included in every export’s `flow.md`, so a conversation about the plan and the exported specification use the same words.
 
@@ -91,7 +91,7 @@ Each connection has an explicit navigation action:
 
 Screen types describe intent. A login label does **not** automatically excuse a one-way path. An intentional ending needs an explanation. Alternate entry points are supported. A screen can represent a reusable view, with context such as `conversationId` passed by a connection.
 
-Checks detect broken references, missing images in the graph, missing titles/intent, unconnected pins, missing entries, unreachable screens, dead ends, possible one-way paths, uncertain history contexts, duplicate branch summaries, multiple fallbacks, natural-language branching that needs review, planned frames waiting for a drawing, pins missing from a mobile layout, link pins without an address, and yarn attached to a link pin.
+Checks detect broken references, missing images in the graph, missing titles/intent, unconnected pins, missing entries, unreachable screens, dead ends, possible one-way paths, uncertain history contexts, duplicate branch summaries, multiple fallbacks, natural-language branching that needs review, planned frames waiting for a drawing (unless the frame is left to the AI), pins missing from a mobile layout, link pins without an address, and yarn attached to a link pin.
 
 A structural return path can be indirect. Conversely, a cycle does not prove that prose conditions permit a return in every state. The checker distinguishes hard structural errors from concerns that need judgment. See [the graph contract](docs/GRAPH.md) for the precise limits.
 

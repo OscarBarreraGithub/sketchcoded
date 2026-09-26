@@ -11,6 +11,8 @@ import {
   assignIdea,
   emptyProject,
   ideaStatus,
+  isLeftToAi,
+  leaveToAi,
   linkIdea,
   newIdea,
   pinColor,
@@ -211,6 +213,22 @@ describe('planned frames', () => {
     ).not.toContain('help');
     expect(analyze(p).filter((i) => i.severity === 'error')).toEqual([]);
     expect(rules(setDrawing(p, 'help', 'web', 'c'))).not.toContain('needs-drawing');
+  });
+  it('a frame left to the AI needs no drawing and says so everywhere the builder reads', () => {
+    const p = leaveToAi(plan(), 'help', true);
+    expect(projectSchema.parse(p).screens[2].leftToAi).toBe(true);
+    expect(isLeftToAi(p.screens[2])).toBe(true);
+    expect(rules(p)).not.toContain('needs-drawing');
+    expect(analyze(p).filter((i) => i.severity === 'error')).toEqual([]);
+    expect(flowDocument(p)).toContain('**Leave it up to the AI.**');
+    expect(planningOutline(p)).toContain('# Help (modal · left to the AI)');
+    const back = leaveToAi(p, 'help', false);
+    expect(back.screens[2].leftToAi).toBeUndefined();
+    expect(rules(back)).toContain('needs-drawing');
+    // Older files without the field still load.
+    expect(
+      projectSchema.parse(JSON.parse(JSON.stringify(plan()))).screens[2].leftToAi,
+    ).toBeUndefined();
   });
   it('describes layouts, planned frames, and the backlog in the export document', () => {
     const p = placeIdea(plan(), 'undo', { x: 0.2, y: 0.2 }, { pin: 'pin1', transition: 't1' });

@@ -19,6 +19,8 @@ builds from the strings has it. It is also the source for the “build rules” 
 - [ ] Planned frames (no drawing yet) and unplaced ideas are the backlog, not the spec. Do not build them; do not drop them either. Carry them forward as open items.
 - [ ] Accepted review findings are decisions with reasons. Respect them. Open findings are the user’s to resolve, not yours to paper over.
 
+- [ ] **A frame can be left to the AI.** A frame wearing the “Leave it up to the AI” post-it needs no drawing: build a standard, conventional page for it from its title, purpose, ideas and the yarn in and out. Everything else on the board is the user’s vision and is built as drawn. (2026-09-26)
+
 ## Layout and interaction (every screen, every device)
 
 - [ ] **Nothing grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; their content scrolls inside. Selecting a different pin, tab or option never changes the size of the surrounding frame or moves the rest of the page. (2026-09-25)
@@ -27,6 +29,8 @@ builds from the strings has it. It is also the source for the “build rules” 
 - [ ] **The page never scrolls; panels do.** The app shell always fits the window. Only the left column, dialogs, side panels and list views scroll, each inside itself. The cork board must never make the page scroll, at any zoom or window size. (2026-09-26)
 - [ ] **The board never pans out of sight of its content.** Panning and zooming have room to breathe, but part of the content stays on screen at all times; panning past the edge snaps back. (2026-09-26)
 - [ ] **Scroll hints must work in a real zoomed browser**, not only in an emulated viewport. Verify at 125% to 250% on a laptop-sized window, both 1440×900 and 1280×720. (2026-09-26)
+- [ ] **Every view works at every zoom.** Not only the board: the screen editor, the connection editor, Review, Test, the outline, the plan and every dialog must be usable at 125%, 150%, 200% and 250% browser zoom on a laptop window. Check each one, seriously, after any layout change. (2026-09-26)
+- [ ] **One kind of line on the board.** Colored yarn is navigation. Do not draw a second, dashed kind of line between frames; planned connections are read in the Plan view and in the text outline, not as lines. (2026-09-26)
 - [ ] **Nothing overlaps.** Labels, pins, frames, buttons and text keep clear of each other. Leave room to breathe. (2026-09-25)
 - [ ] **Make it obvious what is clickable** and which option is selected: the active tab is filled, the primary action is unmistakable. (2026-09-25)
 - [ ] Click targets are at least 44px and form fields at least 48px tall. Long notes stay readable without a tiny inner scrollbar. (2026-09-08)
@@ -53,6 +57,7 @@ builds from the strings has it. It is also the source for the “build rules” 
 - [ ] Read `AGENTS.md`, `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md` and this file before changing anything.
 - [ ] Run `npm run build`, `npm test`, `npm run test:ui` (includes real browser zoom) and `npm run format:check`. Record results in `docs/PROGRESS.md`; do not mark done what was not verified.
 - [ ] Start servers and browsers only while using them; stop them before handing back. Never point tests at the user’s data.
+- [ ] **Measure before fixing a zoom report.** Reproduce it at laptop sizes (1440×900 and 1280×720 at 125%, 150%, 200%) with screenshots and numbers (page scroll, panel scroll, pill present), then fix, then measure again. Emulated viewports find layout bugs; the real tab-zoom test confirms them. (2026-09-26)
 - [ ] Keep `docs/FUNCTIONALITY.md` and the Sketchcoded board’s backlog in step. Keep this checklist explicit and dated.
 - [ ] The final message to the user restates the URL of anything running and anything they need to do next.
 
@@ -72,5 +77,8 @@ A dated record so nothing is lost. Each line points at the rule above it created
 - **2026-09-25, links.** GitHub should not have its own frame. A pin can carry a URL in its description with any conditions; the pin is the exit. This is the expected route for URLs.
 - **2026-09-25, repositories.** The landing page is separate, as the public site; two repositories; set up clean.
 - **2026-09-25, agent box.** Remove the agent chat from the workstation; it adds nothing and makes it messy.
-- **2026-09-26, zoom, scrolling and panning.** The scroll pill did not show up in a zoomed-in browser. The cork board should not scroll for so long; the left panel is what should scroll. The board must never pan out past the content: room is fine, but there must always be content on the board. Keep adding every issue raised to this checklist.
 - **2026-09-25, zoom and scrolling.** It was not obvious that the left panel scrolls when zoomed in. Always keep good control when zoomed in, and always let the user know when something is off screen. Keep this checklist explicit and complete.
+- **2026-09-26, zoom, scrolling and panning.** The scroll pill did not show up in a zoomed-in browser. The cork board should not scroll for so long; the left panel is what should scroll. The board must never pan out past the content: room is fine, but there must always be content on the board. Keep adding every issue raised to this checklist.
+- **2026-09-26, leave it up to the AI.** “We should also have the option to basically have the AI generate a standard board for one particular page, if needed. For example, for our guide, we can put a little label that says like ‘leave it up to the AI’ with a sticker or something. A post-it note.”
+- **2026-09-26, dashed threads.** “The use of the dashed lines connecting things (instead of the colored yarn) is confusing. Not clear at all what is going on, also too overlapping and messy.”
+- **2026-09-26, the editor at zoom.** “The view when we actually open up the image to add the pins and stuff doesn’t work zoomed in. Make sure, seriously, that every view works with all zooms.”

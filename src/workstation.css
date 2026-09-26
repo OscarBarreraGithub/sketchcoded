@@ -347,54 +347,115 @@
   overflow-wrap: anywhere;
 }
 
-/* Rule: dialogs keep a fixed size; their content scrolls inside them. */
-@media (min-width: 1001px) {
-  .modal.screen-modal,
-  .modal.preview-modal {
-    height: min(92dvh, 940px);
-    display: flex;
-    flex-direction: column;
+/* Rule: dialogs keep a fixed size; their content scrolls inside them. Since 2026-09-26 this holds
+   at every width and height (the user found the editor unusable at browser zoom when it stacked
+   and scrolled as one long page). The drawing and the inspector stay side by side; the drawing is
+   sized to the stage in both directions so the whole sketch is visible for placing pins; the
+   inspector scrolls inside itself and says so. */
+.modal.screen-modal,
+.modal.preview-modal {
+  height: min(92dvh, 940px);
+  display: flex;
+  flex-direction: column;
+}
+.modal.edge-modal,
+.modal.detail-modal {
+  height: min(88dvh, 860px);
+  display: flex;
+  flex-direction: column;
+}
+.modal.screen-modal .modal-content,
+.modal.preview-modal .modal-content,
+.modal.edge-modal .modal-content,
+.modal.detail-modal .modal-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.modal.screen-modal .modal-content {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.screen-editor {
+  flex: 1;
+  flex-direction: row;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  align-items: stretch;
+}
+.screen-workspace {
+  position: static;
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+}
+.layout-stages,
+.layout-stage {
+  min-height: 0;
+}
+.screen-workspace .sketch-stage.layout-stage {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+.stage-fit {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.editable-image {
+  max-width: 100% !important;
+}
+.editor-inspector {
+  width: clamp(220px, 34%, 390px);
+  overflow: hidden;
+  min-height: 0;
+  border-left: 1px solid #dce2cf;
+  border-top: 0;
+  scrollbar-width: thin;
+}
+.inspector-scroll {
+  overflow: auto;
+}
+@media (max-width: 1000px) {
+  .screen-workspace,
+  .inspector-scroll {
+    padding: 12px 16px;
   }
+  .editor-toolbar {
+    gap: 8px 12px;
+  }
+  .sketch-stage.layout-stage {
+    padding: 8px 0 6px;
+  }
+}
+/* Short windows (a laptop at 150% zoom and more): a compact dialog heading leaves room to work. */
+@media (max-height: 650px) {
+  .modal > .modal-heading,
+  .screen-modal > .modal-heading,
+  .preview-modal > .modal-heading {
+    padding: 10px 20px;
+  }
+  .modal-heading .eyebrow {
+    display: none;
+  }
+  .modal-heading h2,
+  .screen-modal .modal-heading h2 {
+    font-size: 20px;
+  }
+  .modal.screen-modal,
+  .modal.preview-modal,
   .modal.edge-modal,
   .modal.detail-modal {
-    height: min(88dvh, 860px);
-    display: flex;
-    flex-direction: column;
-  }
-  .modal.screen-modal .modal-content,
-  .modal.preview-modal .modal-content,
-  .modal.edge-modal .modal-content,
-  .modal.detail-modal .modal-content {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-  }
-  .modal.screen-modal .modal-content {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .screen-editor {
-    flex: 1;
-    min-height: 0;
-    height: auto;
-    max-height: none;
-    align-items: stretch;
-  }
-  .screen-workspace {
-    position: static;
-    max-height: none;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .layout-stages,
-  .layout-stage {
-    min-height: 0;
-  }
-  .editor-inspector {
-    overflow: auto;
-    min-height: 0;
-    scrollbar-width: thin;
+    height: calc(100dvh - 24px);
   }
 }
 
@@ -611,13 +672,283 @@
 .modal .scroll-fade.below {
   border-radius: 0 0 13px 13px;
 }
-@media (max-width: 1000px) {
-  .editor-inspector,
-  .inspector-scroll {
-    overflow: visible;
+
+/* Rule (2026-09-26): the page never scrolls; panels do. The 2026-09-08 pass let the shell grow on
+   short windows (under 650px), which is exactly what a laptop at 150% or 200% browser zoom is: the
+   left column stopped scrolling, the board stretched to thousands of pixels and the whole page
+   scrolled instead, so the "More below" pill had nothing to announce. The shell now stays the
+   height of the window at every size and the chrome gets compact instead. */
+@media (max-height: 650px) {
+  .app-shell {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
   }
-  .editor-inspector .scroll-more,
-  .editor-inspector .scroll-fade {
+  .studio-layout,
+  .studio-main,
+  .board-and-review {
+    min-height: 0;
+  }
+  .left-column .library,
+  .library:not(.library-open .library) {
+    max-height: none;
+  }
+  .app-header {
+    min-height: 56px;
+    padding: 6px 20px;
+  }
+  .workspace-header {
+    height: auto;
+    min-height: 0;
+    padding: 8px 20px;
+    align-items: center;
+  }
+  .workspace-header .board-eyebrow,
+  .workspace-header p,
+  .view-toolbar p {
     display: none;
   }
+  .board-title {
+    margin-top: 0;
+  }
+  .board-title h1 {
+    font-size: 24px;
+  }
+  .view-toolbar {
+    padding: 6px 20px;
+  }
+  .outline-view {
+    max-height: none;
+    min-height: 0;
+  }
+}
+
+/* Rule (2026-09-26): every view works at every zoom. Below, the dialogs and the chrome give the
+   work area the room it needs when the CSS viewport is small (a laptop at 150% to 250% zoom). */
+
+/* Test flow: the drawing and the sidebar stay side by side; the drawing fits the stage in both
+   directions so every pin can be clicked without scrolling; the sidebar scrolls inside itself. */
+.modal.preview-modal .modal-content {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.preview-toolbar,
+.preview-footer {
+  flex-shrink: 0;
+}
+.preview-toolbar {
+  flex-wrap: nowrap;
+  gap: 10px 14px;
+}
+.preview-start {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.preview-start select {
+  width: 100%;
+  max-width: none;
+}
+.preview-toolbar > div {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+.preview-body {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+}
+.preview-stage {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 24px;
+}
+.preview-screen-title {
+  margin-bottom: 10px;
+}
+.preview-image {
+  max-width: 100% !important;
+}
+.preview-sidebar {
+  width: clamp(210px, 32%, 310px);
+  flex-shrink: 0;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-left: 1px solid #dce3d0;
+  border-top: 0;
+  --fade: #fbfbf5;
+}
+.preview-sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #b3b9a8 #eceee4;
+}
+.preview-route {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Small dialogs: the drawing gets the room; secondary labels step aside. The X closes the editor. */
+@media (max-width: 1000px) {
+  .editor-toolbar .editor-back {
+    display: none;
+  }
+  .editor-toolbar .layout-toggle small,
+  .sketch-stage.layout-stage .layout-caption span {
+    display: none;
+  }
+  .preview-toolbar .text-button span,
+  .preview-footer > span:not(.preview-step) {
+    display: none;
+  }
+  .preview-toolbar,
+  .preview-footer {
+    padding: 8px 16px;
+  }
+  .preview-stage {
+    padding: 10px 16px;
+  }
+  .preview-sidebar-scroll {
+    padding: 16px;
+  }
+}
+
+/* The app header stays one row at every width: icons carry the buttons when text does not fit. */
+@media (max-width: 700px) {
+  .app-header {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .project-switcher {
+    flex: 0 1 auto;
+    margin-left: 0;
+    min-width: 0;
+  }
+  .header-actions {
+    width: auto;
+    margin-left: auto;
+    flex-wrap: nowrap;
+  }
+  .header-actions .export-button span,
+  .header-actions .test-button span {
+    display: none;
+  }
+}
+
+/* Short windows: the view intros and the review heading make room for the work itself. */
+@media (max-height: 650px) {
+  .review-heading {
+    padding: 10px 20px;
+  }
+  .review-heading h2 {
+    font-size: 20px;
+  }
+  .review-heading p,
+  .planning-intro p,
+  .outline-intro p {
+    display: none;
+  }
+  .planning-intro h2,
+  .outline-intro h2 {
+    font-size: 22px;
+  }
+}
+
+/* The board controls stay one short row on small boards, so they never hide the frames. */
+@media (max-width: 700px), (max-height: 650px) {
+  .board-controls {
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 4px 6px;
+    bottom: 10px;
+  }
+  .board-controls .control-group,
+  .board-controls .control-group:nth-of-type(2) {
+    display: flex;
+  }
+  .board-controls .zoom-slider {
+    width: 72px;
+    min-width: 0;
+  }
+  .board-controls .zoom-value {
+    min-width: 40px;
+  }
+}
+
+/* Rule: nothing overlaps. Zoomed far out (under 40%), pin heads and yarn labels would cover the
+   frames they belong to, so they step aside until the user zooms in; the yarn itself stays. */
+.board.zoomed-out .board-pin,
+.board.zoomed-out .yarn-label-button,
+.board.zoomed-out .history-tag {
+  visibility: hidden;
+  opacity: 0;
+}
+.board .board-pin,
+.board .yarn-label-button,
+.board .history-tag {
+  transition: opacity 0.15s ease;
+}
+.legend-note {
+  margin-left: 14px;
+  color: #6f5f38;
+}
+
+/* Rule (2026-09-26): a frame can be left to the AI. The post-it says so on the board; the builder
+   generates a standard page for that frame from the plan. */
+.post-it {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  z-index: 3;
+  width: 96px;
+  padding: 8px 9px 11px;
+  background: #fff1a3;
+  color: #5a4a12;
+  font-family: var(--hand);
+  font-size: 15px;
+  line-height: 1.05;
+  font-weight: 600;
+  transform: rotate(-4deg);
+  box-shadow: 1px 3px 6px #4f4f3340;
+  pointer-events: none;
+}
+.post-it::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 28px;
+  height: 9px;
+  transform: translateX(-50%) rotate(2deg);
+  background: #ffffff80;
+  box-shadow: 0 1px 2px #4f4f3320;
+}
+.frame-planned.left-to-ai {
+  background: #fdf7d8;
+  border-color: #e0cf7f;
+}
+.frame-planned.left-to-ai .eyebrow {
+  color: #8a7622;
+}
+.outline-count.left-to-ai {
+  background: #fff1a3;
+  color: #5a4a12;
+}
+.post-it-row svg {
+  color: #b39a2b;
 }

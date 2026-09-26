@@ -37,9 +37,10 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - Ideas panel beside the library: organized ideas, expand, scroll, and make clear what is still left to do.
 - Project name in the header; a ? button opens How it works.
 - A little home marker on the frame where the landing page starts.
+- Leave it up to the AI: a post-it on a frame (toggle in the screen editor) says the builder should generate a standard, conventional page for it from the title, purpose, ideas and yarn. No drawing needed; the flow review stops asking for one; the export says so. For example, the Guide.
 - Click to resize a frame. No overlap, lots of space.
-- Planned threads: dashed threads show ideas that lead somewhere but are not pins yet.
-- Pan and zoom: drag blank space, scroll to zoom around the pointer, Shift + scroll to pan, a slider, plus and minus buttons, F to fit. Make it obvious which of Board, Outline and Plan is selected.
+- Planned connections are read in the Plan view and the text outline. The board draws only real yarn; a second, dashed kind of line was confusing and messy (removed 2026-09-26).
+- Pan and zoom: drag blank space, scroll to zoom around the pointer, Shift + scroll to pan, a slider, plus and minus buttons, F to fit. The board never pans out of sight of its content: room around the frames is fine, but part of a frame always stays on the board. Zoomed far out, pin heads and yarn labels step aside so the frames stay readable; zoom in to work with them. Make it obvious which of Board, Outline and Plan is selected.
 - Undo and redo, including deletions that remove pins and yarn together.
 - Save status beside the board name, and a leave warning while unsaved.
 - Export project: a ZIP with `project.json`, `schema.json`, `flow.md`, `review.json`, the images and a READ-ME.
@@ -72,7 +73,7 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - Add a pin on the web drawing; name it and describe the intention.
 - Place a pin on the mobile drawing; pins not yet on mobile wait in a strip.
 - Detail reference: a pin that opens a closer look without changing the app screen.
-- Screen details: title, purpose, type (regular, login, dialog, ending, detail), entry flag, size on the board.
+- Screen details: title, purpose, type (regular, login, dialog, ending, detail), entry flag, “Leave it up to the AI” post-it, size on the board.
 - Planned ideas for this screen: place each waiting idea or add a quick one.
 - Connect to a screen on the board; add Back or Dismiss actions; remove a pin or the screen.
 

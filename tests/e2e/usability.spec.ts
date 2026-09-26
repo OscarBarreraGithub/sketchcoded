@@ -222,6 +222,10 @@ test('actual browser zoom retains navigation, large fields, readable long text a
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
       ).toBe(true);
+      // Rule (2026-09-26): the page never scrolls; panels do.
+      expect(
+        await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight),
+      ).toBe(true);
       await page.getByRole('button', { name: 'App outline', exact: true }).click();
       await page.getByRole('button', { name: 'Expand screens', exact: true }).click();
       const first = page.locator('.outline-screen').first();
@@ -311,4 +315,64 @@ test('actual browser zoom retains navigation, large fields, readable long text a
     await context.close();
     await fs.rm(userDir, { recursive: true, force: true });
   }
+});
+
+// A 1280×720 laptop at 150% browser zoom is a 853×480 CSS viewport. Emulated here so the layout
+// can be measured; the tab-zoom test above covers the real thing on a taller window.
+test.describe('a laptop window at 150% browser zoom', () => {
+  test.use({ viewport: { width: 853, height: 480 }, deviceScaleFactor: 1.5 });
+  test('the page never scrolls, the left column does and says so, and the board keeps its content in view', async ({
+    page,
+  }) => {
+    await fresh(page);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight),
+    ).toBe(true);
+    const column = page.locator('.left-scroll');
+    expect(await column.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+    const more = page.locator('.left-column .scroll-more.below');
+    await expect(more).toBeVisible();
+    await more.click();
+    await expect(page.locator('.left-column .scroll-more.above')).toBeVisible();
+    // The board is the size of its area, never of its content.
+    const board = page.getByRole('main', { name: 'Design board' });
+    const box = (await board.boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(480);
+    await expect(page.getByRole('slider', { name: 'Board zoom', exact: true })).toBeInViewport();
+    // Drag blank cork far past the frames in every direction: part of a frame always stays on the
+    // board (100px of it, or the whole frame when it is smaller at this zoom).
+    const somethingOnTheBoard = () =>
+      page.locator('.screen-card').evaluateAll(
+        (cards, b) =>
+          cards.some((el) => {
+            const r = el.getBoundingClientRect();
+            const shown = Math.min(
+              Math.min(r.right, b.x + b.width) - Math.max(r.left, b.x),
+              Math.min(r.bottom, b.y + b.height) - Math.max(r.top, b.y),
+            );
+            return shown >= Math.min(100, Math.min(r.width, r.height)) - 1;
+          }),
+        box,
+      );
+    for (const [dx, dy] of [
+      [1, 0],
+      [0, 1],
+      [-1, -1],
+      [1, -1],
+    ]) {
+      for (let i = 0; i < 4; i++) {
+        const from = {
+          x: box.x + (dx >= 0 ? 12 : box.width - 12),
+          y: box.y + (dy > 0 ? 12 : dy < 0 ? box.height - 12 : 12),
+        };
+        await page.mouse.move(from.x, from.y);
+        await page.mouse.down();
+        await page.mouse.move(from.x + dx * (box.width - 24), from.y + dy * (box.height - 24), {
+          steps: 8,
+        });
+        await page.mouse.up();
+      }
+      expect(await somethingOnTheBoard()).toBe(true);
+    }
+  });
 });

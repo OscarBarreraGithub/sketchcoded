@@ -21,6 +21,8 @@ export const screenSchema = z.object({
   purpose: prose,
   entry: z.boolean(),
   role: z.enum(['screen', 'auth', 'modal', 'terminal', 'detail']),
+  /** The “Leave it up to the AI” post-it: build a standard page for this screen; no drawing expected. */
+  leftToAi: z.boolean().optional(),
 });
 /** `x`/`y` anchor the pin on the web drawing; `mobile` is its position on the mobile drawing. */
 export const pinSchema = z.object({
@@ -133,6 +135,15 @@ export const pinUrl = (pin: Pin): string | null => pin.description.match(urlPatt
 export const isHistory = (t: Transition) => t.navigation === 'back' || t.navigation === 'dismiss';
 export const assetUrl = (asset?: Asset) => (asset ? `/assets/${asset.file}` : '');
 export const isPlanned = (s: Screen) => s.assetId === null;
+/** Rule (2026-09-26): a frame wearing the “Leave it up to the AI” post-it needs no drawing; the
+ * builder generates a standard, conventional page from its title, purpose, ideas and yarn. */
+export const isLeftToAi = (s: Screen) => s.leftToAi === true;
+export const leaveToAi = (p: Project, screenId: string, on: boolean): Project => ({
+  ...p,
+  screens: p.screens.map((s) =>
+    s.id === screenId ? (on ? { ...s, leftToAi: true } : { ...s, leftToAi: undefined }) : s,
+  ),
+});
 export const screenSize = (p: Project, s: Screen) => {
   const a = p.assets.find((a) => a.id === s.assetId);
   const width = p.layout[s.id]?.width ?? 300;

@@ -17,7 +17,7 @@ Preserve `.drawcode/` user data. It is ignored by Git. Do not point tests at a u
 
 ## Planning routine
 
-The Planning view holds the functionality backlog (`project.ideas`). When the user describes functionality, add it there rather than only in chat, assigned to the screen it belongs on and with `leadsTo` when the destination is clear. When asked what belongs on a screen, answer from the backlog and move ideas on request; the board's planned frames and threads update from the same data. Use `planningOutline()` (Copy as text in the app, or the section in `flow.md`) as the shared text when discussing the plan. Placed ideas stay listed and greyed so nothing is pinned on two pages. Keep `docs/FUNCTIONALITY.md` in step with the Sketchcoded board's backlog. The user draws and connects; the agent writes down what each pin is.
+The Planning view holds the functionality backlog (`project.ideas`). When the user describes functionality, add it there rather than only in chat, assigned to the screen it belongs on and with `leadsTo` when the destination is clear. When asked what belongs on a screen, answer from the backlog and move ideas on request; the board's planned frames update from the same data (planned connections are shown in the plan and the outline, never as lines on the board). Use `planningOutline()` (Copy as text in the app, or the section in `flow.md`) as the shared text when discussing the plan. Placed ideas stay listed and greyed so nothing is pinned on two pages. Keep `docs/FUNCTIONALITY.md` in step with the Sketchcoded board's backlog. The user draws and connects; the agent writes down what each pin is.
 
 A screen may be a planned frame (`assetId: null`) and may carry a mobile drawing; pins are anchored on the web drawing and get a second position for mobile. Input is desktop only: image files on this computer, no phone capture.
 
@@ -29,10 +29,16 @@ The full list, with dates and the user's words, is `docs/BUILD_CHECKLIST.md`; it
 - Nothing overlaps: labels, pins and frames keep clear of each other, and the board leaves room to breathe.
 - Test real browser zoom (125% to 250%) after layout changes; text must stay readable, controls reachable, and the user must keep good control of the workspace.
 - When content continues off screen, say so: every scrolling region keeps a visible scrollbar and shows a “More below” hint (`ScrollHints`) until the end is reached. Never rely on an invisible overlay scrollbar.
+- **The page never scrolls; panels do.** The app shell is always the height of the window (`100dvh`, at every width and height, including short zoomed windows). Only the left column, dialogs, side panels and list views scroll, each inside itself. The board is the size of its area, never of its content.
+- **The board never pans out of sight of its content.** Every view change goes through the clamp in `src/boardView.ts`: room around the frames is fine, but part of a frame always stays on the board.
 
 ## Links out
 
 A pin that leaves the app for a web address is a **link pin** (`kind: "link"`). The address, and any conditions, go in the pin's description in plain words; the checker reads the first URL from it. A link pin has no yarn and no destination frame; it counts as a way onward for its screen. Do not create a screen to represent an external site. This is the expected route whenever a URL is involved.
+
+## Left to the AI
+
+A frame may wear the “Leave it up to the AI” post-it (`leftToAi: true`, toggled in the screen editor). It means: build a standard, conventional page for this screen from its title, purpose, ideas and the yarn in and out; no drawing is expected and the review does not ask for one. Everything else on the board is the user's vision and is built as drawn. The export says this on the screen's section of `flow.md` and the planning outline flags it.
 
 ## Companion site
 

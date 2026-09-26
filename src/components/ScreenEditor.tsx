@@ -1,5 +1,11 @@
 import { AutoTextarea } from './AutoTextarea';
-import { useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -21,7 +27,9 @@ import {
   attachDetail,
   colorNames,
   colors,
+  isLeftToAi,
   isPlanned,
+  leaveToAi,
   linkIdea,
   newIdea,
   pinColor,
@@ -38,6 +46,7 @@ import {
   type Screen,
 } from '../../shared/model';
 import type { Update } from '../useProject';
+import { StickyNote } from 'lucide-react';
 import { Modal, Confirm } from './Modal';
 import { ScrollHints } from './ScrollHints';
 type Placing =
@@ -86,7 +95,9 @@ export function ScreenEditor({
     [quickIdea, setQuickIdea] = useState('');
   const pin = pins.find((pin) => pin.id === selected),
     imageRef = useRef<HTMLDivElement>(null),
+    stageRef = useRef<HTMLDivElement>(null),
     inspectorRef = useRef<HTMLDivElement>(null),
+    [fit, setFit] = useState<{ width: number; height: number } | null>(null),
     drag = useRef<string | null>(null);
   const active = layout === 'mobile' ? mobileAsset : asset;
   const linkedIdea = pin && project.ideas.find((idea) => idea.pinId === pin.id);
@@ -208,14 +219,31 @@ export function ScreenEditor({
       </button>
     );
   };
-  const stageStyle = (a?: { width: number; height: number }) => ({
-    aspectRatio: a ? `${a.width}/${a.height}` : layout === 'mobile' ? '9/16' : '4/3',
-    maxWidth: a
-      ? `min(100%, calc(58vh * ${a.width / a.height}))`
-      : layout === 'mobile'
-        ? '360px'
-        : '100%',
-  });
+  // Rule (2026-09-26): every view works at every zoom. The drawing is sized to the room the stage
+  // has, in both directions, so the whole sketch is visible for placing pins in a small dialog.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const measure = () => {
+      const next = { width: el.clientWidth, height: el.clientHeight };
+      setFit((f) => (f && f.width === next.width && f.height === next.height ? f : next));
+    };
+    measure();
+    const sizes = new ResizeObserver(measure);
+    sizes.observe(el);
+    return () => sizes.disconnect();
+  }, []);
+  const stageStyle = (a?: { width: number; height: number }) => {
+    const aspect = a ? a.width / a.height : layout === 'mobile' ? 9 / 16 : 4 / 3;
+    const width = fit
+      ? Math.max(120, Math.floor(Math.min(fit.width, (fit.height - 6) * aspect)))
+      : undefined;
+    return {
+      aspectRatio: `${aspect}`,
+      width: width === undefined ? undefined : `${width}px`,
+      maxWidth: '100%',
+    };
+  };
   const caption =
     placing?.mode === 'new'
       ? 'Place a pin on the part of the web drawing that does something.'
@@ -253,7 +281,7 @@ export function ScreenEditor({
       <div className="screen-editor">
         <div className="screen-workspace">
           <div className="editor-toolbar">
-            <button className="text-button" onClick={onClose}>
+            <button className="text-button editor-back" onClick={onClose}>
               <ArrowLeft size={15} /> Back to board
             </button>
             <div className="layout-toggle" role="group" aria-label="Drawing shown">
@@ -294,66 +322,73 @@ export function ScreenEditor({
                 </span>
               )}
             </div>
-            <div
-              className={`editable-image ${active ? '' : 'empty'} ${layout === 'mobile' && active ? 'mobile-frame' : ''}`}
-              ref={imageRef}
-              style={stageStyle(active)}
-              onClick={clickImage}
-            >
-              {active ? (
-                <img
-                  src={assetUrl(active)}
-                  alt={layout === 'mobile' ? `${s.title} on mobile` : s.title}
-                  draggable={false}
-                />
-              ) : layout === 'mobile' ? (
-                <div className="frame-planned">
-                  <Smartphone size={22} />
-                  <strong>No mobile drawing yet.</strong>
-                  <label>
-                    Mobile drawing
-                    <select
-                      aria-label="Choose a mobile drawing"
-                      value=""
-                      onChange={(e) =>
-                        e.target.value &&
-                        update((p) => setDrawing(p, s.id, 'mobile', e.target.value))
-                      }
-                    >
-                      {drawingOptions('Choose a sketch from the library…')}
-                    </select>
-                  </label>
-                  <small>Pins keep their web positions; you place each one here too.</small>
-                </div>
-              ) : isPlanned(s) ? (
-                <div className="frame-planned">
-                  <MapPin size={22} />
-                  <strong>Waiting for a drawing.</strong>
-                  <label>
-                    Web drawing
-                    <select
-                      aria-label="Choose a web drawing"
-                      value=""
-                      onChange={(e) =>
-                        e.target.value && update((p) => setDrawing(p, s.id, 'web', e.target.value))
-                      }
-                    >
-                      {drawingOptions('Choose a sketch from the library…')}
-                    </select>
-                  </label>
-                  <small>Or drop a sketch onto this frame on the board.</small>
-                  {ideas.length > 0 && (
-                    <ul>
-                      {ideas.map((idea) => (
-                        <li key={idea.id}>{idea.title}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ) : (
-                <div className="image-missing">Image missing from this project</div>
-              )}
-              {active && pins.filter((v) => layout === 'web' || v.mobile).map(stagePin)}
+            <div className="stage-fit" ref={stageRef}>
+              <div
+                className={`editable-image ${active ? '' : 'empty'} ${layout === 'mobile' && active ? 'mobile-frame' : ''}`}
+                ref={imageRef}
+                style={stageStyle(active)}
+                onClick={clickImage}
+              >
+                {active ? (
+                  <img
+                    src={assetUrl(active)}
+                    alt={layout === 'mobile' ? `${s.title} on mobile` : s.title}
+                    draggable={false}
+                  />
+                ) : layout === 'mobile' ? (
+                  <div className="frame-planned">
+                    <Smartphone size={22} />
+                    <strong>No mobile drawing yet.</strong>
+                    <label>
+                      Mobile drawing
+                      <select
+                        aria-label="Choose a mobile drawing"
+                        value=""
+                        onChange={(e) =>
+                          e.target.value &&
+                          update((p) => setDrawing(p, s.id, 'mobile', e.target.value))
+                        }
+                      >
+                        {drawingOptions('Choose a sketch from the library…')}
+                      </select>
+                    </label>
+                    <small>Pins keep their web positions; you place each one here too.</small>
+                  </div>
+                ) : isPlanned(s) ? (
+                  <div className={`frame-planned ${isLeftToAi(s) ? 'left-to-ai' : ''}`}>
+                    {isLeftToAi(s) ? <StickyNote size={22} /> : <MapPin size={22} />}
+                    <strong>
+                      {isLeftToAi(s)
+                        ? 'Left to the AI: a standard page, no drawing needed.'
+                        : 'Waiting for a drawing.'}
+                    </strong>
+                    <label>
+                      Web drawing
+                      <select
+                        aria-label="Choose a web drawing"
+                        value=""
+                        onChange={(e) =>
+                          e.target.value &&
+                          update((p) => setDrawing(p, s.id, 'web', e.target.value))
+                        }
+                      >
+                        {drawingOptions('Choose a sketch from the library…')}
+                      </select>
+                    </label>
+                    <small>Or drop a sketch onto this frame on the board.</small>
+                    {ideas.length > 0 && (
+                      <ul>
+                        {ideas.map((idea) => (
+                          <li key={idea.id}>{idea.title}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  <div className="image-missing">Image missing from this project</div>
+                )}
+                {active && pins.filter((v) => layout === 'web' || v.mobile).map(stagePin)}
+              </div>
             </div>
             {layout === 'mobile' && mobileAsset && pins.some((v) => !v.mobile) && (
               <div className="unplaced-strip">
@@ -749,6 +784,22 @@ export function ScreenEditor({
                   <Flag size={15} />
                   <span>
                     Can start here<small>An entry point into your app</small>
+                  </span>
+                </label>
+                <label className="check-row post-it-row">
+                  <input
+                    type="checkbox"
+                    disabled={s.role === 'detail'}
+                    checked={isLeftToAi(s)}
+                    onChange={(e) => update((p) => leaveToAi(p, s.id, e.target.checked))}
+                  />
+                  <StickyNote size={15} />
+                  <span>
+                    Leave it up to the AI
+                    <small>
+                      A post-it on the frame: build a standard, conventional page from the title,
+                      purpose and ideas. No drawing needed.
+                    </small>
                   </span>
                 </label>
                 <label>
