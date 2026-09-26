@@ -32,7 +32,7 @@ import {
   type Screen,
 } from '../../shared/model';
 import type { Update } from '../useProject';
-import { clampView, frameRects } from '../boardView';
+import { clampView, fitView, frameRects } from '../boardView';
 export function Board({
   project,
   update,
@@ -123,27 +123,12 @@ export function Board({
   }, [project.screens, project.layout, project.assets]);
   const fit = () => {
     if (!ref.current) return;
-    const p = projectRef.current;
-    if (!p.screens.length) {
-      commitView({ x: 70, y: 70, zoom: 0.85 });
-      return;
-    }
-    const positions = p.screens.map((s) => {
-      const pos = p.layout[s.id] ?? { x: 0, y: 0, width: 300 };
-      return { ...pos, ...screenSize(p, s) };
-    });
-    const minX = Math.min(...positions.map((s) => s.x)),
-      minY = Math.min(...positions.map((s) => s.y)) - 35;
-    const maxX = Math.max(...positions.map((s) => s.x + s.width)),
-      maxY = Math.max(...positions.map((s) => s.y + s.height)) + 20;
-    const w = ref.current.clientWidth,
-      h = ref.current.clientHeight;
-    const z = Math.max(0.15, Math.min(1, (w - 110) / (maxX - minX), (h - 160) / (maxY - minY)));
-    commitView({
-      x: (w - (maxX - minX) * z) / 2 - minX * z,
-      y: (h - 70 - (maxY - minY) * z) / 2 - minY * z,
-      zoom: z,
-    });
+    commitView(
+      fitView(frameRects(projectRef.current), {
+        width: ref.current.clientWidth,
+        height: ref.current.clientHeight,
+      }),
+    );
   };
   const lastFit = useRef(fitSignal);
   useEffect(() => {

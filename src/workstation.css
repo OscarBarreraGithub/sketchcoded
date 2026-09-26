@@ -952,3 +952,183 @@
 .post-it-row svg {
   color: #b39a2b;
 }
+
+/* Rule (2026-09-26): all text is easily legible. Nothing on screen under 12px. Text that lives on
+   the board keeps at least 12 screen pixels at any board zoom (it hides under 40% instead). */
+.eyebrow,
+.board-eyebrow,
+.board-eyebrow span,
+.board-eyebrow .board-local,
+.library-heading .eyebrow,
+.section-heading,
+.section-heading span,
+.color-picker legend,
+.review-heading .eyebrow,
+.project-menu .eyebrow,
+.inspector-scroll .eyebrow,
+.preview-sidebar .eyebrow,
+.planning-intro .eyebrow,
+.outline-intro .eyebrow {
+  font-size: 12px;
+  letter-spacing: 1.2px;
+}
+.view-badge,
+.asset-used,
+.asset-unused,
+.asset-number,
+.review-count,
+.ideas-counts,
+.ideas-group > summary span,
+.import-zone span,
+.import-zone strong,
+.library-footer,
+.library-group > summary,
+.library-group > summary span,
+.library-heading h2 span,
+.library-section,
+.folder-button small,
+.folder-button strong,
+.search-box > input,
+.empty-library small,
+.source-heading,
+.source,
+.board-counts,
+.board-counts span,
+.board-help,
+.board-help span,
+.save-status,
+.save-status span,
+.zoom-value,
+.connection-banner,
+.modal-note,
+.new-board-option span,
+.project-menu small,
+.required,
+.field-help,
+.text-button,
+.button.small,
+.header-actions .button,
+.editor-toolbar .button,
+.editor-toolbar .text-button,
+.editor-toolbar .layout-toggle small,
+.layout-caption,
+.layout-caption span,
+.sketch-caption,
+.sketch-caption > span,
+.pin-row,
+.pin-row > span,
+.check-row,
+.check-row small,
+.inspector-back,
+.connection-row,
+.connection-row small,
+.edge-modal label,
+.editor-inspector label,
+.review-tabs button,
+.review-tabs span,
+.review-tabs button span,
+.review-heading p,
+.review-context p,
+.review-context small,
+.issue-heading small,
+.issue-heading strong,
+.issue-body > p,
+.issue-body > .text-button,
+.issue-body label,
+.issue-body textarea,
+.stale-reason,
+.accepted-reason p,
+.accepted-reason small,
+.accepted-reason > .text-button,
+.review-empty p,
+.review-footer,
+.archived-reviews,
+.archived-reviews small,
+.preview-start select,
+.preview-screen-title,
+.preview-hint,
+.preview-sidebar > p,
+.preview-sidebar-scroll > p,
+.preview-route > span,
+.preview-route > div,
+.preview-route small,
+.last-branch strong,
+.last-branch p,
+.last-branch small,
+.branch-choice > span,
+.branch-choice small,
+.branch-choice em,
+.preview-prose-note,
+.preview-notice,
+.preview-footer > span,
+.preview-toolbar .text-button,
+.route-screen,
+.help-steps p,
+.help-steps section > p,
+.shortcut-list > span,
+kbd,
+.toast,
+.save-error,
+.modal-actions .button,
+.modal-actions > .delete-action,
+.board-empty p,
+.outline-count,
+.idea-heading,
+.idea-heading small,
+.idea-status,
+.idea-controls label,
+.unplaced-strip,
+.badge {
+  font-size: 12px;
+}
+.text-button,
+.button.small,
+.check-row,
+.pin-row,
+.connection-row,
+.edge-modal label,
+.editor-inspector label,
+.field-help,
+.review-heading p,
+.issue-heading strong,
+.issue-body > p,
+.issue-body textarea,
+.preview-notice,
+.preview-sidebar > p,
+.preview-sidebar-scroll > p,
+.help-steps p,
+.toast,
+.save-error,
+.unplaced-strip,
+.idea-heading {
+  font-size: 13px;
+}
+/* On the board, text scales with the zoom; these floors keep it readable while zoomed out. */
+.board-pin > span,
+.editor-pin,
+.preview-pin {
+  font-size: calc(12px / var(--board-zoom, 1));
+}
+.editor-pin,
+.preview-pin {
+  font-size: 12px;
+}
+.yarn-label-button,
+.yarn-label text,
+.history-tag {
+  font-size: max(14px, calc(13px / var(--board-zoom)));
+  padding: 8px 14px;
+  color: #6b5a40;
+  max-width: max(260px, calc(220px / var(--board-zoom)));
+}
+.card-footer,
+.card-footer span {
+  font-size: max(11px, calc(12px / var(--board-zoom)));
+}
+.frame-planned small,
+.frame-planned .eyebrow {
+  font-size: max(12px, calc(12px / var(--board-zoom)));
+}
+.paper-title {
+  font-size: max(27px, calc(13px / var(--board-zoom)));
+}

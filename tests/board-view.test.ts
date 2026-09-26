@@ -1,25 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import { emptyProject } from '../shared/model';
-import { KEEP, clampView, frameRects, type Rect, type View } from '../src/boardView';
+import { KEEP, PAD, clampView, fitView, frameRects, type Rect, type View } from '../src/boardView';
 
 const size = { width: 1000, height: 600 };
-/** Two 300×200 frames with their tapes, far apart: top left and bottom right. */
+/** Two 300×200 frames with their tapes, in a row: the content is 1100 wide and 255 tall. */
 const frames: Rect[] = [
   { x: 0, y: -35, width: 300, height: 255 },
-  { x: 800, y: 465, width: 300, height: 255 },
+  { x: 800, y: -35, width: 300, height: 255 },
 ];
+const onScreen = (view: View, frame: Rect) => ({
+  left: frame.x * view.zoom + view.x,
+  top: frame.y * view.zoom + view.y,
+  right: (frame.x + frame.width) * view.zoom + view.x,
+  bottom: (frame.y + frame.height) * view.zoom + view.y,
+});
 const visible = (view: View, frame: Rect) => {
-  const left = frame.x * view.zoom + view.x,
-    top = frame.y * view.zoom + view.y,
-    right = left + frame.width * view.zoom,
-    bottom = top + frame.height * view.zoom;
+  const r = onScreen(view, frame);
   return {
-    x: Math.min(right, size.width) - Math.max(left, 0),
-    y: Math.min(bottom, size.height) - Math.max(top, 0),
+    x: Math.min(r.right, size.width) - Math.max(r.left, 0),
+    y: Math.min(r.bottom, size.height) - Math.max(r.top, 0),
   };
 };
-const somethingOnTheBoard = (view: View) =>
-  frames.some((f) => {
+const somethingOnTheBoard = (view: View, all = frames) =>
+  all.some((f) => {
     const v = visible(view, f);
     return (
       v.x >= Math.min(KEEP, f.width * view.zoom) - 0.01 &&
@@ -27,33 +30,50 @@ const somethingOnTheBoard = (view: View) =>
     );
   });
 
-describe('board view clamp: the board never pans out of sight of its content', () => {
-  it('leaves a view alone while a frame is on the board', () => {
-    const view = { x: 40, y: 60, zoom: 1 };
+describe('board view clamp: the board stops at the last frame plus padding', () => {
+  it('leaves a view alone while the content sits inside the padded board', () => {
+    const view = { x: 40, y: 100, zoom: 1 };
     expect(clampView(view, frames, size)).toBe(view);
-    expect(clampView({ x: 700, y: 400, zoom: 1 }, frames, size)).toEqual({
-      x: 700,
-      y: 400,
-      zoom: 1,
-    });
   });
-  it('stops a pan past the last frame with KEEP pixels of it still showing', () => {
-    const clamped = clampView({ x: 5000, y: 0, zoom: 1 }, frames, size);
-    expect(clamped).toEqual({ x: size.width - KEEP, y: 0, zoom: 1 });
-    expect(visible(clamped, frames[0]).x).toBe(KEEP);
-    expect(somethingOnTheBoard(clamped)).toBe(true);
+  it('panning right stops with the first frame PAD.left from the edge', () => {
+    // The content (1100 wide) is wider than the usable board, so it covers the board instead.
+    const clamped = clampView({ x: 5000, y: 100, zoom: 1 }, frames, size);
+    expect(onScreen(clamped, frames[0]).left).toBe(PAD.left);
+    expect(clamped.y).toBe(100);
   });
-  it('comes back to the nearest frame by the smallest move', () => {
-    const clamped = clampView({ x: -5000, y: -5000, zoom: 1 }, frames, size);
-    // The bottom-right frame is closer to a view that went off to the top left.
-    expect(visible(clamped, frames[1])).toEqual({ x: KEEP, y: KEEP });
-    expect(somethingOnTheBoard(clamped)).toBe(true);
+  it('panning left stops with the last frame fully in view and PAD.right of cork beside it', () => {
+    const clamped = clampView({ x: -5000, y: 100, zoom: 1 }, frames, size);
+    expect(onScreen(clamped, frames[1]).right).toBe(size.width - PAD.right);
+    expect(visible(clamped, frames[1]).x).toBe(300);
   });
-  it('keeps the whole frame when it is smaller than KEEP on screen', () => {
-    const clamped = clampView({ x: 950, y: 100, zoom: 0.5 }, frames, size);
-    expect(clamped.x).toBe(size.width - 150);
-    expect(visible(clamped, frames[0]).x).toBe(150);
-    expect(somethingOnTheBoard(clamped)).toBe(true);
+  it('keeps content that fits inside the padded board, never clipped at an edge', () => {
+    // Zoomed out, the content is 550 wide: it floats between the paddings but cannot leave.
+    const right = clampView({ x: 900, y: 100, zoom: 0.5 }, frames, size);
+    expect(onScreen(right, frames[1]).right).toBe(size.width - PAD.right);
+    const left = clampView({ x: -900, y: 100, zoom: 0.5 }, frames, size);
+    expect(onScreen(left, frames[0]).left).toBe(PAD.left);
+    const inside = { x: 200, y: 100, zoom: 0.5 };
+    expect(clampView(inside, frames, size)).toBe(inside);
+  });
+  it('keeps the top tape below the tagline and the bottom edge above the board controls', () => {
+    // Dragging down moves the content down until its bottom edge rests above the controls;
+    // dragging up moves it up until the tape rests under the tagline.
+    const down = clampView({ x: 40, y: 5000, zoom: 1 }, frames, size);
+    expect(onScreen(down, frames[0]).bottom).toBe(size.height - PAD.bottom);
+    const up = clampView({ x: 40, y: -5000, zoom: 1 }, frames, size);
+    expect(onScreen(up, frames[0]).top).toBe(PAD.top);
+  });
+  it('brings the nearest frame back when a layout leaves an empty corner in view', () => {
+    const corner: Rect[] = [
+      { x: 0, y: -35, width: 300, height: 255 },
+      { x: 2000, y: 2000, width: 300, height: 255 },
+    ];
+    // This view sits inside the content's bounding box but shows neither frame.
+    const empty = { x: -1000, y: 0, zoom: 1 };
+    expect(somethingOnTheBoard(empty, corner)).toBe(false);
+    const clamped = clampView(empty, corner, size);
+    expect(somethingOnTheBoard(clamped, corner)).toBe(true);
+    expect(visible(clamped, corner[0]).x).toBe(KEEP);
   });
   it('holds at any zoom', () => {
     for (const zoom of [0.15, 0.5, 1, 2, 3])
@@ -72,6 +92,15 @@ describe('board view clamp: the board never pans out of sight of its content', (
     const view = { x: 9999, y: 9999, zoom: 1 };
     expect(clampView(view, [], size)).toBe(view);
     expect(clampView(view, frames, { width: 0, height: 0 })).toBe(view);
+  });
+  it('fit shows everything inside the padding, and the clamp then has nothing to do', () => {
+    const fitted = fitView(frames, size);
+    expect(fitted.zoom).toBeLessThanOrEqual(1);
+    expect(onScreen(fitted, frames[0]).left).toBeGreaterThanOrEqual(PAD.left - 0.01);
+    expect(onScreen(fitted, frames[1]).right).toBeLessThanOrEqual(size.width - PAD.right + 0.01);
+    expect(onScreen(fitted, frames[0]).top).toBeGreaterThanOrEqual(PAD.top - 0.01);
+    expect(clampView(fitted, frames, size)).toBe(fitted);
+    expect(fitView([], size)).toEqual({ x: 70, y: 70, zoom: 0.85 });
   });
   it('measures every frame with its tape, planned frames included', () => {
     const p = emptyProject('Frames', 'frames');

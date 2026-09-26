@@ -30,7 +30,7 @@ The full list, with dates and the user's words, is `docs/BUILD_CHECKLIST.md`; it
 - Test real browser zoom (125% to 250%) after layout changes; text must stay readable, controls reachable, and the user must keep good control of the workspace.
 - When content continues off screen, say so: every scrolling region keeps a visible scrollbar and shows a “More below” hint (`ScrollHints`) until the end is reached. Never rely on an invisible overlay scrollbar.
 - **The page never scrolls; panels do.** The app shell is always the height of the window (`100dvh`, at every width and height, including short zoomed windows). Only the left column, dialogs, side panels and list views scroll, each inside itself. The board is the size of its area, never of its content.
-- **The board never pans out of sight of its content.** Every view change goes through the clamp in `src/boardView.ts`: room around the frames is fine, but part of a frame always stays on the board.
+- **The board never pans out of sight of its content.** Every view change goes through the clamp in `src/boardView.ts`: panning stops at the outermost frame plus padding (`PAD`), so the last frame in view is whole with cork beside it, never clipped at the edge; a frame always stays on the board.
 
 ## Links out
 
