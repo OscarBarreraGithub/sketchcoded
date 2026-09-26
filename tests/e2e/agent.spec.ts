@@ -133,7 +133,10 @@ test('every view hands its task to the agent, and the agent can read everything 
   const frame = await handoff(
     page,
     editor.locator('.editor-toolbar').getByRole('button', { name: 'Tell the agent' }),
-    [/· F\d+ “[^”]+” \([^)]+\) · Screen editor/, /brief\?view=screen-editor&screen=[^&]+&layout=web/],
+    [
+      /· F\d+ “[^”]+” \([^)]+\) · Screen editor/,
+      /brief\?view=screen-editor&screen=[^&]+&layout=web/,
+    ],
   );
   expect(frame.text).toContain(`“${title}”`);
   expect(frame.body).toMatch(new RegExp(`## The frame: F\\d+ ${title}`));
