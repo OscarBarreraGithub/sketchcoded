@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { ScrollHints } from './ScrollHints';
 export function Modal({
   title,
   children,
@@ -12,6 +13,7 @@ export function Modal({
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null),
+    contentRef = useRef<HTMLDivElement>(null),
     closeRef = useRef(onClose);
   closeRef.current = onClose;
   useEffect(() => {
@@ -54,7 +56,10 @@ export function Modal({
           <X size={20} />
         </button>
       </div>
-      <div className="modal-content">{children}</div>
+      <div className="modal-content" ref={contentRef}>
+        {children}
+      </div>
+      <ScrollHints target={contentRef} />
     </dialog>
   );
 }

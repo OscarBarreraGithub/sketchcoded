@@ -463,3 +463,156 @@
     width: 300px;
   }
 }
+
+/* Rule: when content continues off screen, say so and offer a way there. Every scrolling region
+   keeps a visible scrollbar and shows a "More below" pill with a fade until the end is reached. */
+.left-column {
+  position: relative;
+  overflow: hidden;
+}
+.left-scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  --fade: #f9f9f3;
+}
+.left-scroll,
+.inspector-scroll,
+.scroll-area-inner,
+.review-scroll,
+.modal-content,
+.library-scroll,
+.ideas-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #b3b9a8 #eceee4;
+}
+.left-scroll::-webkit-scrollbar,
+.inspector-scroll::-webkit-scrollbar,
+.scroll-area-inner::-webkit-scrollbar,
+.review-scroll::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 10px;
+}
+.left-scroll::-webkit-scrollbar-track,
+.inspector-scroll::-webkit-scrollbar-track,
+.scroll-area-inner::-webkit-scrollbar-track,
+.review-scroll::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+  background: #eceee4;
+}
+.left-scroll::-webkit-scrollbar-thumb,
+.inspector-scroll::-webkit-scrollbar-thumb,
+.scroll-area-inner::-webkit-scrollbar-thumb,
+.review-scroll::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: #b3b9a8;
+  border-radius: 5px;
+  border: 2px solid #eceee4;
+}
+.scroll-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 56px;
+  pointer-events: none;
+  z-index: 5;
+}
+.scroll-fade.below {
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent, var(--fade, #f9f9f3));
+}
+.scroll-fade.above {
+  top: 0;
+  background: linear-gradient(to top, transparent, var(--fade, #f9f9f3));
+}
+.scroll-more {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fffef8;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px #24332640;
+}
+.scroll-more:hover {
+  background: #2b4033;
+}
+.scroll-more.above {
+  top: 10px;
+}
+.scroll-more.below {
+  bottom: 10px;
+}
+.editor-inspector {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  --fade: #fafbf4;
+}
+.inspector-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 24px;
+}
+.scroll-area {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  --fade: #f2f1e8;
+}
+.scroll-area-inner {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  display: flex;
+  background: #f2f1e8;
+}
+.scroll-area .planning-view,
+.scroll-area .outline-view {
+  overflow: visible;
+  flex: 1;
+  min-width: 0;
+}
+.review-panel {
+  position: relative;
+  --fade: #fbfbf5;
+}
+.review-panel .scroll-more.below {
+  bottom: 52px;
+}
+.review-panel .scroll-fade.below {
+  bottom: 42px;
+}
+.modal {
+  --fade: #fcfcf6;
+}
+.modal .scroll-fade.below {
+  border-radius: 0 0 13px 13px;
+}
+@media (max-width: 1000px) {
+  .editor-inspector,
+  .inspector-scroll {
+    overflow: visible;
+  }
+  .editor-inspector .scroll-more,
+  .editor-inspector .scroll-fade {
+    display: none;
+  }
+}

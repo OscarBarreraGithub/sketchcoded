@@ -42,6 +42,7 @@ import { Planning } from './components/Planning';
 import { Board } from './components/Board';
 import { Library } from './components/Library';
 import { IdeasPanel } from './components/IdeasPanel';
+import { ScrollArea, ScrollHints } from './components/ScrollHints';
 import { Modal, Confirm } from './components/Modal';
 import { ScreenEditor } from './components/ScreenEditor';
 import { EdgeEditor } from './components/EdgeEditor';
@@ -148,6 +149,7 @@ function Studio({
     [folder, setFolder] = useState(''),
     [formError, setFormError] = useState('');
   const importRef = useRef<HTMLInputElement>(null),
+    leftScroll = useRef<HTMLDivElement>(null),
     folderInput = useRef<HTMLInputElement>(null),
     scanning = useRef(false),
     noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -568,36 +570,39 @@ function Studio({
       )}
       <div className="studio-layout">
         <div className="left-column">
-          <Library
-            onLocate={showOnBoard}
-            onClose={() => setLibraryOpen(false)}
-            project={project}
-            onImport={(files) => void importImages(files)}
-            onFolder={() => {
-              setFormError('');
-              setModal('folder');
-            }}
-            onRefresh={() =>
-              void scan(project.folders).then((ok) => {
-                if (!ok)
-                  notify('Could not refresh a folder. Open Connect a folder to check the path.');
-              })
-            }
-            onDisconnect={(folder) =>
-              update((p) => ({ ...p, folders: p.folders.filter((f) => f !== folder) }))
-            }
-            onAdd={(a) => add(a)}
-            busy={busy}
-          />
-          <IdeasPanel
-            project={project}
-            onOpenPlan={() => {
-              setViewMode('planning');
-              setLibraryOpen(false);
-            }}
-            onPlace={placeIdeaOnDrawing}
-            onScreen={(id) => setScreen({ id })}
-          />
+          <div className="left-scroll" ref={leftScroll}>
+            <Library
+              onLocate={showOnBoard}
+              onClose={() => setLibraryOpen(false)}
+              project={project}
+              onImport={(files) => void importImages(files)}
+              onFolder={() => {
+                setFormError('');
+                setModal('folder');
+              }}
+              onRefresh={() =>
+                void scan(project.folders).then((ok) => {
+                  if (!ok)
+                    notify('Could not refresh a folder. Open Connect a folder to check the path.');
+                })
+              }
+              onDisconnect={(folder) =>
+                update((p) => ({ ...p, folders: p.folders.filter((f) => f !== folder) }))
+              }
+              onAdd={(a) => add(a)}
+              busy={busy}
+            />
+            <IdeasPanel
+              project={project}
+              onOpenPlan={() => {
+                setViewMode('planning');
+                setLibraryOpen(false);
+              }}
+              onPlace={placeIdeaOnDrawing}
+              onScreen={(id) => setScreen({ id })}
+            />
+          </div>
+          <ScrollHints target={leftScroll} label="More" />
         </div>
         <button
           className="library-scrim"
@@ -681,23 +686,27 @@ function Studio({
           </div>
           <div className="board-and-review">
             {viewMode === 'planning' ? (
-              <Planning
-                project={project}
-                update={update}
-                onScreen={(id) => setScreen({ id })}
-                onPin={(id, pin) => setScreen({ id, pin })}
-                onPlace={placeIdeaOnDrawing}
-                onBoard={showOnBoard}
-                onPlanScreen={planScreen}
-              />
+              <ScrollArea label="More of the plan">
+                <Planning
+                  project={project}
+                  update={update}
+                  onScreen={(id) => setScreen({ id })}
+                  onPin={(id, pin) => setScreen({ id, pin })}
+                  onPlace={placeIdeaOnDrawing}
+                  onBoard={showOnBoard}
+                  onPlanScreen={planScreen}
+                />
+              </ScrollArea>
             ) : viewMode === 'outline' ? (
-              <Outline
-                project={project}
-                onScreen={(id) => setScreen({ id })}
-                onPin={(id, pin) => setScreen({ id, pin })}
-                onEdge={editEdge}
-                onBoard={showOnBoard}
-              />
+              <ScrollArea label="More screens">
+                <Outline
+                  project={project}
+                  onScreen={(id) => setScreen({ id })}
+                  onPin={(id, pin) => setScreen({ id, pin })}
+                  onEdge={editEdge}
+                  onBoard={showOnBoard}
+                />
+              </ScrollArea>
             ) : (
               <Board
                 project={project}

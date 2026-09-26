@@ -1,0 +1,72 @@
+# Build checklist
+
+The explicit list of rules for any agent that builds a site or app from a Sketchcoded board, and
+for anyone working on Sketchcoded itself. Everything the user has asked for is here, in their own
+terms, dated. Read it before building. Check each item against the result. When the user adds a
+rule, add it here the same day; never delete one, mark it superseded.
+
+This file ships inside every export as `BUILD-CHECKLIST.md`, next to `flow.md`, so the agent that
+builds from the strings has it. It is also the source for the “build rules” section of the guide.
+
+## How to read a board
+
+- [ ] `project.json` is the specification. `flow.md` is the same content in reading order. Pins are the interactions; their descriptions are the intent, written by the user or their agent. Use the words as written.
+- [ ] A screen’s drawing is the layout to build. Where a screen has a web drawing and a mobile drawing, both are the same screen; each pin has a position on each.
+- [ ] Yarn is the navigation. Honor the authored kind: open (push), replace, start fresh (reset), open as dialog (modal), go back, dismiss. Never invent a route that is not drawn. Back and Dismiss use real history; if a screen can be reached without the history they need, the review says so and the user’s accepted reason explains what to do.
+- [ ] Conditions on yarn are plain language. Implement them as described. Where they overlap or leave a case out, do not guess silently: build the fallback the user marked, and list the ambiguity.
+- [ ] A **link pin** leaves the app for a web address written in its description. Build it as a plain link. Never a screen, never a frame, never a route.
+- [ ] A **detail reference** shows a closer look without changing the screen. It is never navigation and never a way back.
+- [ ] Planned frames (no drawing yet) and unplaced ideas are the backlog, not the spec. Do not build them; do not drop them either. Carry them forward as open items.
+- [ ] Accepted review findings are decisions with reasons. Respect them. Open findings are the user’s to resolve, not yours to paper over.
+
+## Layout and interaction (every screen, every device)
+
+- [ ] **Nothing grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; their content scrolls inside. Selecting a different pin, tab or option never changes the size of the surrounding frame or moves the rest of the page. (2026-09-25)
+- [ ] **Good control when zoomed in.** Test real browser zoom at 125%, 150%, 200% and 250%. Text stays readable, controls stay reachable, nothing overflows its container, and the main work area stays usable. Zoom must work, every time. (2026-09-08, restated 2026-09-25)
+- [ ] **When something is off screen, the user must know.** Every scrolling region keeps a visible scrollbar and shows a clear “more below” or “more above” signal until the end is reached. Never rely on an invisible overlay scrollbar. (2026-09-25)
+- [ ] **Nothing overlaps.** Labels, pins, frames, buttons and text keep clear of each other. Leave room to breathe. (2026-09-25)
+- [ ] **Make it obvious what is clickable** and which option is selected: the active tab is filled, the primary action is unmistakable. (2026-09-25)
+- [ ] Click targets are at least 44px and form fields at least 48px tall. Long notes stay readable without a tiny inner scrollbar. (2026-09-08)
+- [ ] Order of work on any screen: first the logic and the placement of every element, second the behavior when the window resizes, third the mobile appearance. (2026-09-25)
+- [ ] Mobile is a stacked version of the same screen; the drawing says what goes below what. (For the landing page: the setup block sits below the example frame.) (2026-09-25)
+- [ ] No text-heavy summaries where a picture is expected. A card summarizes; the detail lives one click away. (2026-09-25)
+
+## Copy and content
+
+- [ ] Use the user’s words. Pin names and descriptions are the copy unless they say “rephrase”, in which case rephrase and show them.
+- [ ] Sketchcoded: “Prompts make apps. Sketching makes your vision.” Alternate: “Telling an AI what you want gets you an app. Showing it gets you your vision.” (2026-09-25)
+- [ ] Say plainly that it runs on the user’s computer and that sketches never leave it. No account, no API key, no upload. (2026-09-25)
+- [ ] The setup prompt is the whole onboarding: something to paste into an AI, with a copy button. It is generated from the one place the repository address lives. (2026-09-25)
+
+## Scope decisions to respect
+
+- [ ] Desktop only for input: image files already on the computer. No phone capture. (2026-09-25)
+- [ ] The landing site is its own repository and its own thing; the app is the app. Keep name, tagline, setup prompt and feature list identical between them. (2026-09-25)
+- [ ] No agent chat inside the workstation. The plan is where ideas go; the export is where an agent reads from. (2026-09-25)
+- [ ] No LLM runs inside Sketchcoded yet. Nothing written in words is executed or proved. (2026-09-07)
+
+## Process for agents working on Sketchcoded itself
+
+- [ ] Read `AGENTS.md`, `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md` and this file before changing anything.
+- [ ] Run `npm run build`, `npm test`, `npm run test:ui` (includes real browser zoom) and `npm run format:check`. Record results in `docs/PROGRESS.md`; do not mark done what was not verified.
+- [ ] Start servers and browsers only while using them; stop them before handing back. Never point tests at the user’s data.
+- [ ] Keep `docs/FUNCTIONALITY.md` and the Sketchcoded board’s backlog in step. Keep this checklist explicit and dated.
+- [ ] The final message to the user restates the URL of anything running and anything they need to do next.
+
+## What the user said, and when
+
+A dated record so nothing is lost. Each line points at the rule above it created.
+
+- **2026-09-07, the brief.** A bulletin board for sketches; drop with a tack animation; title each image on a paper scrap; easy zoom; pins with high-level descriptions; yarn with the logic; one pin can feed many yarns; a graph the LLM can read; an automatic check for one-way pages, with the login case handled by letting the user or a later LLM accept the exception one by one; a Test button to click through the sketches, with a chooser when a pin has several yarns; save the brief as Markdown; track progress so nothing is lost across compaction.
+- **2026-09-08, usability.** Rename to Sketchcoded; fix zoomed-in clipping; an outline view beside the board; simpler board movement and a zoom slider; every control easy to click; consistent field sizes and readable text; no nested scrolling for long text; detail sketches distinct from navigation; explain what Review flow checks; show which sketches are used.
+- **2026-09-08, process.** No idle development servers or browsers.
+- **2026-09-25, scope.** Desktop only for now; users bring files from the computer. Mobile and web layouts for every screen, overlaid, with pins connected accordingly and both shown when a screen is opened. Logic and placement first, resizing second, mobile third.
+- **2026-09-25, planning.** Make the first board the structure of the site itself. The agent organizes the functionality into the backbone and leaves the pins open; the user draws and connects. Show the plan as pins and yarn and as text that is easy to talk about in chat. A place for ideas that is easy to add to and skim. “What should go on the home page?” answered from the backlog; move ideas on request; the yarn follows. Pinned ideas grey out but stay legible so nothing lands on two pages. Write the functionality down for a website that explains what you can do, with a demo, so future users benefit too.
+- **2026-09-25, the landing page.** A sentence or two; the name; two lines; a GitHub button; a copy-and-paste prompt to set up; an easy way to open the example workspace, not to play it; a guide plus FAQ. Tagline work settled on “Telling an AI what you want gets you an app. Showing it gets you your vision.”
+- **2026-09-25, the drawings.** Landing: example of this website sending to a read-only demo, made obviously clickable; on mobile the setup block goes below the example frame; runs local and sketches never leave, rephrased; read more in a guide covering the autochecks (no overlapping or small text, no browser zoom issues), setup from the Markdown file structure, and GitHub. Workstation: Used and New library sections, drag and drop onto the board moves an image to Used, drag to upload; an ideas panel that makes clear what is left; project name; Export, Test and help buttons; plus and minus zoom just in case; Board, Outline and Plan tabs with the selected one obvious; cork background; color-coded yarn; tape titles; click to resize; no overlap; lots of space; a little home marker where the landing page starts. Overlay: add pin; highlight the selected pin; a pins list that is easy to move and delete; color coding with labels; title and description; toggle web versus mobile changes the image; remove.
+- **2026-09-25, readability.** Walls of text per image are unusable; too many things overlapped. Cards summarize; threads merge; labels shrink.
+- **2026-09-25, layout stability.** “We should never have the background grow or shrink depending on the button we pressed.” Never, on any site ever built.
+- **2026-09-25, links.** GitHub should not have its own frame. A pin can carry a URL in its description with any conditions; the pin is the exit. This is the expected route for URLs.
+- **2026-09-25, repositories.** The landing page is separate, as the public site; two repositories; set up clean.
+- **2026-09-25, agent box.** Remove the agent chat from the workstation; it adds nothing and makes it messy.
+- **2026-09-25, zoom and scrolling.** It was not obvious that the left panel scrolls when zoomed in. Always keep good control when zoomed in, and always let the user know when something is off screen. Keep this checklist explicit and complete.

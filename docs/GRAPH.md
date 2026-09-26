@@ -1,6 +1,6 @@
 # Graph contract, version 1
 
-`shared/model.ts` is the executable schema. Every export includes its JSON Schema as `schema.json`. The JSON project is canonical; `flow.md` supplies a convenient reading order for future agents and human reviewers.
+`shared/model.ts` is the executable schema. Every export includes its JSON Schema as `schema.json` and the user's build rules as `BUILD-CHECKLIST.md`. The JSON project is canonical; `flow.md` supplies a convenient reading order for future agents and human reviewers.
 
 ## Records
 

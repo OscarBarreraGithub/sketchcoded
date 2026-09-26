@@ -115,6 +115,7 @@ Source folders are read only. Source changes create new library versions; screen
 - `flow.md`: the same specification organized by screen, pin, branch, planning backlog, and review finding for a human or future agent.
 - `review.json`: current findings, acceptance status, and recorded reasons.
 - `assets/`: all the project’s normalized image snapshots.
+- `BUILD-CHECKLIST.md`: the user’s rules for anything built from the board, dated and in their words.
 - `READ-ME.md`: a guide to reading the bundle.
 
 The Sketchcoded name keeps the existing `.drawcode/` storage directory and client identifiers so saved boards continue working. Older `.drawcode.zip` bundles still import. Local source-folder paths are omitted. Importing a bundle creates a separate board, validates the graph and image hashes, and never replaces an existing board. Export uses the current in-memory project, so it can rescue unsaved edits after a two-tab conflict while the server is running.
@@ -125,7 +126,7 @@ The agentic generation and review workflow is intentionally deferred, as request
 
 - Designed for desktop browsers, with a compact layout for smaller windows. Images are files already on this computer; there is no phone capture or upload from a phone. Mouse/trackpad authoring is the main interaction; file selection and add buttons provide alternatives to dragging.
 - A screen needs a web drawing before pins can be placed. The mobile drawing adds a second position for each pin; it does not hold pins of its own.
-- Dialogs keep a fixed size and scroll inside. Nothing on screen grows or shrinks because of what was clicked.
+- Dialogs keep a fixed size and scroll inside. Nothing on screen grows or shrinks because of what was clicked. Wherever content continues off screen, a “More below” pill and a visible scrollbar say so.
 - Supported input: PNG, JPEG, WebP, GIF, AVIF, TIFF, and SVG. Animated or multipage images use the first frame/page. Images are oriented correctly, stripped of source metadata, and normalized to WebP at a maximum of 4096 pixels per side. Keep originals if you need their original format or resolution.
 - Images: 25 MB each, 40 per upload batch. Folder sync: up to 500 images, 5,000 entries, and eight nested levels per folder; hidden files and symlinks are skipped. The UI reports skipped/unreadable files during manual import or refresh.
 - ZIP import: 150 MB compressed / 250 MB expanded. Projects support up to 500 screens, 5,000 pins, 10,000 connections, and 2,000 assets within the 8 MB JSON request limit.
@@ -156,6 +157,7 @@ The shared graph, navigation and planning code has no React or server dependency
 - [Current usability pass](docs/USABILITY_PASS.md)
 - [Planning pass: backlog, planned frames, layouts](docs/PLANNING_PASS.md)
 - [What Sketchcoded can do](docs/FUNCTIONALITY.md)
+- [Build checklist for agents](docs/BUILD_CHECKLIST.md)
 - [Development decisions](docs/DECISIONS.md)
 - [Graph format and checker semantics](docs/GRAPH.md)
 

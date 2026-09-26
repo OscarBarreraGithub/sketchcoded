@@ -1,5 +1,5 @@
 import { AutoTextarea } from './AutoTextarea';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   ArrowUpRight,
@@ -13,6 +13,7 @@ import {
 import { analyze, decisionFor, type Issue } from '../../shared/graph';
 import type { Project } from '../../shared/model';
 import type { Update } from '../useProject';
+import { ScrollHints } from './ScrollHints';
 export function ReviewPanel({
   project,
   update,
@@ -38,6 +39,7 @@ export function ReviewPanel({
   const active =
     expanded === '' ? null : shown.some((i) => i.id === expanded) ? expanded : shown[0]?.id;
   const archived = project.reviews.filter((r) => !issues.some((i) => i.id === r.issueId));
+  const scrollRef = useRef<HTMLDivElement>(null);
   return (
     <aside className="review-panel" aria-label="Flow review">
       <div className="review-heading">
@@ -76,7 +78,7 @@ export function ReviewPanel({
           Accepted <span>{issues.length - open.length}</span>
         </button>
       </div>
-      <div className="review-scroll">
+      <div className="review-scroll" ref={scrollRef}>
         <div className="review-context">
           <CircleHelp size={16} />
           <p>
@@ -227,6 +229,7 @@ export function ReviewPanel({
           </details>
         )}
       </div>
+      <ScrollHints target={scrollRef} label="More findings" />
       <div className="review-footer">
         <ShieldCheck size={14} /> Decisions travel with your project.
       </div>

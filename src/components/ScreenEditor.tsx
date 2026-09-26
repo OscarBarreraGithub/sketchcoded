@@ -39,6 +39,7 @@ import {
 } from '../../shared/model';
 import type { Update } from '../useProject';
 import { Modal, Confirm } from './Modal';
+import { ScrollHints } from './ScrollHints';
 type Placing =
   | { mode: 'new' }
   | { mode: 'idea'; ideaId: string }
@@ -85,6 +86,7 @@ export function ScreenEditor({
     [quickIdea, setQuickIdea] = useState('');
   const pin = pins.find((pin) => pin.id === selected),
     imageRef = useRef<HTMLDivElement>(null),
+    inspectorRef = useRef<HTMLDivElement>(null),
     drag = useRef<string | null>(null);
   const active = layout === 'mobile' ? mobileAsset : asset;
   const linkedIdea = pin && project.ideas.find((idea) => idea.pinId === pin.id);
@@ -379,543 +381,551 @@ export function ScreenEditor({
           </div>
         </div>
         <aside className="editor-inspector">
-          {pin ? (
-            <>
-              <button className="text-button inspector-back" onClick={() => setSelected(null)}>
-                <ArrowLeft size={14} /> Screen details
-              </button>
-              <div className="inspector-title">
-                <span className="pin-swatch" style={{ background: colors[pinColor(pin)] }}>
-                  <MapPin size={18} />
-                </span>
-                <div>
-                  <span className="eyebrow">PIN {pins.indexOf(pin) + 1}</span>
-                  <h3>
-                    {pin.kind === 'detail'
-                      ? 'Show a closer look.'
-                      : pin.kind === 'link'
-                        ? 'Where does this link go?'
-                        : 'What happens here?'}
-                  </h3>
+          <div className="inspector-scroll" ref={inspectorRef}>
+            {pin ? (
+              <>
+                <button className="text-button inspector-back" onClick={() => setSelected(null)}>
+                  <ArrowLeft size={14} /> Screen details
+                </button>
+                <div className="inspector-title">
+                  <span className="pin-swatch" style={{ background: colors[pinColor(pin)] }}>
+                    <MapPin size={18} />
+                  </span>
+                  <div>
+                    <span className="eyebrow">PIN {pins.indexOf(pin) + 1}</span>
+                    <h3>
+                      {pin.kind === 'detail'
+                        ? 'Show a closer look.'
+                        : pin.kind === 'link'
+                          ? 'Where does this link go?'
+                          : 'What happens here?'}
+                    </h3>
+                  </div>
                 </div>
-              </div>
-              <label>
-                Pin purpose
-                <select
-                  value={pin.kind ?? 'interaction'}
-                  onChange={(e) =>
-                    editPin({ kind: e.target.value as Pin['kind'], detailTarget: null })
-                  }
-                >
-                  <option value="interaction" disabled={s.role === 'detail'}>
-                    App interaction — go somewhere or do something
-                  </option>
-                  <option
-                    value="detail"
-                    disabled={project.transitions.some((t) => t.pinId === pin.id)}
-                  >
-                    Detail reference — show a closer look
-                  </option>
-                  <option
-                    value="link"
-                    disabled={project.transitions.some((t) => t.pinId === pin.id)}
-                  >
-                    Link out — opens a web address
-                  </option>
-                </select>
-              </label>
-              <p className="field-help">
-                {pin.kind === 'detail'
-                  ? 'Attach an enlarged or supporting sketch. This explains the design without changing the app screen.'
-                  : pin.kind === 'link'
-                    ? 'Write the address in the description below, with any conditions. The pin is the exit: no yarn, no destination frame.'
-                    : 'Describe an action, then connect the possible outcomes. To change an existing interaction to a reference or a link, remove its yarns first.'}
-              </p>
-              <label>
-                Pin name
-                <input
-                  autoFocus
-                  key={pin.id}
-                  value={pin.title}
-                  placeholder="e.g. Open a recent chat"
-                  maxLength={200}
-                  onChange={(e) => editPin({ title: e.target.value })}
-                />
-              </label>
-              <label>
-                The idea
-                <AutoTextarea
-                  rows={5}
-                  value={pin.description}
-                  placeholder="Describe this part of the screen and what a click should do…"
-                  onChange={(e) => editPin({ description: e.target.value })}
-                />
-              </label>
-              <p className="field-help">
-                {pin.kind === 'detail'
-                  ? 'Describe what this closer look explains. It does not move the user to another page.'
-                  : pin.kind === 'link'
-                    ? 'For example: “Opens https://github.com/… in a new tab. Only shown when the repo is public.”'
-                    : 'Think in intentions. The detailed rules live on each yarn.'}
-              </p>
-              {linkedIdea ? (
-                <p className="field-help linked-idea">
-                  <ListChecks size={14} /> Planned as “{linkedIdea.title}” in the plan.
-                </p>
-              ) : (
-                project.ideas.some(
-                  (idea) => !idea.pinId && (!idea.screenId || idea.screenId === s.id),
-                ) && (
-                  <label>
-                    Planned idea
-                    <select
-                      value=""
-                      onChange={(e) =>
-                        e.target.value && update((p) => linkIdea(p, e.target.value, pin.id))
-                      }
-                    >
-                      <option value="">Link this pin to an idea from the plan…</option>
-                      {project.ideas
-                        .filter((idea) => !idea.pinId && (!idea.screenId || idea.screenId === s.id))
-                        .map((idea) => (
-                          <option key={idea.id} value={idea.id}>
-                            {idea.title}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                )
-              )}
-              <div className="inspector-section">
-                <div className="section-heading">
-                  <span>COLOR CODING</span>
-                  <span>{project.colorLabels?.[pinColor(pin)] || pinColor(pin)}</span>
-                </div>
-                <fieldset className="color-picker">
-                  <legend>Pin color</legend>
-                  {colorNames.map((name) => (
-                    <button
-                      type="button"
-                      className={pinColor(pin) === name ? 'chosen' : ''}
-                      key={name}
-                      style={{ background: colors[name] }}
-                      aria-label={`${name} pin`}
-                      aria-pressed={pinColor(pin) === name}
-                      title={project.colorLabels?.[name] || name}
-                      onClick={() => editPin({ color: name })}
-                    />
-                  ))}
-                </fieldset>
                 <label>
-                  What {pinColor(pin)} means on this board
+                  Pin purpose
+                  <select
+                    value={pin.kind ?? 'interaction'}
+                    onChange={(e) =>
+                      editPin({ kind: e.target.value as Pin['kind'], detailTarget: null })
+                    }
+                  >
+                    <option value="interaction" disabled={s.role === 'detail'}>
+                      App interaction — go somewhere or do something
+                    </option>
+                    <option
+                      value="detail"
+                      disabled={project.transitions.some((t) => t.pinId === pin.id)}
+                    >
+                      Detail reference — show a closer look
+                    </option>
+                    <option
+                      value="link"
+                      disabled={project.transitions.some((t) => t.pinId === pin.id)}
+                    >
+                      Link out — opens a web address
+                    </option>
+                  </select>
+                </label>
+                <p className="field-help">
+                  {pin.kind === 'detail'
+                    ? 'Attach an enlarged or supporting sketch. This explains the design without changing the app screen.'
+                    : pin.kind === 'link'
+                      ? 'Write the address in the description below, with any conditions. The pin is the exit: no yarn, no destination frame.'
+                      : 'Describe an action, then connect the possible outcomes. To change an existing interaction to a reference or a link, remove its yarns first.'}
+                </p>
+                <label>
+                  Pin name
                   <input
-                    value={project.colorLabels?.[pinColor(pin)] ?? ''}
-                    maxLength={60}
-                    placeholder="e.g. navigation, needs a decision, nice to have"
-                    onChange={(e) => {
-                      const color: PinColor = pinColor(pin),
-                        label = e.target.value;
-                      update((p) => ({ ...p, colorLabels: { ...p.colorLabels, [color]: label } }), {
-                        group: `color-label:${color}`,
-                      });
-                    }}
+                    autoFocus
+                    key={pin.id}
+                    value={pin.title}
+                    placeholder="e.g. Open a recent chat"
+                    maxLength={200}
+                    onChange={(e) => editPin({ title: e.target.value })}
                   />
                 </label>
-              </div>
-              <div className="inspector-section">
-                <div className="section-heading">
-                  <span>MOBILE LAYOUT</span>
-                  <span>{!mobileAsset ? 'No drawing' : pin.mobile ? 'Placed' : 'Not yet'}</span>
-                </div>
-                {mobileAsset ? (
-                  <>
-                    <button
-                      className="button full"
-                      onClick={() => {
-                        switchLayout('mobile');
-                        setPlacing({ mode: 'mobile', pinId: pin.id });
-                      }}
-                    >
-                      <Smartphone size={15} />{' '}
-                      {pin.mobile ? 'Move on the mobile drawing' : 'Place on the mobile drawing'}
-                    </button>
-                    {pin.mobile && (
-                      <button
-                        className="text-button full centered"
-                        onClick={() => update((p) => placeOnMobile(p, pin.id, null))}
-                      >
-                        Remove from mobile
-                      </button>
-                    )}
-                  </>
+                <label>
+                  The idea
+                  <AutoTextarea
+                    rows={5}
+                    value={pin.description}
+                    placeholder="Describe this part of the screen and what a click should do…"
+                    onChange={(e) => editPin({ description: e.target.value })}
+                  />
+                </label>
+                <p className="field-help">
+                  {pin.kind === 'detail'
+                    ? 'Describe what this closer look explains. It does not move the user to another page.'
+                    : pin.kind === 'link'
+                      ? 'For example: “Opens https://github.com/… in a new tab. Only shown when the repo is public.”'
+                      : 'Think in intentions. The detailed rules live on each yarn.'}
+                </p>
+                {linkedIdea ? (
+                  <p className="field-help linked-idea">
+                    <ListChecks size={14} /> Planned as “{linkedIdea.title}” in the plan.
+                  </p>
                 ) : (
-                  <button
-                    className="text-button full centered"
-                    onClick={() => switchLayout('mobile')}
-                  >
-                    <Smartphone size={14} /> Add a mobile drawing
-                  </button>
+                  project.ideas.some(
+                    (idea) => !idea.pinId && (!idea.screenId || idea.screenId === s.id),
+                  ) && (
+                    <label>
+                      Planned idea
+                      <select
+                        value=""
+                        onChange={(e) =>
+                          e.target.value && update((p) => linkIdea(p, e.target.value, pin.id))
+                        }
+                      >
+                        <option value="">Link this pin to an idea from the plan…</option>
+                        {project.ideas
+                          .filter(
+                            (idea) => !idea.pinId && (!idea.screenId || idea.screenId === s.id),
+                          )
+                          .map((idea) => (
+                            <option key={idea.id} value={idea.id}>
+                              {idea.title}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                  )
                 )}
-              </div>
-              {pin.kind === 'link' ? (
                 <div className="inspector-section">
                   <div className="section-heading">
-                    <span>LINK OUT</span>
-                    <span>{pinUrl(pin) ? 'Address found' : 'No address yet'}</span>
+                    <span>COLOR CODING</span>
+                    <span>{project.colorLabels?.[pinColor(pin)] || pinColor(pin)}</span>
                   </div>
-                  <p className="field-help link-out">
-                    <ExternalLink size={14} />
-                    {pinUrl(pin) ? (
-                      <span>
-                        Opens{' '}
-                        <a href={pinUrl(pin)!} target="_blank" rel="noreferrer">
-                          {pinUrl(pin)}
-                        </a>{' '}
-                        in the browser. It leaves the app, so it needs no yarn.
-                      </span>
-                    ) : (
-                      <span>
-                        No web address in the description yet. Add one and this pin becomes the
-                        exit.
-                      </span>
-                    )}
-                  </p>
-                </div>
-              ) : pin.kind === 'detail' ? (
-                <div className="inspector-section">
+                  <fieldset className="color-picker">
+                    <legend>Pin color</legend>
+                    {colorNames.map((name) => (
+                      <button
+                        type="button"
+                        className={pinColor(pin) === name ? 'chosen' : ''}
+                        key={name}
+                        style={{ background: colors[name] }}
+                        aria-label={`${name} pin`}
+                        aria-pressed={pinColor(pin) === name}
+                        title={project.colorLabels?.[name] || name}
+                        onClick={() => editPin({ color: name })}
+                      />
+                    ))}
+                  </fieldset>
                   <label>
-                    Detail sketch
+                    What {pinColor(pin)} means on this board
+                    <input
+                      value={project.colorLabels?.[pinColor(pin)] ?? ''}
+                      maxLength={60}
+                      placeholder="e.g. navigation, needs a decision, nice to have"
+                      onChange={(e) => {
+                        const color: PinColor = pinColor(pin),
+                          label = e.target.value;
+                        update(
+                          (p) => ({ ...p, colorLabels: { ...p.colorLabels, [color]: label } }),
+                          {
+                            group: `color-label:${color}`,
+                          },
+                        );
+                      }}
+                    />
+                  </label>
+                </div>
+                <div className="inspector-section">
+                  <div className="section-heading">
+                    <span>MOBILE LAYOUT</span>
+                    <span>{!mobileAsset ? 'No drawing' : pin.mobile ? 'Placed' : 'Not yet'}</span>
+                  </div>
+                  {mobileAsset ? (
+                    <>
+                      <button
+                        className="button full"
+                        onClick={() => {
+                          switchLayout('mobile');
+                          setPlacing({ mode: 'mobile', pinId: pin.id });
+                        }}
+                      >
+                        <Smartphone size={15} />{' '}
+                        {pin.mobile ? 'Move on the mobile drawing' : 'Place on the mobile drawing'}
+                      </button>
+                      {pin.mobile && (
+                        <button
+                          className="text-button full centered"
+                          onClick={() => update((p) => placeOnMobile(p, pin.id, null))}
+                        >
+                          Remove from mobile
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      className="text-button full centered"
+                      onClick={() => switchLayout('mobile')}
+                    >
+                      <Smartphone size={14} /> Add a mobile drawing
+                    </button>
+                  )}
+                </div>
+                {pin.kind === 'link' ? (
+                  <div className="inspector-section">
+                    <div className="section-heading">
+                      <span>LINK OUT</span>
+                      <span>{pinUrl(pin) ? 'Address found' : 'No address yet'}</span>
+                    </div>
+                    <p className="field-help link-out">
+                      <ExternalLink size={14} />
+                      {pinUrl(pin) ? (
+                        <span>
+                          Opens{' '}
+                          <a href={pinUrl(pin)!} target="_blank" rel="noreferrer">
+                            {pinUrl(pin)}
+                          </a>{' '}
+                          in the browser. It leaves the app, so it needs no yarn.
+                        </span>
+                      ) : (
+                        <span>
+                          No web address in the description yet. Add one and this pin becomes the
+                          exit.
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                ) : pin.kind === 'detail' ? (
+                  <div className="inspector-section">
+                    <label>
+                      Detail sketch
+                      <select
+                        value={pin.detailTarget ?? ''}
+                        onChange={(e) =>
+                          update((p) => attachDetail(p, pin.id, e.target.value || null))
+                        }
+                      >
+                        <option value="">Choose a sketch already on the board</option>
+                        {project.screens
+                          .filter((target) => target.id !== s.id)
+                          .map((target) => (
+                            <option key={target.id} value={target.id}>
+                              {target.title}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                    <p className="field-help">
+                      A sketch with no app connections becomes a detail view. A screen already used
+                      in your app keeps its existing role.
+                    </p>
+                    {pin.detailTarget && (
+                      <div className="detail-thumbnail">
+                        <img
+                          src={assetUrl(
+                            project.assets.find(
+                              (a) =>
+                                a.id ===
+                                project.screens.find((target) => target.id === pin.detailTarget)
+                                  ?.assetId,
+                            ),
+                          )}
+                          alt={`Attached detail: ${project.screens.find((target) => target.id === pin.detailTarget)?.title}`}
+                        />
+                        <small>Reference only · no navigation step</small>
+                      </div>
+                    )}
+                    <button className="button full" onClick={() => onConnect(pin.id)}>
+                      <Link2 size={16} /> Choose detail on board
+                    </button>
+                  </div>
+                ) : (
+                  <div className="inspector-section">
+                    <div className="section-heading">
+                      <span>OUTGOING YARNS</span>
+                      <span>{project.transitions.filter((t) => t.pinId === pin.id).length}</span>
+                    </div>
+                    {project.transitions
+                      .filter((t) => t.pinId === pin.id)
+                      .map((t) => (
+                        <button className="connection-row" key={t.id} onClick={() => onEdge(t.id)}>
+                          <span className={`thread-dot ${t.color}`} />
+                          <span>
+                            {t.summary || 'Unnamed connection'}
+                            <small>
+                              {t.target
+                                ? project.screens.find((s) => s.id === t.target)?.title
+                                : t.navigation === 'back'
+                                  ? 'Previous screen'
+                                  : 'Dialog caller'}
+                            </small>
+                          </span>
+                          <ArrowUpRight size={15} />
+                        </button>
+                      ))}
+                    <button className="button full" onClick={() => onConnect(pin.id)}>
+                      <Link2 size={15} /> Connect to a screen
+                    </button>
+                    <button className="text-button full centered" onClick={() => onHistory(pin.id)}>
+                      <Undo2 size={14} /> Add Back / Dismiss action
+                    </button>
+                  </div>
+                )}
+                <div className="pin-actions">
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      setPlacing({ mode: 'move', pinId: pin.id });
+                    }}
+                  >
+                    <Move size={14} /> Move pin
+                  </button>
+                  <button className="text-button delete-action" onClick={() => setRemove(pin.id)}>
+                    <Trash2 size={14} /> Remove pin
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="eyebrow">THE BIG PICTURE</span>
+                <h3>Screen details</h3>
+                <label>
+                  Paper title
+                  <input
+                    value={s.title}
+                    maxLength={200}
+                    onChange={(e) => editScreen({ title: e.target.value })}
+                    placeholder="Give this screen a title"
+                  />
+                </label>
+                <label>
+                  What is this screen for?
+                  <AutoTextarea
+                    rows={4}
+                    value={s.purpose}
+                    onChange={(e) => editScreen({ purpose: e.target.value })}
+                    placeholder="Its purpose, important states, and any data it needs…"
+                  />
+                </label>
+                <label>
+                  Screen type
+                  <select
+                    value={s.role}
+                    onChange={(e) =>
+                      editScreen({
+                        role: e.target.value as Screen['role'],
+                        ...(e.target.value === 'detail' ? { entry: false } : {}),
+                      })
+                    }
+                  >
+                    <option value="screen">Regular screen</option>
+                    <option value="auth">Login / onboarding</option>
+                    <option value="modal">Dialog / overlay</option>
+                    <option value="terminal">Intentional ending</option>
+                    <option
+                      value="detail"
+                      disabled={project.transitions.some(
+                        (t) => t.target === s.id || pins.some((pin) => pin.id === t.pinId),
+                      )}
+                    >
+                      Detail / enlarged sketch (not an app page)
+                    </option>
+                  </select>
+                </label>
+                {project.transitions.some(
+                  (t) => t.target === s.id || pins.some((pin) => pin.id === t.pinId),
+                ) && (
+                  <p className="field-help">
+                    This screen is part of your app flow. Remove its app connections before making
+                    it a detail-only sketch.
+                  </p>
+                )}
+                {s.role === 'terminal' && (
+                  <p className="field-help">
+                    Describe the intended ending above so the flow review understands it.
+                  </p>
+                )}
+                <label className="check-row">
+                  <input
+                    type="checkbox"
+                    disabled={s.role === 'detail'}
+                    checked={s.entry}
+                    onChange={(e) => editScreen({ entry: e.target.checked })}
+                  />
+                  <Flag size={15} />
+                  <span>
+                    Can start here<small>An entry point into your app</small>
+                  </span>
+                </label>
+                <label>
+                  Size on the board
+                  <input
+                    type="range"
+                    min="160"
+                    max="1000"
+                    step="10"
+                    value={project.layout[s.id]?.width ?? 300}
+                    onChange={(e) =>
+                      update(
+                        (p) => ({
+                          ...p,
+                          layout: {
+                            ...p.layout,
+                            [s.id]: { ...p.layout[s.id], width: Number(e.target.value) },
+                          },
+                        }),
+                        { group: `size:${s.id}` },
+                      )
+                    }
+                  />
+                </label>
+                <div className="inspector-section">
+                  <div className="section-heading">
+                    <span>PINS</span>
+                    <span>{pins.length}</span>
+                  </div>
+                  {pins.map((v, i) => (
+                    <div className="pin-list-row" key={v.id}>
+                      <button className="pin-row" onClick={() => setSelected(v.id)}>
+                        <span style={{ background: colors[pinColor(v)], color: '#fffef8' }}>
+                          {i + 1}
+                        </span>
+                        {v.title || 'Untitled interaction'}
+                      </button>
+                      <button
+                        className="icon-button"
+                        aria-label={`Move ${v.title || `pin ${i + 1}`}`}
+                        title="Click, then click the new spot on the drawing"
+                        onClick={() => {
+                          setSelected(v.id);
+                          setPlacing({ mode: 'move', pinId: v.id });
+                        }}
+                      >
+                        <Move size={14} />
+                      </button>
+                      <button
+                        className="icon-button delete-action"
+                        aria-label={`Delete ${v.title || `pin ${i + 1}`}`}
+                        onClick={() => setRemove(v.id)}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    className="button full"
+                    disabled={!asset}
+                    onClick={() => {
+                      switchLayout('web');
+                      setSelected(null);
+                      setPlacing({ mode: 'new' });
+                    }}
+                  >
+                    <Plus size={15} /> Add a pin
+                  </button>
+                  {legend.length > 0 && (
+                    <div className="color-legend">
+                      {legend.map((c) => (
+                        <span key={c}>
+                          <i style={{ background: colors[c] }} /> {project.colorLabels![c]}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="inspector-section">
+                  <div className="section-heading">
+                    <span>LAYOUTS</span>
+                    <span>{mobileAsset ? 'Web + mobile' : asset ? 'Web' : 'None yet'}</span>
+                  </div>
+                  <label>
+                    Web drawing
                     <select
-                      value={pin.detailTarget ?? ''}
+                      value={s.assetId ?? ''}
                       onChange={(e) =>
-                        update((p) => attachDetail(p, pin.id, e.target.value || null))
+                        update((p) => setDrawing(p, s.id, 'web', e.target.value || null))
                       }
                     >
-                      <option value="">Choose a sketch already on the board</option>
-                      {project.screens
-                        .filter((target) => target.id !== s.id)
-                        .map((target) => (
-                          <option key={target.id} value={target.id}>
-                            {target.title}
-                          </option>
-                        ))}
+                      {drawingOptions(
+                        pins.length ? 'Pins are anchored to this drawing' : 'No drawing yet',
+                        pins.length > 0,
+                      )}
+                    </select>
+                  </label>
+                  <label>
+                    Mobile drawing
+                    <select
+                      value={s.mobileAssetId ?? ''}
+                      onChange={(e) =>
+                        update((p) => setDrawing(p, s.id, 'mobile', e.target.value || null))
+                      }
+                    >
+                      {drawingOptions('None yet')}
                     </select>
                   </label>
                   <p className="field-help">
-                    A sketch with no app connections becomes a detail view. A screen already used in
-                    your app keeps its existing role.
+                    Both drawings show the same screen. Switch between them above the drawing. Pins
+                    are placed on the web drawing first, then positioned on the mobile drawing.
                   </p>
-                  {pin.detailTarget && (
-                    <div className="detail-thumbnail">
-                      <img
-                        src={assetUrl(
-                          project.assets.find(
-                            (a) =>
-                              a.id ===
-                              project.screens.find((target) => target.id === pin.detailTarget)
-                                ?.assetId,
-                          ),
-                        )}
-                        alt={`Attached detail: ${project.screens.find((target) => target.id === pin.detailTarget)?.title}`}
-                      />
-                      <small>Reference only · no navigation step</small>
-                    </div>
-                  )}
-                  <button className="button full" onClick={() => onConnect(pin.id)}>
-                    <Link2 size={16} /> Choose detail on board
-                  </button>
                 </div>
-              ) : (
                 <div className="inspector-section">
                   <div className="section-heading">
-                    <span>OUTGOING YARNS</span>
-                    <span>{project.transitions.filter((t) => t.pinId === pin.id).length}</span>
+                    <span>PLANNED IDEAS</span>
+                    <span>{ideas.length}</span>
                   </div>
-                  {project.transitions
-                    .filter((t) => t.pinId === pin.id)
-                    .map((t) => (
-                      <button className="connection-row" key={t.id} onClick={() => onEdge(t.id)}>
-                        <span className={`thread-dot ${t.color}`} />
-                        <span>
-                          {t.summary || 'Unnamed connection'}
-                          <small>
-                            {t.target
-                              ? project.screens.find((s) => s.id === t.target)?.title
-                              : t.navigation === 'back'
-                                ? 'Previous screen'
-                                : 'Dialog caller'}
-                          </small>
-                        </span>
-                        <ArrowUpRight size={15} />
-                      </button>
-                    ))}
-                  <button className="button full" onClick={() => onConnect(pin.id)}>
-                    <Link2 size={15} /> Connect to a screen
-                  </button>
-                  <button className="text-button full centered" onClick={() => onHistory(pin.id)}>
-                    <Undo2 size={14} /> Add Back / Dismiss action
-                  </button>
-                </div>
-              )}
-              <div className="pin-actions">
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    setPlacing({ mode: 'move', pinId: pin.id });
-                  }}
-                >
-                  <Move size={14} /> Move pin
-                </button>
-                <button className="text-button delete-action" onClick={() => setRemove(pin.id)}>
-                  <Trash2 size={14} /> Remove pin
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <span className="eyebrow">THE BIG PICTURE</span>
-              <h3>Screen details</h3>
-              <label>
-                Paper title
-                <input
-                  value={s.title}
-                  maxLength={200}
-                  onChange={(e) => editScreen({ title: e.target.value })}
-                  placeholder="Give this screen a title"
-                />
-              </label>
-              <label>
-                What is this screen for?
-                <AutoTextarea
-                  rows={4}
-                  value={s.purpose}
-                  onChange={(e) => editScreen({ purpose: e.target.value })}
-                  placeholder="Its purpose, important states, and any data it needs…"
-                />
-              </label>
-              <label>
-                Screen type
-                <select
-                  value={s.role}
-                  onChange={(e) =>
-                    editScreen({
-                      role: e.target.value as Screen['role'],
-                      ...(e.target.value === 'detail' ? { entry: false } : {}),
-                    })
-                  }
-                >
-                  <option value="screen">Regular screen</option>
-                  <option value="auth">Login / onboarding</option>
-                  <option value="modal">Dialog / overlay</option>
-                  <option value="terminal">Intentional ending</option>
-                  <option
-                    value="detail"
-                    disabled={project.transitions.some(
-                      (t) => t.target === s.id || pins.some((pin) => pin.id === t.pinId),
-                    )}
-                  >
-                    Detail / enlarged sketch (not an app page)
-                  </option>
-                </select>
-              </label>
-              {project.transitions.some(
-                (t) => t.target === s.id || pins.some((pin) => pin.id === t.pinId),
-              ) && (
-                <p className="field-help">
-                  This screen is part of your app flow. Remove its app connections before making it
-                  a detail-only sketch.
-                </p>
-              )}
-              {s.role === 'terminal' && (
-                <p className="field-help">
-                  Describe the intended ending above so the flow review understands it.
-                </p>
-              )}
-              <label className="check-row">
-                <input
-                  type="checkbox"
-                  disabled={s.role === 'detail'}
-                  checked={s.entry}
-                  onChange={(e) => editScreen({ entry: e.target.checked })}
-                />
-                <Flag size={15} />
-                <span>
-                  Can start here<small>An entry point into your app</small>
-                </span>
-              </label>
-              <label>
-                Size on the board
-                <input
-                  type="range"
-                  min="160"
-                  max="1000"
-                  step="10"
-                  value={project.layout[s.id]?.width ?? 300}
-                  onChange={(e) =>
-                    update(
-                      (p) => ({
+                  {ideas.map((idea) => (
+                    <div className={`idea-row ${idea.pinId ? 'placed' : ''}`} key={idea.id}>
+                      <span>{idea.title}</span>
+                      {idea.pinId ? (
+                        <button className="text-button" onClick={() => setSelected(idea.pinId)}>
+                          <Check size={13} /> Pin {pinIndex(idea.pinId)}
+                        </button>
+                      ) : (
+                        <button
+                          className="button small"
+                          disabled={!asset}
+                          title={asset ? undefined : 'Choose a drawing first'}
+                          onClick={() => {
+                            switchLayout('web');
+                            setSelected(null);
+                            setPlacing({ mode: 'idea', ideaId: idea.id });
+                          }}
+                        >
+                          <MapPin size={13} /> Place
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <form
+                    className="quick-idea"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!quickIdea.trim()) return;
+                      update((p) => ({
                         ...p,
-                        layout: {
-                          ...p.layout,
-                          [s.id]: { ...p.layout[s.id], width: Number(e.target.value) },
-                        },
-                      }),
-                      { group: `size:${s.id}` },
-                    )
-                  }
-                />
-              </label>
-              <div className="inspector-section">
-                <div className="section-heading">
-                  <span>PINS</span>
-                  <span>{pins.length}</span>
+                        ideas: [...p.ideas, newIdea({ title: quickIdea, screenId: s.id })],
+                      }));
+                      setQuickIdea('');
+                    }}
+                  >
+                    <input
+                      aria-label="Add an idea for this screen"
+                      placeholder="Add an idea for this screen…"
+                      maxLength={200}
+                      value={quickIdea}
+                      onChange={(e) => setQuickIdea(e.target.value)}
+                    />
+                    <button
+                      className="button small"
+                      type="submit"
+                      disabled={!quickIdea.trim()}
+                      aria-label="Add idea"
+                    >
+                      <Plus size={15} />
+                    </button>
+                  </form>
                 </div>
-                {pins.map((v, i) => (
-                  <div className="pin-list-row" key={v.id}>
-                    <button className="pin-row" onClick={() => setSelected(v.id)}>
-                      <span style={{ background: colors[pinColor(v)], color: '#fffef8' }}>
-                        {i + 1}
-                      </span>
-                      {v.title || 'Untitled interaction'}
-                    </button>
-                    <button
-                      className="icon-button"
-                      aria-label={`Move ${v.title || `pin ${i + 1}`}`}
-                      title="Click, then click the new spot on the drawing"
-                      onClick={() => {
-                        setSelected(v.id);
-                        setPlacing({ mode: 'move', pinId: v.id });
-                      }}
-                    >
-                      <Move size={14} />
-                    </button>
-                    <button
-                      className="icon-button delete-action"
-                      aria-label={`Delete ${v.title || `pin ${i + 1}`}`}
-                      onClick={() => setRemove(v.id)}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  className="button full"
-                  disabled={!asset}
-                  onClick={() => {
-                    switchLayout('web');
-                    setSelected(null);
-                    setPlacing({ mode: 'new' });
-                  }}
-                >
-                  <Plus size={15} /> Add a pin
+                <button className="text-button delete-action" onClick={onDelete}>
+                  <Trash2 size={14} /> Remove screen
                 </button>
-                {legend.length > 0 && (
-                  <div className="color-legend">
-                    {legend.map((c) => (
-                      <span key={c}>
-                        <i style={{ background: colors[c] }} /> {project.colorLabels![c]}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="inspector-section">
-                <div className="section-heading">
-                  <span>LAYOUTS</span>
-                  <span>{mobileAsset ? 'Web + mobile' : asset ? 'Web' : 'None yet'}</span>
-                </div>
-                <label>
-                  Web drawing
-                  <select
-                    value={s.assetId ?? ''}
-                    onChange={(e) =>
-                      update((p) => setDrawing(p, s.id, 'web', e.target.value || null))
-                    }
-                  >
-                    {drawingOptions(
-                      pins.length ? 'Pins are anchored to this drawing' : 'No drawing yet',
-                      pins.length > 0,
-                    )}
-                  </select>
-                </label>
-                <label>
-                  Mobile drawing
-                  <select
-                    value={s.mobileAssetId ?? ''}
-                    onChange={(e) =>
-                      update((p) => setDrawing(p, s.id, 'mobile', e.target.value || null))
-                    }
-                  >
-                    {drawingOptions('None yet')}
-                  </select>
-                </label>
-                <p className="field-help">
-                  Both drawings show the same screen. Switch between them above the drawing. Pins
-                  are placed on the web drawing first, then positioned on the mobile drawing.
-                </p>
-              </div>
-              <div className="inspector-section">
-                <div className="section-heading">
-                  <span>PLANNED IDEAS</span>
-                  <span>{ideas.length}</span>
-                </div>
-                {ideas.map((idea) => (
-                  <div className={`idea-row ${idea.pinId ? 'placed' : ''}`} key={idea.id}>
-                    <span>{idea.title}</span>
-                    {idea.pinId ? (
-                      <button className="text-button" onClick={() => setSelected(idea.pinId)}>
-                        <Check size={13} /> Pin {pinIndex(idea.pinId)}
-                      </button>
-                    ) : (
-                      <button
-                        className="button small"
-                        disabled={!asset}
-                        title={asset ? undefined : 'Choose a drawing first'}
-                        onClick={() => {
-                          switchLayout('web');
-                          setSelected(null);
-                          setPlacing({ mode: 'idea', ideaId: idea.id });
-                        }}
-                      >
-                        <MapPin size={13} /> Place
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <form
-                  className="quick-idea"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!quickIdea.trim()) return;
-                    update((p) => ({
-                      ...p,
-                      ideas: [...p.ideas, newIdea({ title: quickIdea, screenId: s.id })],
-                    }));
-                    setQuickIdea('');
-                  }}
-                >
-                  <input
-                    aria-label="Add an idea for this screen"
-                    placeholder="Add an idea for this screen…"
-                    maxLength={200}
-                    value={quickIdea}
-                    onChange={(e) => setQuickIdea(e.target.value)}
-                  />
-                  <button
-                    className="button small"
-                    type="submit"
-                    disabled={!quickIdea.trim()}
-                    aria-label="Add idea"
-                  >
-                    <Plus size={15} />
-                  </button>
-                </form>
-              </div>
-              <button className="text-button delete-action" onClick={onDelete}>
-                <Trash2 size={14} /> Remove screen
-              </button>
-            </>
-          )}
+              </>
+            )}
+          </div>
+          <ScrollHints target={inspectorRef} label="More settings" />
         </aside>
       </div>
       {removing && (

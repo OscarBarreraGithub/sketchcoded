@@ -76,3 +76,7 @@ The user's second drawing is the workstation itself, and the third is the screen
 ## 2026-09-25 — No agent box in the UI
 
 The drawn agent conversation box was built as a stub that saved typed notes as ideas. The user judged it clutter without a model behind it and asked for its removal. The Ideas panel stays; ideas are added in Plan. Any future agent integration starts from the export, not from a chat box in the workstation.
+
+## 2026-09-25 — Off-screen content announces itself; the build checklist
+
+The user could not tell that the left column scrolled at browser zoom. Two standing rules follow, recorded in `docs/BUILD_CHECKLIST.md`: keep good control when zoomed in, and always let the user know when something is off screen. Every scrolling region now keeps a visible scrollbar and shows a clickable “More below / More above” pill with a fade until the end is reached (`ScrollHints`). The checklist itself is the explicit, dated record of every rule the user has given since the brief; it ships in each export as `BUILD-CHECKLIST.md` so the agent that builds from the board reads it first.
