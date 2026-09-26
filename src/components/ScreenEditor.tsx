@@ -27,6 +27,7 @@ import {
   attachDetail,
   colorNames,
   colors,
+  codeOf,
   isLeftToAi,
   isPlanned,
   leaveToAi,
@@ -278,7 +279,11 @@ export function ScreenEditor({
   const legend = colorNames.filter((c) => project.colorLabels?.[c]);
   const removing = pins.find((v) => v.id === remove);
   return (
-    <Modal title={s.title || 'Untitled screen'} onClose={onClose} className="screen-modal">
+    <Modal
+      title={`${codeOf(s)} · ${s.title || 'Untitled screen'}`}
+      onClose={onClose}
+      className="screen-modal"
+    >
       <div className="screen-editor">
         <div className="screen-workspace">
           <div className="editor-toolbar">

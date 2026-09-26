@@ -19,7 +19,7 @@ Use `curl -s` (or your fetch tool) from the machine the app runs on. `{base}` is
 `PUT {base}/api/projects/{id}` with header `X-Drawcode-Client: local` and `Content-Type: application/json`. The body is the **whole project JSON** you fetched, with your changes. The server validates it against the schema, bumps `revision`, and returns the saved project.
 
 - Send the `revision` you read. If the user saved in between, you get a conflict: fetch again and reapply your change.
-- Never change ids, `schemaVersion`, `layout` or `viewport` unless the task is about them.
+- Never change ids, codes (`code` on frames, sketches and ideas), `schemaVersion`, `layout` or `viewport` unless the task is about them. New frames, sketches and ideas may be sent without a `code`; the server assigns the next one.
 - New ids: letters, digits, `-` and `_` only, at most 100 characters (a UUID is fine). Anything else fails validation for the whole `PUT`.
 - Images cannot be created through JSON; the user adds drawings in the app.
 - **Write once, at the end of the task**, not after every small change. The browser autosaves the user's edits a moment after they make them, with the revision it last saw; every `PUT` of yours moves that revision, so an edit the user makes between your write and their reload is refused as a conflict. Before you write, say so: “I am about to update the board; please pause editing until it refreshes.” The open board picks up your change within a few seconds when the user has nothing unsaved (panning and zooming do not count), and says “Updated from your agent”; if they were mid-edit, it asks them to take the newer copy or export their work first. After writing, confirm: “Done. The board should have refreshed; reload if not.”

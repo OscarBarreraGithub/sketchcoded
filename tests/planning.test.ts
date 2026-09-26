@@ -24,6 +24,7 @@ import {
   removePin,
   removeScreen,
   setDrawing,
+  withCodes,
   type Project,
 } from '../shared/model';
 const asset = (id: string) => ({
@@ -78,7 +79,7 @@ function plan(): Project {
     newIdea({ title: 'Undo', screenId: 'board' }, 'You', 'undo'),
     newIdea({ title: 'Dark mode' }, 'You', 'dark'),
   ];
-  return p;
+  return withCodes(p);
 }
 const rules = (p: Project) => analyze(p).map((i) => i.rule);
 describe('planning backlog', () => {
@@ -164,15 +165,15 @@ describe('planning backlog', () => {
   it('writes a chat-friendly outline with status markers and planned threads', () => {
     const p = placeIdea(plan(), 'open', { x: 0.5, y: 0.8 }, { pin: 'pin1', transition: 't1' });
     const text = planningOutline(p);
-    expect(text).toContain('## Home (entry)');
-    expect(text).toContain('- [x] Open the studio → Board (pin 1)');
+    expect(text).toContain('## F1 Home (entry)');
+    expect(text).toContain('- [x] Open the studio → Board (pin 1) [I1]');
     expect(text).toContain('  Primary call to action');
     expect(text).toContain('- [ ] How it works → Help');
-    expect(text).toContain('## Help (modal · no drawing yet)');
-    expect(text).toContain('## Board (web + mobile)');
+    expect(text).toContain('## F3 Help (modal · no drawing yet)');
+    expect(text).toContain('## F2 Board (web + mobile)');
     expect(text).toContain('- ( ) Dark mode');
     expect(text).toContain('- Home → Help via “How it works”');
-    expect(planningOutline(p, 2)).toContain('### Home (entry)');
+    expect(planningOutline(p, 2)).toContain('### F1 Home (entry)');
   });
 });
 describe('web and mobile layouts', () => {
@@ -221,7 +222,7 @@ describe('planned frames', () => {
     expect(rules(p)).not.toContain('needs-drawing');
     expect(analyze(p).filter((i) => i.severity === 'error')).toEqual([]);
     expect(flowDocument(p)).toContain('**Leave it up to the AI.**');
-    expect(planningOutline(p)).toContain('# Help (modal · left to the AI)');
+    expect(planningOutline(p)).toContain('# F3 Help (modal · left to the AI)');
     const back = leaveToAi(p, 'help', false);
     expect(back.screens[2].leftToAi).toBeUndefined();
     expect(rules(back)).toContain('needs-drawing');
@@ -239,7 +240,7 @@ describe('planned frames', () => {
     expect(doc).toContain('_No drawing yet.');
     expect(doc).toContain('Planned as idea: Undo (undo)');
     expect(doc).toContain('## Planning: Plan');
-    expect(doc).toContain('### Help (modal · no drawing yet)');
+    expect(doc).toContain('### F3 Help (modal · no drawing yet)');
   });
 });
 describe('planning survives storage', () => {

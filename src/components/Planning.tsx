@@ -19,6 +19,7 @@ import {
 import {
   assignIdea,
   ideaStatus,
+  codeOf,
   isLeftToAi,
   isPlanned,
   newIdea,
@@ -120,6 +121,7 @@ export function Planning({
     return (
       <article className={`idea-card ${status}`} key={idea.id} data-idea={idea.id}>
         <div className="idea-heading">
+          <b className="item-code">{codeOf(idea)}</b>
           <span className={`idea-status ${status}`}>
             {status === 'placed' ? (
               <>
@@ -230,7 +232,9 @@ export function Planning({
             {screen.entry ? <Flag size={18} /> : <Layers size={18} />}
           </span>
           <div>
-            <h3>{screen.title || 'Untitled screen'}</h3>
+            <h3>
+              <b className="item-code">{codeOf(screen)}</b> {screen.title || 'Untitled screen'}
+            </h3>
             <p>
               {[
                 screen.entry ? 'Entry' : null,

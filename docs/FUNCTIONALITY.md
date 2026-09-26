@@ -37,6 +37,7 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - Ideas panel beside the library: organized ideas, expand, scroll, and make clear what is still left to do.
 - Project name in the header; a ? button opens How it works.
 - A little home marker on the frame where the landing page starts.
+- Codes: every frame (F1, F2, …), sketch (S1, …) and idea (I1, …) carries a short code, shown on the frame footer, in the library, the outline, the plan, the editor title and Test flow; a pin is “F3 pin 2”. Prompts, briefs and the export lead with them.
 - Tell the agent (view toolbar): copies a prompt naming this board, the task brief served by the running app, the skills to read and the rules; the same button appears on every frame's footer, in the screen editor (frame, selected pin, idea being placed), the connection editor (the yarn), Plan (whole plan, per frame, per idea), the Ideas panel, App outline (whole and per screen), Review flow (all findings and each finding), Test flow (current screen and trail), the Detail view and the sketch library. The open board refreshes itself when the agent writes and nothing is unsaved. See `docs/AGENT_HANDOFF.md`.
 - Leave it up to the AI: a post-it on a frame (toggle in the screen editor) says the builder should generate a standard, conventional page for it from the title, purpose, ideas and yarn. No drawing needed; the flow review stops asking for one; the export says so. For example, the Guide.
 - Click to resize a frame. No overlap, lots of space.

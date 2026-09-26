@@ -3,6 +3,7 @@ import { analyze, decisionFor, type Issue } from './graph';
 import { screenSection } from './flow-document';
 import { planningOutline } from './planning';
 import {
+  codeOf,
   ideaStatus,
   isHistory,
   isLeftToAi,
@@ -151,7 +152,9 @@ const destination = (p: Project, t: Transition) =>
     ? t.navigation === 'back'
       ? 'the previous screen'
       : 'the dialog’s caller'
-    : (screenOf(p, t.target)?.title ?? 'a missing screen');
+    : screenOf(p, t.target)
+      ? `${codeOf(screenOf(p, t.target))} ${q(screenOf(p, t.target)!.title)}`
+      : 'a missing screen';
 const unusedAssets = (p: Project) =>
   p.assets.filter((a) => !p.screens.some((s) => s.assetId === a.id || s.mobileAssetId === a.id));
 const openIssues = (p: Project, issues = analyze(p)) =>
@@ -186,13 +189,13 @@ export function describeSubject(p: Project, ctx: AgentContext): { noun: string; 
         source = screenOf(p, from?.screenId);
       return {
         noun: 'yarn',
-        text: `yarn ${q(yarn.summary || 'unnamed')} (${yarn.id}) from pin ${q(from?.title || 'untitled')} on ${q(source?.title ?? '?')} to ${destination(p, yarn)}`,
+        text: `yarn ${q(yarn.summary || 'unnamed')} from ${codeOf(source)} pin ${from ? pinNumber(p, from) : '?'} ${q(from?.title || 'untitled')} to ${destination(p, yarn)} (${yarn.id})`,
       };
     }
     if (pin)
       return {
         noun: 'yarn',
-        text: `a new yarn from pin ${pinNumber(p, pin)} ${q(pin.title || 'untitled')} on ${q(screenOf(p, pin.screenId)?.title ?? '?')}`,
+        text: `a new yarn from ${codeOf(screenOf(p, pin.screenId))} pin ${pinNumber(p, pin)} ${q(pin.title || 'untitled')}`,
       };
     return { noun: 'yarn', text: 'a yarn that is no longer on this board' };
   }
@@ -207,25 +210,26 @@ export function describeSubject(p: Project, ctx: AgentContext): { noun: string; 
     const steps = ctx.trail?.length ?? 0;
     return {
       noun: 'trail',
-      text: `Test flow at ${q(screen.title)} after ${steps} ${steps === 1 ? 'step' : 'steps'}${mobile}`,
+      text: `Test flow at ${codeOf(screen)} ${q(screen.title)} after ${steps} ${steps === 1 ? 'step' : 'steps'}${mobile}`,
     };
   }
   if (idea) {
     const home = screenOf(p, idea.screenId);
     const where = screen
-      ? ` being placed on frame ${q(screen.title)} (${screen.id})`
+      ? ` being placed on ${codeOf(screen)} ${q(screen.title)}`
       : home
-        ? ` on frame ${q(home.title)} (${home.id})`
+        ? ` on ${codeOf(home)} ${q(home.title)}`
         : ', not on a frame yet';
-    return { noun: 'idea', text: `idea ${q(idea.title)} (${idea.id})${where}` };
+    return { noun: 'idea', text: `${codeOf(idea)} ${q(idea.title)}${where} (${idea.id})` };
   }
   if (ctx.idea) return { noun: 'idea', text: `idea ${ctx.idea} (not on this board)` };
   if (pin && screen)
     return {
       noun: 'pin',
-      text: `pin ${pinNumber(p, pin)} ${q(pin.title || 'untitled')} on frame ${q(screen.title)} (${screen.id})${mobile}`,
+      text: `${codeOf(screen)} pin ${pinNumber(p, pin)} ${q(pin.title || 'untitled')} on ${q(screen.title)}${mobile} (${pin.id})`,
     };
-  if (screen) return { noun: 'frame', text: `frame ${q(screen.title)} (${screen.id})${mobile}` };
+  if (screen)
+    return { noun: 'frame', text: `${codeOf(screen)} ${q(screen.title)}${mobile} (${screen.id})` };
   if (ctx.screen) return { noun: 'frame', text: `frame ${ctx.screen} (not on this board)` };
   if (ctx.view === 'plan') return { noun: 'plan', text: 'the whole plan' };
   if (ctx.view === 'outline') return { noun: 'outline', text: 'the whole outline' };
@@ -309,7 +313,7 @@ export function agentPrompt(p: Project, ctx: AgentContext, base: string): string
   const view = views[ctx.view],
     subject = describeSubject(p, ctx);
   return [
-    `Sketchcoded task · ${view.label} · ${subject.text} · board ${q(p.name)}`,
+    `Sketchcoded task · ${subject.text} · ${view.label} · board ${q(p.name)}`,
     `Sketchcoded is running at ${base}. Read before asking; everything you need is there:`,
     `1. The brief for exactly this task (read first): ${briefUrl(p, ctx, base)}`,
     `2. Skills to follow: ${view.skills.join(', ')} (each linked from ${skillsIndexUrl(base)})`,
@@ -367,7 +371,7 @@ const yarnLines = (p: Project, t: Transition) => {
     source = screenOf(p, from?.screenId);
   return [
     `- Yarn id: ${t.id}`,
-    `- From: pin ${from ? pinNumber(p, from) : '?'} ${q(from?.title || 'untitled')} on ${q(source?.title ?? '?')} (${source?.id ?? '?'})`,
+    `- From: ${codeOf(source)} pin ${from ? pinNumber(p, from) : '?'} ${q(from?.title || 'untitled')} (${source?.id ?? '?'}, ${from?.id ?? '?'})`,
     `- To: ${destination(p, t)}${t.target ? ` (${t.target})` : ''}`,
     `- Navigation: ${t.navigation} · Fallback: ${t.fallback ? 'yes' : 'no'} · Color: ${t.color}`,
     `- Label: ${t.summary || '_none yet_'}`,
@@ -386,13 +390,13 @@ const frameLines = (
   pin?: Pin,
 ): string[] => {
   const lines = [
-    `## The frame: ${screen.title} (${screen.id})`,
+    `## The frame: ${codeOf(screen)} ${screen.title} (${screen.id})`,
     '',
     ...drawingLines(p, screen, base),
   ];
   if (pin)
     lines.push(
-      `Selected pin: ${pinNumber(p, pin)} ${q(pin.title || 'untitled')} (${pin.id}) · kind ${pin.kind ?? 'interaction'} · color ${pin.color ?? 'red'} · web (${pin.x}, ${pin.y})${pin.mobile ? ` · mobile (${pin.mobile.x}, ${pin.mobile.y})` : ' · not placed on mobile'}`,
+      `Selected pin: ${codeOf(screen)} pin ${pinNumber(p, pin)} ${q(pin.title || 'untitled')} (${pin.id}) · kind ${pin.kind ?? 'interaction'} · color ${pin.color ?? 'red'} · web (${pin.x}, ${pin.y})${pin.mobile ? ` · mobile (${pin.mobile.x}, ${pin.mobile.y})` : ' · not placed on mobile'}`,
       '',
     );
   lines.push(...screenSection(p, screen).slice(2));
@@ -449,10 +453,10 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
     lines.push(
       '## The idea',
       '',
-      `- ${q(idea.title)} (${idea.id}) · status ${ideaStatus(idea)} · by ${idea.author}`,
-      `- Frame: ${home ? `${q(home.title)} (${home.id})` : 'not decided yet'}`,
-      `- Leads to: ${leads ? `${q(leads.title)} (${leads.id})` : idea.leadsTo ? `${idea.leadsTo} (missing)` : 'nowhere yet'}`,
-      `- Pin: ${placed ? `${pinNumber(p, placed)} ${q(placed.title || 'untitled')} (${placed.id})` : 'not placed yet'}`,
+      `- ${codeOf(idea)} ${q(idea.title)} (${idea.id}) · status ${ideaStatus(idea)} · by ${idea.author}`,
+      `- Frame: ${home ? `${codeOf(home)} ${q(home.title)} (${home.id})` : 'not decided yet'}`,
+      `- Leads to: ${leads ? `${codeOf(leads)} ${q(leads.title)} (${leads.id})` : idea.leadsTo ? `${idea.leadsTo} (missing)` : 'nowhere yet'}`,
+      `- Pin: ${placed ? `pin ${pinNumber(p, placed)} ${q(placed.title || 'untitled')} (${placed.id})` : 'not placed yet'}`,
       '',
       idea.detail.trim() || '_No details written._',
       '',
@@ -474,7 +478,7 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
       if (!screen && source) lines.push(...frameLines(p, source, base, issues, from));
       if (target)
         lines.push(
-          `## Where it goes: ${target.title} (${target.id})`,
+          `## Where it goes: ${codeOf(target)} ${target.title} (${target.id})`,
           '',
           ...drawingLines(p, target, base),
           target.purpose || '_Screen purpose has not been described._',
@@ -504,7 +508,7 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
               s.role !== 'screen' ? s.role : null,
               isLeftToAi(s) ? 'left to the AI' : isPlanned(s) ? 'no drawing yet' : null,
             ].filter(Boolean);
-          return `- ${s.title} (${s.id})${flags.length ? ` · ${flags.join(' · ')}` : ''} · ${pins} pins · ${exits} yarn out`;
+          return `- ${codeOf(s)} ${s.title} (${s.id})${flags.length ? ` · ${flags.join(' · ')}` : ''} · ${pins} pins · ${exits} yarn out`;
         }),
         '',
       );
@@ -559,7 +563,7 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
       const from = pinOf(p, t.pinId),
         source = screenOf(p, from?.screenId);
       lines.push(
-        `${i + 1}. ${q(source?.title ?? '?')} → pin ${q(from?.title || 'untitled')} → ${q(t.summary || 'unnamed')} (${t.navigation}) → ${destination(p, t)}`,
+        `${i + 1}. ${codeOf(source)} ${q(source?.title ?? '?')} → pin ${from ? pinNumber(p, from) : '?'} ${q(from?.title || 'untitled')} → ${q(t.summary || 'unnamed')} (${t.navigation}) → ${destination(p, t)}`,
       );
     });
     if (ctx.trail?.length) lines.push('');
@@ -573,9 +577,9 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
     for (const a of p.assets) {
       const uses = p.screens
         .filter((s) => s.assetId === a.id || s.mobileAssetId === a.id)
-        .map((s) => `${q(s.title)} (${s.id}, ${s.assetId === a.id ? 'web' : 'mobile'})`);
+        .map((s) => `${codeOf(s)} ${q(s.title)} (${s.assetId === a.id ? 'web' : 'mobile'})`);
       lines.push(
-        `- ${a.name} (${a.id}) · ${a.width} × ${a.height} · ${base}/assets/${a.file} · ${uses.length ? `used on ${uses.join(', ')}` : 'unused'}`,
+        `- ${codeOf(a)} ${a.name} (${a.id}) · ${a.width} × ${a.height} · ${base}/assets/${a.file} · ${uses.length ? `used on ${uses.join(', ')}` : 'unused'}`,
       );
     }
     if (!p.assets.length) lines.push('_No sketches yet._');
@@ -584,7 +588,7 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
     if (!waiting.length) lines.push('_None._');
     for (const s of waiting)
       lines.push(
-        `- ${q(s.title)} (${s.id}) · ${p.ideas.filter((i) => i.screenId === s.id).length} ideas planned`,
+        `- ${codeOf(s)} ${q(s.title)} (${s.id}) · ${p.ideas.filter((i) => i.screenId === s.id).length} ideas planned`,
       );
     lines.push('');
   }
@@ -599,7 +603,7 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
             ? 'planned, no drawing'
             : 'drawn';
         const pins = p.pins.filter((v) => v.screenId === s.id).length;
-        return `- ${s.title} (${s.id}) · ${s.role}${s.entry ? ' · entry' : ''} · ${state} · ${pins} pins`;
+        return `- ${codeOf(s)} ${s.title} (${s.id}) · ${s.role}${s.entry ? ' · entry' : ''} · ${state} · ${pins} pins`;
       }),
       '',
       `Open findings: ${openIssues(p, issues).length}. Ideas waiting: ${p.ideas.filter((i) => ideaStatus(i) !== 'placed').length}. Unused sketches: ${unusedAssets(p).length}.`,

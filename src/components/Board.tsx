@@ -23,6 +23,7 @@ import {
   assetUrl,
   colors,
   isHistory,
+  codeOf,
   isLeftToAi,
   isPlanned,
   pinColor,
@@ -490,7 +491,7 @@ export function Board({
                 </div>
                 <div className="card-footer">
                   <span>
-                    {String(index + 1).padStart(2, '0')} /{' '}
+                    <b className="item-code">{codeOf(s)}</b> ·{' '}
                     {s.role === 'detail'
                       ? 'DETAIL REFERENCE'
                       : s.role === 'auth'

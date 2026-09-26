@@ -89,7 +89,7 @@ test('planning: plan a frame, add ideas, place one as a pin with its yarn, and k
   await expect(page.locator('.idea-card', { hasText: 'Sign out' })).toHaveClass(/assigned/);
   await page.getByRole('button', { name: 'Show as text', exact: true }).click();
   const text = page.getByLabel('Planning outline');
-  await expect(text).toContainText('## Settings (no drawing yet)');
+  await expect(text).toContainText(/## F\d+ Settings \(no drawing yet\)/);
   await expect(text).toContainText('- [ ] Sign out → A warm welcome');
   await expect(text).toContainText('- [x] Search people → A little conversation (pin 2)');
   expect(errors).toEqual([]);
@@ -204,5 +204,7 @@ test('a frame left to the AI wears its post-it on the board, in the outline and 
   await page.getByRole('button', { name: 'Close flow review', exact: true }).click();
   await page.locator('.view-switch').getByRole('button', { name: /^Plan/ }).click();
   await page.getByRole('button', { name: 'Show as text', exact: true }).click();
-  await expect(page.getByLabel('Planning outline')).toContainText('## Guide (left to the AI)');
+  await expect(page.getByLabel('Planning outline')).toContainText(
+    /## F\d+ Guide \(left to the AI\)/,
+  );
 });

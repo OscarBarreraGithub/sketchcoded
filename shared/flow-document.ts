@@ -1,4 +1,13 @@
-import { isHistory, isLeftToAi, isPlanned, pinUrl, type Project, type Screen } from './model';
+import {
+  codeOf,
+  isHistory,
+  isLeftToAi,
+  isPlanned,
+  pinLabel,
+  pinUrl,
+  type Project,
+  type Screen,
+} from './model';
 import { analyze, decisionFor } from './graph';
 import { planningOutline } from './planning';
 /** One screen's section of flow.md: drawings, purpose, every pin and its yarn. Also served alone
@@ -8,7 +17,7 @@ export function screenSection(p: Project, screen: Screen): string[] {
   const asset = p.assets.find((a) => a.id === screen.assetId),
     mobile = p.assets.find((a) => a.id === screen.mobileAssetId);
   lines.push(
-    `## ${screen.title}`,
+    `## ${codeOf(screen)} ${screen.title}`,
     '',
     `Screen ID: ${screen.id} · Type: ${screen.role} · Entry: ${screen.entry ? 'yes' : 'no'}`,
     '',
@@ -45,7 +54,7 @@ export function screenSection(p: Project, screen: Screen): string[] {
     lines.push(
       `### ${pin.title || 'Unnamed interaction'}`,
       '',
-      `Pin ID: ${pin.id} · Web coordinate: (${pin.x}, ${pin.y})${mobilePosition}, normalized from the top-left`,
+      `${pinLabel(p, pin)} · Pin ID: ${pin.id} · Web coordinate: (${pin.x}, ${pin.y})${mobilePosition}, normalized from the top-left`,
       '',
       pin.description || '_Interaction intent is missing._',
       '',
@@ -78,7 +87,7 @@ export function screenSection(p: Project, screen: Screen): string[] {
         ? t.navigation === 'back'
           ? 'Actual previous screen in app history'
           : 'Actual caller of the current dialog'
-        : `${p.screens.find((s) => s.id === t.target)?.title ?? 'MISSING SCREEN'} (${t.target})`;
+        : `${codeOf(p.screens.find((s) => s.id === t.target))} ${p.screens.find((s) => s.id === t.target)?.title ?? 'MISSING SCREEN'} (${t.target})`;
       lines.push(
         `#### ${t.summary || 'Unnamed branch'} (${t.id})`,
         '',
@@ -111,7 +120,9 @@ export function flowDocument(p: Project): string {
     '',
     '## Entry points',
     '',
-    ...p.screens.filter((s) => s.entry && s.role !== 'detail').map((s) => `- ${s.title} (${s.id})`),
+    ...p.screens
+      .filter((s) => s.entry && s.role !== 'detail')
+      .map((s) => `- ${codeOf(s)} ${s.title} (${s.id})`),
     '',
   ];
   for (const screen of p.screens) lines.push(...screenSection(p, screen));

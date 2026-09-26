@@ -1216,3 +1216,35 @@ kbd,
   margin-left: auto;
   margin-right: 4px;
 }
+
+/* Rule (2026-09-26): everything the user and the agent talk about has a short code (F1, S2, I3). */
+.item-code {
+  display: inline-block;
+  font:
+    600 12px/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.4px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #e9ecdf;
+  color: #3f4d3e;
+  vertical-align: middle;
+}
+.card-footer .item-code {
+  font-size: max(11px, calc(12px / var(--board-zoom)));
+  padding: calc(2px / var(--board-zoom)) calc(5px / var(--board-zoom));
+  background: #f1ead6;
+  color: #6b5a40;
+}
+.outline-screen summary .item-code,
+.folder-heading h3 .item-code {
+  margin-right: 8px;
+}
+.idea-heading .item-code {
+  margin-right: 8px;
+}
+.preview-screen-title .item-code {
+  margin-right: 4px;
+}

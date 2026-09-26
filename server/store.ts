@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import { z } from 'zod';
 import { flowDocument } from '../shared/flow-document';
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
-import { emptyProject, projectSchema, type Asset, type Project } from '../shared/model';
+import { emptyProject, projectSchema, withCodes, type Asset, type Project } from '../shared/model';
 import { skillIds } from '../shared/agent';
 import { analyze, decisionFor } from '../shared/graph';
 import { demoProject } from '../shared/demo';
@@ -96,7 +96,9 @@ export class Store {
   }
   async read(id: string): Promise<Project> {
     try {
-      return projectSchema.parse(JSON.parse(await fs.readFile(this.projectPath(id), 'utf8')));
+      return withCodes(
+        projectSchema.parse(JSON.parse(await fs.readFile(this.projectPath(id), 'utf8'))),
+      );
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT')
         throw new AppError('This board could not be found.', 404);
@@ -104,7 +106,7 @@ export class Store {
     }
   }
   async save(input: Project, isNew = false): Promise<Project> {
-    const project = projectSchema.parse(input);
+    const project = withCodes(projectSchema.parse(input));
     const previous = this.saves.get(project.id) ?? Promise.resolve();
     const next = previous
       .catch(() => {})

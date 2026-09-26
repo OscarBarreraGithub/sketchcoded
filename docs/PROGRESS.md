@@ -206,3 +206,7 @@ Open for the user: publish the two repositories (`gh repo create sketchcoded --p
 The user asked to remove “A little space for your next big idea.” from the cork. Gone, with its styles; the board's top padding shrank accordingly.
 
 The user also asked why “All changes saved” flips to “Unsaved changes” when only moving around the board: the view position is saved like an edit. Viewport saves are now quiet: the position is still remembered, but panning and zooming never change the save indicator or arm the leave warning. Both are Sketchcoded-specific requests, so they live here and not in the checklist, which the user clarified is for general rules only.
+
+## 2026-09-26 — Short codes so both sides point at the same thing
+
+The user found the handoff unclear: prompts named things by title and internal id. Every frame (F1, F2, …), sketch (S1, …) and idea (I1, …) now has a short code, stored in the project, assigned once and never reused; a pin is “F3 pin 2”. Codes show on frame footers, in the library, the outline, plan folders and idea cards, the editor title, Test flow and the yarn editor, and lead every prompt, brief, `flow.md` heading and planning outline line. Older boards get codes the first time the server reads them.

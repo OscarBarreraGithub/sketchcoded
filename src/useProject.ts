@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Project } from '../shared/model';
+import { withCodes, type Project } from '../shared/model';
 import { api } from './api';
 export type Update = (
   recipe: (project: Project) => Project,
@@ -94,7 +94,7 @@ export function useProject(initial: Project) {
   const update: Update = useCallback(
     (recipe, options = {}) => {
       const before = current.current,
-        next = recipe(before);
+        next = withCodes(recipe(before));
       if (next === before) return;
       if (options.history !== false) {
         const grouped =

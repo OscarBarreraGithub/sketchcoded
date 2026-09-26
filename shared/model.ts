@@ -11,6 +11,8 @@ export const assetSchema = z.object({
   height: z.number().int().positive().max(20000),
   source: z.string().max(4000).optional(),
   importedAt: z.string(),
+  /** Short code people and agents say out loud: S1, S2, … Assigned once, never reused. */
+  code: z.string().max(12).optional(),
 });
 /** A screen with `assetId: null` is a planned frame waiting for its web drawing. */
 export const screenSchema = z.object({
@@ -23,6 +25,8 @@ export const screenSchema = z.object({
   role: z.enum(['screen', 'auth', 'modal', 'terminal', 'detail']),
   /** The “Leave it up to the AI” post-it: build a standard page for this screen; no drawing expected. */
   leftToAi: z.boolean().optional(),
+  /** Short code people and agents say out loud: F1, F2, … Assigned once, never reused. */
+  code: z.string().max(12).optional(),
 });
 /** `x`/`y` anchor the pin on the web drawing; `mobile` is its position on the mobile drawing. */
 export const pinSchema = z.object({
@@ -67,6 +71,8 @@ export const ideaSchema = z.object({
   leadsTo: id.nullable(),
   author: z.string().max(200),
   createdAt: z.string(),
+  /** Short code people and agents say out loud: I1, I2, … Assigned once, never reused. */
+  code: z.string().max(12).optional(),
 });
 export const projectSchema = z.object({
   schemaVersion: z.literal(1),
@@ -135,6 +141,39 @@ export const pinUrl = (pin: Pin): string | null => pin.description.match(urlPatt
 export const isHistory = (t: Transition) => t.navigation === 'back' || t.navigation === 'dismiss';
 export const assetUrl = (asset?: Asset) => (asset ? `/assets/${asset.file}` : '');
 export const isPlanned = (s: Screen) => s.assetId === null;
+/**
+ * Rule (2026-09-26): everything the user and the agent talk about has a short code. Frames are
+ * F1, F2, …; sketches S1, S2, …; ideas I1, I2, …. A code is given once, when the item first
+ * appears, and is never reused, so “F3” means the same frame for the life of the board. Pins are
+ * named by their frame and number (“F3 pin 2”), which is what the board and the editor show.
+ */
+const nextCode = (prefix: string, items: { code?: string }[]) => {
+  let max = 0;
+  for (const item of items) {
+    const m = item.code?.match(new RegExp(`^${prefix}(\\d+)$`));
+    if (m) max = Math.max(max, Number(m[1]));
+  }
+  return () => `${prefix}${++max}`;
+};
+const codeAll = <T extends { code?: string }>(prefix: string, items: T[]): T[] => {
+  if (items.every((item) => item.code)) return items;
+  const next = nextCode(prefix, items);
+  return items.map((item) => (item.code ? item : { ...item, code: next() }));
+};
+export function withCodes(p: Project): Project {
+  const screens = codeAll('F', p.screens),
+    assets = codeAll('S', p.assets),
+    ideas = codeAll('I', p.ideas);
+  if (screens === p.screens && assets === p.assets && ideas === p.ideas) return p;
+  return { ...p, screens, assets, ideas };
+}
+export const codeOf = (item: { code?: string } | undefined) => item?.code ?? '?';
+/** “F3 pin 2”: the frame's code and the pin's number on that frame. */
+export const pinLabel = (p: Project, pin: Pin) => {
+  const screen = p.screens.find((s) => s.id === pin.screenId);
+  const index = p.pins.filter((v) => v.screenId === pin.screenId).indexOf(pin) + 1;
+  return `${codeOf(screen)} pin ${index}`;
+};
 /** Rule (2026-09-26): a frame wearing the “Leave it up to the AI” post-it needs no drawing; the
  * builder generates a standard, conventional page from its title, purpose, ideas and yarn. */
 export const isLeftToAi = (s: Screen) => s.leftToAi === true;

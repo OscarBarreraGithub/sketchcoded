@@ -12,6 +12,7 @@ import {
   Search,
 } from 'lucide-react';
 import {
+  codeOf,
   isHistory,
   isLeftToAi,
   isPlanned,
@@ -159,6 +160,7 @@ export function Outline({
                     ) : (
                       <Layers size={18} />
                     )}
+                    <b className="item-code">{codeOf(s)}</b>
                     <strong>{s.title || 'Untitled screen'}</strong>
                     {isLeftToAi(s) ? (
                       <span className="outline-count left-to-ai">left to the AI</span>

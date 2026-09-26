@@ -20,6 +20,7 @@ import {
   type Pin,
   type Project,
   type Transition,
+  codeOf,
 } from '../../shared/model';
 import { follow, startPreview, type PreviewState } from '../../shared/navigation';
 import { Modal } from './Modal';
@@ -167,7 +168,8 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
       <div className="preview-body">
         <div className="preview-stage">
           <div className="preview-screen-title">
-            <span className="live-indicator" /> {screen?.title || 'Missing screen'}
+            <span className="live-indicator" /> <b className="item-code">{codeOf(screen)}</b>{' '}
+            {screen?.title || 'Missing screen'}
             {current.kind === 'modal' && <span className="badge">DIALOG</span>}
             {showingMobile && <span className="badge">MOBILE</span>}
           </div>

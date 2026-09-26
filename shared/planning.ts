@@ -1,4 +1,5 @@
 import {
+  codeOf,
   ideaStatus,
   isLeftToAi,
   isPlanned,
@@ -31,6 +32,7 @@ export function planningOutline(p: Project, level = 1): string {
       const index = pin ? p.pins.filter((v) => v.screenId === pin.screenId).indexOf(pin) + 1 : 0;
       parts.push(`(pin ${index || '?'})`);
     }
+    parts.push(`[${codeOf(idea)}]`);
     return [parts.join(' '), ...(idea.detail.trim() ? [`  ${idea.detail.trim()}`] : [])];
   };
   for (const screen of p.screens) {
@@ -42,7 +44,7 @@ export function planningOutline(p: Project, level = 1): string {
       screen.mobileAssetId ? 'web + mobile' : null,
     ].filter(Boolean);
     lines.push(
-      `${h(1)} ${screen.title || 'Untitled screen'}${flags.length ? ` (${flags.join(' · ')})` : ''}`,
+      `${h(1)} ${codeOf(screen)} ${screen.title || 'Untitled screen'}${flags.length ? ` (${flags.join(' · ')})` : ''}`,
     );
     if (screen.purpose.trim()) lines.push(screen.purpose.trim());
     lines.push('');

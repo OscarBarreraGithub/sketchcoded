@@ -11,7 +11,7 @@ import {
   Search,
   X,
 } from 'lucide-react';
-import { assetUrl, type Asset, type Project } from '../../shared/model';
+import { assetUrl, type Asset, type Project, codeOf } from '../../shared/model';
 /** The sketch library: New sketches wait at the top; a sketch moves to Used when it lands on the board. */
 export function Library({
   project,
@@ -75,7 +75,7 @@ export function Library({
           )}
         </button>
         <div className="asset-caption">
-          <span className="asset-number">{String(index + 1).padStart(2, '0')}</span>
+          <span className="asset-number item-code">{codeOf(a)}</span>
           <span title={a.name}>
             {a.name
               .replace(/\.[^.]+$/, '')

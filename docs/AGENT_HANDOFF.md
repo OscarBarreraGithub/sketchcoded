@@ -19,6 +19,10 @@ A **view id** names where the user is. Each view has a label and the skills its 
 | `test-flow`         | Test flow         | Footer, beside Rewind test                                                                        | the current screen and the trail of yarn taken                 |
 | `library`           | Sketch library    | Library heading, beside the import button (icon)                                                  | the sketches, used and unused, and the frames still waiting    |
 
+## Codes
+
+Everything the user and the agent talk about has a short code, given once and never reused: frames **F1, F2, …**, sketches **S1, S2, …**, ideas **I1, I2, …**. A pin is named by its frame and its number on that frame, **F3 pin 2**, which is what the board and the editor show. Codes are stored in the project (`code` on screens, assets and ideas; `withCodes()` in `shared/model.ts` assigns missing ones on the server and in the app) and appear on the frame footers, the library, the outline, the plan folders and idea cards, the editor title, Test flow, the yarn editor, `flow.md`, the planning outline, and at the front of every prompt and brief.
+
 ## Context
 
 A **context** is `{ view, screen?, pin?, layout?, transition?, idea?, finding?, trail? }` (`contextSchema`). It is what the button knows about what the user is looking at. The same context is the query string of the brief URL, so the agent can fetch exactly that.
@@ -52,7 +56,7 @@ All `GET`, all local only, all Markdown unless noted:
 ## The prompt
 
 ```
-Sketchcoded task · Screen editor · pin 2 “Read more” on frame “Home” (home) · board “Sketchcoded”
+Sketchcoded task · F1 pin 2 “Read more” on “Home” (pin-landing-guide) · Screen editor · board “Sketchcoded”
 Sketchcoded is running at http://127.0.0.1:5173. Read before asking; everything you need is there:
 1. The brief for exactly this task (read first): http://127.0.0.1:5173/api/projects/<id>/brief?view=screen-editor&screen=home&pin=<pin>&layout=web
 2. Skills to follow: talk-to-sketchcoded, read-a-board, describe-pins, build-rules (each linked from http://127.0.0.1:5173/api/skills)

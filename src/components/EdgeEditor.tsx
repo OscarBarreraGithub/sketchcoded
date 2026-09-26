@@ -1,7 +1,7 @@
 import { AutoTextarea } from './AutoTextarea';
 import { useState } from 'react';
 import { ArrowRight, Link2, Trash2 } from 'lucide-react';
-import { colors, isHistory, type Project, type Transition } from '../../shared/model';
+import { colors, isHistory, type Project, type Transition, codeOf } from '../../shared/model';
 import { Modal } from './Modal';
 import { TellAgent } from './TellAgent';
 export function EdgeEditor({
@@ -41,7 +41,9 @@ export function EdgeEditor({
         }}
       >
         <div className="edge-route">
-          <span className="route-screen">{source?.title || 'Choose a source'}</span>
+          <span className="route-screen">
+            {source ? `${codeOf(source)} ${source.title}` : 'Choose a source'}
+          </span>
           <span className="route-yarn">
             <Link2 size={19} />
             <ArrowRight size={16} />
