@@ -281,11 +281,11 @@ test('actual browser zoom retains navigation, large fields, readable long text a
         page.getByRole('button', { name: 'Close flow review', exact: true }),
       ).toBeInViewport();
       await page.getByRole('button', { name: 'Close flow review', exact: true }).click();
-      if (factor >= 1.5) {
+      if (factor >= 2) {
         await page.getByRole('button', { name: 'Sketch library', exact: true }).click();
         await expect(page.locator('.library-group.new > summary')).toBeVisible();
         await page.getByRole('button', { name: 'Close sketch library', exact: true }).click();
-      }
+      } else await expect(page.locator('.library-group.new > summary')).toBeVisible();
       await page.getByRole('button', { name: 'Board', exact: true }).click();
       await page.getByRole('slider', { name: 'Board zoom', exact: true }).scrollIntoViewIfNeeded();
       await expect(page.getByRole('slider', { name: 'Board zoom', exact: true })).toBeInViewport();

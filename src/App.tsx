@@ -591,7 +591,6 @@ function Studio({
           />
           <IdeasPanel
             project={project}
-            update={update}
             onOpenPlan={() => {
               setViewMode('planning');
               setLibraryOpen(false);
@@ -940,7 +939,7 @@ function Studio({
               [
                 '01',
                 'Plan first, if you like',
-                'Open Plan, or type into the Ideas panel beside the library, and write down every idea for the app. Assign each one to a screen, even a frame you have not drawn yet. Placing an idea later turns it into a pin with its text already written.',
+                'Open Plan and write down every idea for the app. The Ideas panel beside the library shows what is still left to place. Assign each one to a screen, even a frame you have not drawn yet. Placing an idea later turns it into a pin with its text already written.',
               ],
               [
                 '02',

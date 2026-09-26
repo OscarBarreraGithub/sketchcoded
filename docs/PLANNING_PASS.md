@@ -87,7 +87,7 @@ Evidence: `npm test` 62 pass, `npm run test:ui` 16 pass, `npm run build` and `np
 The user's second and third drawings describe the app itself, and three notes arrived while building: never let anything grow or shrink because of a click; links are pins, not frames; build the landing page as its own site and repository.
 
 - [x] Library in two sections, New and Used; a sketch moves to Used when it lands on a frame.
-- [x] Ideas panel beside the library: what is left to do by screen, an Open the plan link, and an agent box whose messages become ideas (no model connected, and it says so).
+- [x] Ideas panel beside the library: what is left to do by screen and an Open the plan link. The agent box drawn in the corner was built, then removed at the user's request the same day: it added clutter without a model behind it.
 - [x] Board, Outline, Plan tabs with the selected one filled.
 - [x] Resize a frame by dragging its corner; a home marker on entry frames.
 - [x] Pin color coding with a per-board meaning for each color and a legend in the editor.

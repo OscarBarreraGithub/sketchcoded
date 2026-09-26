@@ -66,7 +66,7 @@ A screen can hold two drawings of the same view. In the screen editor, choose a 
 
 ## The workstation
 
-The left column holds the **sketch library** in two sections, **New** and **Used**; a sketch moves to Used the moment it lands on a frame. Below it, the **Ideas** panel lists what is still left to do, grouped by screen, with an agent box: no model is connected yet, so anything you type there is saved as an idea in the plan and the panel says so. The **Plan** tab holds the full planning view.
+The left column holds the **sketch library** in two sections, **New** and **Used**; a sketch moves to Used the moment it lands on a frame. Below it, the **Ideas** panel lists what is still left to do, grouped by screen; click an idea to place it. The **Plan** tab holds the full planning view, where ideas are added and edited.
 
 On the board, drag a frame’s corner to **resize** it, and look for the small house on the frame where the app starts. Pins carry one of four **colors**; in the pin editor, pick the color and write what it means on this board, and the legend appears under the pins list.
 

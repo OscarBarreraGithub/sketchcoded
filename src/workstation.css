@@ -9,6 +9,8 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
   background: #f9f9f3;
   border-right: 1px solid #dcded3;
   z-index: 5;
@@ -20,10 +22,12 @@
   min-height: 0;
 }
 .left-column .library {
-  overflow: hidden;
+  overflow: visible;
+  flex: 0 0 auto;
 }
 .left-column .library .library-scroll {
-  min-height: 160px;
+  min-height: 120px;
+  max-height: 38vh;
 }
 .left-column .library-footer {
   display: none;
@@ -75,7 +79,7 @@
 /* Ideas panel */
 .ideas-panel {
   flex: 0 0 auto;
-  max-height: 38%;
+  max-height: none;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -106,7 +110,8 @@
 }
 .ideas-scroll {
   overflow: auto;
-  min-height: 0;
+  min-height: 96px;
+  max-height: 34vh;
   padding: 0 12px 6px;
   scrollbar-width: thin;
 }
@@ -170,78 +175,6 @@
   margin: 0 8px;
   font-size: 12px;
   flex-shrink: 0;
-}
-.agent-box {
-  border-top: 1px dashed #d4d8c8;
-  padding: 10px 12px 12px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.agent-heading {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #4f5c48;
-}
-.agent-heading small {
-  margin-left: auto;
-  font-weight: 400;
-  color: #98a08e;
-  font-size: 11px;
-}
-.agent-log {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 120px;
-  overflow: auto;
-}
-.agent-log li {
-  background: #fffef8;
-  border: 1px solid #e2e5d8;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 12px;
-  line-height: 1.4;
-}
-.agent-log small {
-  display: block;
-  color: #8a927f;
-  font-size: 11px;
-  margin-top: 2px;
-}
-.agent-input {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.agent-input input {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-size: 13px;
-}
-.agent-input .icon-button {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  background: var(--green);
-  color: #fffef8;
-  border-radius: 8px;
-}
-.agent-input .icon-button:disabled {
-  background: #d7dbcd;
-  color: #fffef8;
-}
-.agent-note {
-  font-size: 11px;
-  line-height: 1.5;
-  color: #8a927f;
 }
 
 /* Board: resize corner, home marker, pin colors, link pins */
@@ -460,8 +393,45 @@
   }
 }
 
+/* Board controls and the hint text must not overlap on short windows. */
+@media (max-height: 820px) {
+  .board-help {
+    display: none;
+  }
+}
+
+/* Between 781px and 1000px (browser zoom around 150%), keep a narrower column on screen. */
+@media (max-width: 1000px) and (min-width: 781px) {
+  .left-column {
+    display: flex;
+    width: 240px;
+  }
+  .left-column .library,
+  .library-open .left-column .library {
+    display: flex;
+    position: static;
+    inset: auto;
+    width: auto;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .library-toggle,
+  .library-scrim,
+  .library-close {
+    display: none;
+  }
+  .library-heading,
+  .folder-button,
+  .search-box,
+  .library-scroll,
+  .import-zone {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
 /* Narrow windows: the whole left column becomes the drawer. */
-@media (max-width: 1000px) {
+@media (max-width: 780px) {
   .left-column {
     display: none;
   }

@@ -35,7 +35,6 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - Planned frames: frames from the planning stage wait as empty dashed paper listing their ideas; drop a sketch to fill one.
 - Pins and yarn: numbered pins on each sketch; click a pin then a card to tie color-coded yarn; labels show the branch summary.
 - Ideas panel beside the library: organized ideas, expand, scroll, and make clear what is still left to do.
-- Agent conversation in the left panel, for example to add new ideas. (Planned; no agent runs yet.)
 - Project name in the header; a ? button opens How it works.
 - A little home marker on the frame where the landing page starts.
 - Click to resize a frame. No overlap, lots of space.

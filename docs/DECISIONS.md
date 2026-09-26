@@ -72,3 +72,7 @@ The user's second drawing is the workstation itself, and the third is the screen
 - **Links are pins.** An external destination is a link pin with the address in its description, never a frame. GitHub and the projects link on the landing page were converted, and the two external frames removed.
 - **Layout stability is a rule.** Dialogs keep a fixed size while their content scrolls; selecting a pin no longer changes the editor's height. Recorded in `AGENTS.md` so it applies to everything built from a board.
 - **The landing page is its own repository.** `../sketchcoded-site` is static HTML with the copy from the drawing, a guide page, and one file of external addresses. Publishing to GitHub needs the user's choice of name and visibility.
+
+## 2026-09-25 — No agent box in the UI
+
+The drawn agent conversation box was built as a stub that saved typed notes as ideas. The user judged it clutter without a model behind it and asked for its removal. The Ideas panel stays; ideas are added in Plan. Any future agent integration starts from the export, not from a chat box in the workstation.
