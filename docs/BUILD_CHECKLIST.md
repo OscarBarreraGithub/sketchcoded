@@ -24,6 +24,9 @@ builds from the strings has it. It is also the source for the “build rules” 
 - [ ] **Nothing grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; their content scrolls inside. Selecting a different pin, tab or option never changes the size of the surrounding frame or moves the rest of the page. (2026-09-25)
 - [ ] **Good control when zoomed in.** Test real browser zoom at 125%, 150%, 200% and 250%. Text stays readable, controls stay reachable, nothing overflows its container, and the main work area stays usable. Zoom must work, every time. (2026-09-08, restated 2026-09-25)
 - [ ] **When something is off screen, the user must know.** Every scrolling region keeps a visible scrollbar and shows a clear “more below” or “more above” signal until the end is reached. Never rely on an invisible overlay scrollbar. (2026-09-25)
+- [ ] **The page never scrolls; panels do.** The app shell always fits the window. Only the left column, dialogs, side panels and list views scroll, each inside itself. The cork board must never make the page scroll, at any zoom or window size. (2026-09-26)
+- [ ] **The board never pans out of sight of its content.** Panning and zooming have room to breathe, but part of the content stays on screen at all times; panning past the edge snaps back. (2026-09-26)
+- [ ] **Scroll hints must work in a real zoomed browser**, not only in an emulated viewport. Verify at 125% to 250% on a laptop-sized window, both 1440×900 and 1280×720. (2026-09-26)
 - [ ] **Nothing overlaps.** Labels, pins, frames, buttons and text keep clear of each other. Leave room to breathe. (2026-09-25)
 - [ ] **Make it obvious what is clickable** and which option is selected: the active tab is filled, the primary action is unmistakable. (2026-09-25)
 - [ ] Click targets are at least 44px and form fields at least 48px tall. Long notes stay readable without a tiny inner scrollbar. (2026-09-08)
@@ -69,4 +72,5 @@ A dated record so nothing is lost. Each line points at the rule above it created
 - **2026-09-25, links.** GitHub should not have its own frame. A pin can carry a URL in its description with any conditions; the pin is the exit. This is the expected route for URLs.
 - **2026-09-25, repositories.** The landing page is separate, as the public site; two repositories; set up clean.
 - **2026-09-25, agent box.** Remove the agent chat from the workstation; it adds nothing and makes it messy.
+- **2026-09-26, zoom, scrolling and panning.** The scroll pill did not show up in a zoomed-in browser. The cork board should not scroll for so long; the left panel is what should scroll. The board must never pan out past the content: room is fine, but there must always be content on the board. Keep adding every issue raised to this checklist.
 - **2026-09-25, zoom and scrolling.** It was not obvious that the left panel scrolls when zoomed in. Always keep good control when zoomed in, and always let the user know when something is off screen. Keep this checklist explicit and complete.

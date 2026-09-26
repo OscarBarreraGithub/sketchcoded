@@ -155,3 +155,24 @@ The user drew the landing page, the workstation and the screen editor overlay an
 ## 2026-09-25 — Workstation pass
 
 Built the app as drawn: New/Used library, Ideas panel with an agent box (saves ideas; no model), Plan tab, frame resizing, home markers, pin colors with a legend, a Web/Mobile toggle in the editor, a pins list with move and delete, and link pins for URLs. Recorded the no-layout-shift rule and the link route in `AGENTS.md`. Created the landing site as a separate static repository at `../sketchcoded-site`. See `docs/PLANNING_PASS.md` for the checklist and evidence.
+
+## In progress — 2026-09-26 (handoff written before a context compaction)
+
+**Standing instruction from the user:** every issue they raise is also a rule. Append it to `docs/BUILD_CHECKLIST.md` the same day, in their words, with the date, under both the rules and the dated log. Never delete; mark superseded.
+
+**Open issues, reported 2026-09-26 while using the app at browser zoom on a laptop:**
+
+1. The “More below” scroll pill does not appear in a real zoomed browser (it did in emulation at 1440×1000).
+2. The cork board scrolls for a long time; the left panel should be the thing that scrolls, not the page.
+3. The board can be panned far past the content. It should have room, but the user must never be left looking at empty cork: clamp panning so part of the content stays on screen.
+
+**Diagnosis so far (verified by reading the CSS, not yet by measurement):** `src/usability.css` has a `@media (max-height: 650px)` block from the 2026-09-08 usability pass that switches the page into document-scroll mode: `.app-shell { height: auto; min-height: 100dvh; overflow: visible }`, `.studio-layout` / `.studio-main` min-height 460px, `.library:not(.library-open .library) { max-height: 800px }`. On a laptop (about 900px or 720px tall) at 150% or 200% zoom the CSS viewport is under 650px, so this block applies. The left column is then no longer height-constrained: it grows to its content, the board stretches to match, the page scrolls, and the column never scrolls internally, so `ScrollHints` has nothing to announce. Issues 1 and 2 share this cause. Issue 3 is separate: `Board.tsx` panning (`commitView`, wheel and drag handlers, `fit`) has no clamp.
+
+**Plan:**
+
+- Keep the shell at `100dvh` at every height (override the short-window block in `src/workstation.css`, which loads last). Make the chrome compact instead: at short heights hide the board tagline and eyebrow, shrink the title, hide the toolbar explanation. The review panel stays fixed as it is. Re-check that every control remains reachable at 125–250% zoom on 1440×900 and 1280×720 (a measurement script exists at the scratchpad path `pagescroll-check.mjs`, not yet run).
+- Clamp the viewport in `Board.tsx`: after any pan or zoom, keep the content bounding box overlapping the visible area by a margin (for example at least 120px of content visible, or the whole content when it is smaller than the view). Apply in drag end, wheel pan, and the zoom helper; `fit` already frames the content.
+- Add browser checks: at 1280×720 emulated 150% and 200%, `document.documentElement.scrollHeight === window.innerHeight`, the left column scrolls and shows the pill; a pan far off the content snaps back so content is visible.
+- Then: `npm run build`, `npm test`, `npm run test:ui`, `npm run format:check`; commit on a branch and fast-forward into `main`; stop any scratch server (port 5175, data dir under the session scratchpad); leave the user’s server on port 5173 running.
+
+**State at handoff:** all work so far is committed on `main` (latest `0ae6acc`). The working tree is clean apart from this note and the checklist entries added with it. The user’s app runs on port 5173. The scratch server on 5175 is stopped. The site repository at `../sketchcoded-site` is committed and unaffected.
