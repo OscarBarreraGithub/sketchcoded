@@ -380,10 +380,6 @@ textarea {
 .board-help > i:last-of-type {
   display: inline;
 }
-.board-top-note {
-  font-size: 20px;
-  max-width: none;
-}
 .board-legend {
   display: none;
 }
@@ -1037,10 +1033,6 @@ textarea {
   }
   .board-help {
     display: none;
-  }
-  .board-top-note {
-    font-size: 17px;
-    left: 16px;
   }
   .outline-view {
     padding: 18px 12px;

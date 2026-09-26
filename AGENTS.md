@@ -1,6 +1,6 @@
 # Working on Sketchcoded
 
-Read `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md` and `docs/BUILD_CHECKLIST.md` before changing the product. The checklist is the explicit, dated list of the user's rules for anything built from a board and for Sketchcoded itself; append to it the day a rule is given, never delete. Read `docs/USABILITY_PASS.md` for the latest user feedback and acceptance checks. The original brief is preserved verbatim. Keep the progress file and significant decisions current when the implementation changes.
+Read `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md` and `docs/BUILD_CHECKLIST.md` before changing the product. The checklist is the explicit, dated list of the user's general rules for anything built from a board and for Sketchcoded itself; append to it the day a rule is given, never delete. Requests specific to Sketchcoded (remove this label, change that default) are not rules: record them in `docs/PROGRESS.md` and the board's backlog, not in the checklist. Read `docs/USABILITY_PASS.md` for the latest user feedback and acceptance checks. The original brief is preserved verbatim. Keep the progress file and significant decisions current when the implementation changes.
 
 This is a local screenshot flow designer. The later LLM generation/review workflow is not implemented yet. Keep screen/pin intent and natural-language branch rules intact; do not pretend to execute or prove prose conditions. Keep test rewind distinct from authored navigation.
 

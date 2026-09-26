@@ -833,19 +833,6 @@ hr {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.7' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: multiply;
 }
-.board-top-note {
-  position: absolute;
-  top: 23px;
-  left: 29px;
-  font-family: var(--hand);
-  font-size: 16px;
-  letter-spacing: 0.2px;
-  color: #806d4f;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  pointer-events: none;
-}
 .tiny-star {
   font-size: 18px;
   color: #927c58;
@@ -2669,12 +2656,6 @@ kbd {
   .board-help > span:last-child,
   .board-help > i:last-of-type {
     display: none;
-  }
-  .board-top-note {
-    font-size: 13px;
-    left: 16px;
-    top: 18px;
-    max-width: 230px;
   }
   .review-panel {
     width: min(315px, 100%);

@@ -3,7 +3,9 @@ import type { Project } from '../shared/model';
 import { api } from './api';
 export type Update = (
   recipe: (project: Project) => Project,
-  options?: { history?: boolean; group?: string },
+  /** `quiet`: a presentation change (where the board is looked at from). It is saved, but it is
+   * not an edit: the save indicator and the leave warning ignore it. */
+  options?: { history?: boolean; group?: string; quiet?: boolean },
 ) => void;
 /** True when the only difference between two copies is where the board is looked at from. */
 const onlyViewportChanged = (a: Project, b: Project) => {
@@ -19,6 +21,7 @@ export function useProject(initial: Project) {
     [error, setError] = useState('');
   const version = useRef(0),
     savedVersion = useRef(0),
+    quietOnly = useRef(true),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null),
     running = useRef<Promise<boolean> | null>(null);
   const past = useRef<Project[]>([]),
@@ -34,7 +37,8 @@ export function useProject(initial: Project) {
     }
     if (savedVersion.current === version.current) return true;
     const save = async () => {
-      setStatus('saving');
+      const silent = quietOnly.current;
+      if (!silent) setStatus('saving');
       try {
         while (savedVersion.current !== version.current) {
           const snapshot = current.current,
@@ -72,7 +76,8 @@ export function useProject(initial: Project) {
           setProject(current.current);
           savedVersion.current = atVersion;
         }
-        setStatus('saved');
+        quietOnly.current = true;
+        if (!silent) setStatus('saved');
         setError('');
         return true;
       } catch (e) {
@@ -107,7 +112,10 @@ export function useProject(initial: Project) {
       current.current = { ...next, revision: before.revision };
       setProject(current.current);
       version.current++;
-      setStatus('unsaved');
+      if (!options.quiet) {
+        quietOnly.current = false;
+        setStatus('unsaved');
+      }
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => void flush(), 650);
     },
@@ -187,7 +195,7 @@ export function useProject(initial: Project) {
   }, []);
   useEffect(() => {
     const unload = (e: BeforeUnloadEvent) => {
-      if (version.current !== savedVersion.current) {
+      if (version.current !== savedVersion.current && !quietOnly.current) {
         e.preventDefault();
         e.returnValue = '';
       }

@@ -5,9 +5,9 @@ export type Rect = { x: number; y: number; width: number; height: number };
 export type Size = { width: number; height: number };
 export type Padding = { top: number; right: number; bottom: number; left: number };
 
-/** Breathing room between the outermost frames and the board's edges, in screen pixels. The top
- * keeps clear of the board tagline, the bottom of the board controls. */
-export const PAD: Padding = { top: 60, right: 64, bottom: 116, left: 64 };
+/** Breathing room between the outermost frames and the board's edges, in screen pixels. The
+ * bottom keeps clear of the board controls. */
+export const PAD: Padding = { top: 48, right: 64, bottom: 116, left: 64 };
 /** Safety net: how much of a frame must stay on the board when a layout leaves an empty corner. */
 export const KEEP = 160;
 

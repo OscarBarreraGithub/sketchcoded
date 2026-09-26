@@ -102,7 +102,7 @@ export function Board({
     const next = clamp(raw);
     viewRef.current = next;
     setView(next);
-    update((p) => ({ ...p, viewport: next }), { history: false });
+    update((p) => ({ ...p, viewport: next }), { history: false, quiet: true });
   };
   // Automatic clamps only move the view on screen; the next pan or zoom by the user persists it.
   // Writing here would race an agent's write with a stale revision the moment the board opens.
@@ -377,9 +377,6 @@ export function Board({
       }}
     >
       <div className="board-grain" />
-      <div className="board-top-note">
-        <span className="tiny-star">✳</span> A little space for your next big idea.
-      </div>
       {connecting && (
         <div className="connection-banner">
           <span className="mini-pin" />{' '}

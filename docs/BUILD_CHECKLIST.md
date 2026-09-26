@@ -32,7 +32,6 @@ builds from the strings has it. It is also the source for the “build rules” 
 - [ ] **Every view works at every zoom.** Not only the board: the screen editor, the connection editor, Review, Test, the outline, the plan and every dialog must be usable at 125%, 150%, 200% and 250% browser zoom on a laptop window. Check each one, seriously, after any layout change. (2026-09-26)
 - [ ] **One kind of line on the board.** Colored yarn is navigation. Do not draw a second, dashed kind of line between frames; planned connections are read in the Plan view and in the text outline, not as lines. (2026-09-26)
 - [ ] **All text is easily legible.** No text on screen under 12px, including eyebrows, badges, captions, footers and hints. Text that lives on the board (yarn labels, frame titles, frame footers) keeps at least 12 screen pixels at any board zoom, or steps aside when the board is zoomed far out. Check at browser zoom too. (2026-09-26)
-- [ ] **Looking around is not a change.** Panning and zooming the board never show “Unsaved changes”, never warn on leaving, and never count as an edit; where the board is looked at from is remembered quietly. Only what the user changes about the app flips the save indicator. (2026-09-26)
 - [ ] **Nothing overlaps.** Labels, pins, frames, buttons and text keep clear of each other. Leave room to breathe. (2026-09-25)
 - [ ] **Make it obvious what is clickable** and which option is selected: the active tab is filled, the primary action is unmistakable. (2026-09-25)
 - [ ] Click targets are at least 44px and form fields at least 48px tall. Long notes stay readable without a tiny inner scrollbar. (2026-09-08)
@@ -63,6 +62,7 @@ builds from the strings has it. It is also the source for the “build rules” 
 - [ ] Start servers and browsers only while using them; stop them before handing back. Never point tests at the user’s data.
 - [ ] **Measure before fixing a zoom report.** Reproduce it at laptop sizes (1440×900 and 1280×720 at 125%, 150%, 200%) with screenshots and numbers (page scroll, panel scroll, pill present), then fix, then measure again. Emulated viewports find layout bugs; the real tab-zoom test confirms them. (2026-09-26)
 - [ ] Keep `docs/FUNCTIONALITY.md` and the Sketchcoded board’s backlog in step. Keep this checklist explicit and dated.
+- [ ] This checklist holds general rules for building apps, in the user’s words. A request that is specific to Sketchcoded (remove this label, change that default) is not a rule: record it in `docs/PROGRESS.md` and the board’s backlog instead. (2026-09-26)
 - [ ] The final message to the user restates the URL of anything running and anything they need to do next.
 
 ## What the user said, and when
@@ -89,4 +89,3 @@ A dated record so nothing is lost. Each line points at the rule above it created
 - **2026-09-26, the board's edge.** “Constrain the board so that it's not just the inner border of one of the posted pictures, but you have some padding on the last one in view.” (With two screenshots: one frame clipped at the left edge; one frame alone in view.)
 - **2026-09-26, legible text.** “We also need the text connecting things to be larger. Hard to read. Can we make sure all text is easily legible?”
 - **2026-09-26, tell the agent.** “For the board view where we are manually adding the pins, can we have a button which gives us a prompt, copied into our clipboard (but also with the ability to manually copy), that basically tells the agent exactly which frame you're looking at and where the task instructions are. This entire site has to play well with the agent the user is working with. Nowhere do we have the agent directly talking with our running localhost. We need an easy way to tell the agent ‘here is your current task’: point to the right page and the right prior instructions so there is no confusion or unneeded back and forth. Work out everywhere, in every view, where this is needed and set up the copy prompts there. Name the views, instructions and skills so generating the prompt is modular. Have a reviewer check everything.”
-- **2026-09-26, moving around.** “Why do we lose All changes saved when just moving around the cork board?”

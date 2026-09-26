@@ -200,3 +200,9 @@ Open for the user: publish the two repositories (`gh repo create sketchcoded --p
 - The prompt ended in a literal `<name>` placeholder; now it links the skills index. The pin task ignored the pin's state; now a described pin without yarn, a link pin, a detail pin and a pin being placed from an idea each get their own task. Headings in the brief were misnested; the frame's section now sits under one heading with ideas and findings beneath it, and a single finding's brief carries the frame (and yarn) it is about.
 - A malformed brief query said “Invalid project data”; it now names the valid views and fields. The site FAQ still said the export is what you hand to the agent; corrected.
 - Test gaps the reviewer listed are covered except two, left open on purpose: the clipboard-denied path and Escape inside a nested dialog.
+
+## 2026-09-26 — Board tagline removed
+
+The user asked to remove “A little space for your next big idea.” from the cork. Gone, with its styles; the board's top padding shrank accordingly.
+
+The user also asked why “All changes saved” flips to “Unsaved changes” when only moving around the board: the view position is saved like an edit. Viewport saves are now quiet: the position is still remembered, but panning and zooming never change the save indicator or arm the leave warning. Both are Sketchcoded-specific requests, so they live here and not in the checklist, which the user clarified is for general rules only.

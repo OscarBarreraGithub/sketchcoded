@@ -348,3 +348,37 @@ test('two-tab conflicts preserve the server version and allow exporting unsaved 
   second.on('dialog', (dialog) => dialog.accept());
   await second.close();
 });
+
+test('looking around the board is not a change: the save indicator stays put while panning', async ({
+  page,
+}) => {
+  const response = await page.request.post('/api/projects', {
+    headers: { 'X-Drawcode-Client': 'local' },
+    data: { name: 'Quiet viewport', demo: true },
+  });
+  const project = await response.json();
+  await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Quiet viewport', exact: true })).toBeVisible();
+  const status = page.locator('.save-status');
+  await expect(status).toHaveText(/All changes saved/);
+  const board = page.getByRole('main', { name: 'Design board' });
+  const box = (await board.boundingBox())!;
+  const seen = new Set<string>();
+  for (let i = 0; i < 3; i++) {
+    await page.mouse.move(box.x + 30, box.y + 30);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 230, box.y + 130, { steps: 6 });
+    await page.mouse.up();
+    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+    seen.add((await status.textContent()) ?? '');
+    await page.waitForTimeout(300);
+    seen.add((await status.textContent()) ?? '');
+  }
+  await page.waitForTimeout(900);
+  seen.add((await status.textContent()) ?? '');
+  expect([...seen].every((text) => /All changes saved/.test(text))).toBe(true);
+  // The position is still remembered.
+  const before = (await page.request.get(`/api/projects/${project.id}`)).json();
+  expect((await before).viewport.zoom).toBeGreaterThan(project.viewport.zoom);
+});
