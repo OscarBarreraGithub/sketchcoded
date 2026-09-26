@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Focus } from 'lucide-react';
 import { assetUrl, type Project } from '../../shared/model';
 import { Modal } from './Modal';
+import { TellAgent } from './TellAgent';
 export function DetailView({
   project,
   targetId,
@@ -66,6 +67,9 @@ export function DetailView({
         </p>
       )}
       <div className="modal-actions">
+        {screen && (
+          <TellAgent project={project} context={{ view: 'screen-editor', screen: screen.id }} />
+        )}
         {trail.length > 1 && (
           <button
             className="button"

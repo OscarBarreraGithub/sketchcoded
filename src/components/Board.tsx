@@ -33,6 +33,7 @@ import {
 } from '../../shared/model';
 import type { Update } from '../useProject';
 import { clampView, fitView, frameRects } from '../boardView';
+import { TellAgent } from './TellAgent';
 export function Board({
   project,
   update,
@@ -103,10 +104,14 @@ export function Board({
     setView(next);
     update((p) => ({ ...p, viewport: next }), { history: false });
   };
+  // Automatic clamps only move the view on screen; the next pan or zoom by the user persists it.
+  // Writing here would race an agent's write with a stale revision the moment the board opens.
   const keepContentInView = () => {
     const next = clamp(viewRef.current);
-    if (Math.abs(next.x - viewRef.current.x) > 0.5 || Math.abs(next.y - viewRef.current.y) > 0.5)
-      commitView(next);
+    if (Math.abs(next.x - viewRef.current.x) > 0.5 || Math.abs(next.y - viewRef.current.y) > 0.5) {
+      viewRef.current = next;
+      setView(next);
+    }
   };
   const keepRef = useRef(keepContentInView);
   keepRef.current = keepContentInView;
@@ -503,6 +508,15 @@ export function Board({
                         <Smartphone size={11} />
                       </i>
                     )}
+                  </span>
+                  <span className="card-agent" onPointerDown={(e) => e.stopPropagation()}>
+                    <TellAgent
+                      project={project}
+                      context={{ view: 'screen-editor', screen: s.id }}
+                      label=""
+                      title={`Tell the agent about ${s.title}`}
+                      className="icon-button"
+                    />
                   </span>
                   <button
                     className="icon-button"

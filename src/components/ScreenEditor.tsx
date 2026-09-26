@@ -314,7 +314,13 @@ export function ScreenEditor({
             )}
             <TellAgent
               project={project}
-              context={{ view: 'screen-editor', screen: s.id, pin: selected ?? undefined, layout }}
+              context={{
+                view: 'screen-editor',
+                screen: s.id,
+                pin: selected ?? undefined,
+                layout,
+                idea: placingIdea?.id,
+              }}
             />
           </div>
           <div className={`sketch-stage layout-stage ${layout} ${placing ? 'placing' : ''}`}>

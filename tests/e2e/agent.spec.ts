@@ -65,6 +65,22 @@ test('every view hands its task to the agent, and the agent can read everything 
     [/Sketchcoded task · Board · the whole board/, /brief\?view=board/],
   );
   expect(board.body).toContain('## The board at a glance');
+  const card = page.locator('.screen-card').first();
+  const cardTitle = (await card.getAttribute('aria-label'))!.replace('Screen: ', '');
+  const onCork = await handoff(
+    page,
+    card.getByRole('button', { name: `Tell the agent about ${cardTitle}` }),
+    [/· Screen editor · frame “/, /brief\?view=screen-editor&screen=/],
+  );
+  expect(onCork.text).toContain(`frame “${cardTitle}”`);
+  const library = await handoff(
+    page,
+    page
+      .locator('.library-heading')
+      .getByRole('button', { name: 'Tell the agent about the library' }),
+    [/· Sketch library · the sketch library \(\d+ sketches, \d+ unused\)/, /brief\?view=library/],
+  );
+  expect(library.body).toContain('## The library');
   // Ideas panel (left column).
   const ideas = page.locator('.ideas-panel');
   if (!(await ideas.getByRole('button', { name: 'Tell the agent' }).isVisible()))
@@ -79,6 +95,16 @@ test('every view hands its task to the agent, and the agent can read everything 
     page.locator('.planning-summary').getByRole('button', { name: 'Tell the agent' }),
     [/· Plan · the whole plan/, /brief\?view=plan$/m],
   );
+  await page.getByLabel('New idea').fill('Nudge me');
+  await page.getByRole('button', { name: 'Add idea', exact: true }).click();
+  const ideaCard = page.locator('.idea-card', { hasText: 'Nudge me' });
+  // The brief is served from the saved board; let the autosave land first.
+  await expect(page.getByText('All changes saved', { exact: true })).toBeVisible();
+  const ideaText = await handoff(page, ideaCard.getByRole('button', { name: 'Tell the agent' }), [
+    /· Plan · idea “Nudge me”/,
+    /brief\?view=plan&idea=/,
+  ]);
+  expect(ideaText.body).toContain('## The idea');
   const folder = page.locator('.folder-actions').first();
   const folderText = await handoff(page, folder.getByRole('button', { name: 'Tell the agent' }), [
     /· Plan · frame “/,
@@ -153,10 +179,35 @@ test('every view hands its task to the agent, and the agent can read everything 
   // Test flow: the current screen and the trail.
   await page.getByRole('button', { name: 'Test flow', exact: true }).click();
   const preview = page.getByRole('dialog', { name: 'Take your idea for a walk.' });
+  await preview.locator('.preview-pin').first().click();
+  const choice = preview.locator('.branch-choice').first();
+  if (await choice.count()) await choice.click();
   const walk = await handoff(
     page,
     preview.locator('.preview-footer').getByRole('button', { name: 'Tell the agent' }),
-    [/· Test flow · Test flow at “/, /brief\?view=test-flow&screen=/],
+    [
+      /· Test flow · Test flow at “[^”]+” after 1 step/,
+      /brief\?view=test-flow&screen=[^&]+&layout=web&trail=/,
+    ],
   );
   expect(walk.body).toContain('## The trail');
+  expect(walk.body).toMatch(/1\. “[^”]+” → pin “/);
+});
+
+test('the open board picks up a change the agent wrote, when nothing is unsaved', async ({
+  page,
+}) => {
+  const project = await fresh(page);
+  await expect(page.getByText('All changes saved', { exact: true })).toBeVisible();
+  const current = await (await page.request.get(`/api/projects/${project.id}`)).json();
+  const renamed = await page.request.put(`/api/projects/${project.id}`, {
+    headers,
+    data: { ...current, name: 'Renamed by the agent' },
+  });
+  expect(renamed.ok()).toBeTruthy();
+  await expect(
+    page.getByRole('heading', { name: 'Renamed by the agent', exact: true }),
+  ).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Updated from your agent', { exact: false })).toBeVisible();
+  await expect(page.getByText('All changes saved', { exact: true })).toBeVisible();
 });

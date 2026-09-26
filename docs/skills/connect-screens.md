@@ -9,4 +9,4 @@ Yarn is navigation. Fill in a yarn so a builder and Test flow both understand it
 - A `link` pin never has yarn. A `detail` pin is not navigation.
 - Keep the navigation kind the user chose unless the brief says otherwise. Do not add a destination screen that is not on the board; ask.
 
-Write back through the API (skill: talk-to-sketchcoded) and tell the user to reload.
+Write back through the API once, at the end (skill: talk-to-sketchcoded, which also says when to warn the user); the open board refreshes itself when the user has nothing unsaved.

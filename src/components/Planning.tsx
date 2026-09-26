@@ -163,6 +163,10 @@ export function Planning({
           </>
         )}
         <div className="idea-controls">
+          <TellAgent
+            project={project}
+            context={{ view: 'plan', screen: idea.screenId ?? undefined, idea: idea.id }}
+          />
           <label>
             Belongs on
             <select

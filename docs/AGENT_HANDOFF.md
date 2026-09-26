@@ -8,15 +8,16 @@ Nothing is hand-written. Three registries in `shared/agent.ts` generate everythi
 
 A **view id** names where the user is. Each view has a label and the skills its task needs.
 
-| View id             | Label             | Where the button is                                                   | Subject the prompt names                                |
-| ------------------- | ----------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
-| `board`             | Board             | View toolbar, beside Sketch library (Board tab only)                  | the whole board                                         |
-| `screen-editor`     | Screen editor     | Editor toolbar, beside Add a pin                                      | the frame; the selected pin; the layout (web or mobile) |
-| `connection-editor` | Connection editor | Dialog actions, beside Cancel                                         | the yarn (or a new yarn from its pin)                   |
-| `plan`              | Plan              | Plan header beside Copy as text; each frame's folder; the Ideas panel | the whole plan; one frame's ideas                       |
-| `outline`           | App outline       | Outline header beside Expand screens; each screen's actions           | the whole outline; one screen                           |
-| `review`            | Review flow       | Review heading; inside each finding                                   | all open findings; one finding                          |
-| `test-flow`         | Test flow         | Footer, beside Rewind test                                            | the current screen and the trail of yarn taken          |
+| View id             | Label             | Where the button is                                                                               | Subject the prompt names                                       |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `board`             | Board             | View toolbar, beside Sketch library (Board tab only); an icon in every frame's footer on the cork | the whole board; one frame (as `screen-editor`)                |
+| `screen-editor`     | Screen editor     | Editor toolbar, beside Add a pin; the Detail view's actions                                       | the frame; the selected pin; the layout; the idea being placed |
+| `connection-editor` | Connection editor | Dialog actions, beside Cancel                                                                     | the yarn (or a new yarn from its pin)                          |
+| `plan`              | Plan              | Plan header beside Copy as text; each frame's folder; each idea card; the Ideas panel             | the whole plan; one frame's ideas; one idea                    |
+| `outline`           | App outline       | Outline header beside Expand screens; each screen's actions                                       | the whole outline; one screen                                  |
+| `review`            | Review flow       | Review heading; inside each finding                                                               | all open findings; one finding                                 |
+| `test-flow`         | Test flow         | Footer, beside Rewind test                                                                        | the current screen and the trail of yarn taken                 |
+| `library`           | Sketch library    | Library heading, beside the import button (icon)                                                  | the sketches, used and unused, and the frames still waiting    |
 
 ## Context
 
@@ -45,7 +46,7 @@ All `GET`, all local only, all Markdown unless noted:
 - `/api/projects/:id/flow.md` and `/api/projects/:id/outline.md` — the whole documents.
 - `/api/checklist.md` — the user's dated rules. They win.
 - `/api/skills` (JSON) and `/api/skills/:id.md`.
-- `/api/projects/:id` (JSON) — the canonical project; `PUT` it back with `X-Drawcode-Client: local` to change the board (see `talk-to-sketchcoded`).
+- `/api/projects/:id` (JSON) — the canonical project; `PUT` it back with `X-Drawcode-Client: local` to change the board (see `talk-to-sketchcoded`). The open board checks for changes every few seconds and on focus; when it has nothing unsaved (or only moved its viewport) it takes the newer copy and says “Updated from your agent”. Real unsaved edits still get the conflict banner, now with “Take the newer copy”. The agent writes once at the end and warns the user to pause editing until then.
 - `/assets/<file>` — the drawings.
 
 ## The prompt
@@ -54,13 +55,13 @@ All `GET`, all local only, all Markdown unless noted:
 Sketchcoded task · Screen editor · pin 2 “Read more” on frame “Home” (home) · board “Sketchcoded”
 Sketchcoded is running at http://127.0.0.1:5173. Read before asking; everything you need is there:
 1. The brief for exactly this task (read first): http://127.0.0.1:5173/api/projects/<id>/brief?view=screen-editor&screen=home&pin=<pin>&layout=web
-2. Skills to follow: talk-to-sketchcoded, read-a-board, describe-pins, build-rules → http://127.0.0.1:5173/api/skills/<name>.md
+2. Skills to follow: talk-to-sketchcoded, read-a-board, describe-pins, build-rules (each linked from http://127.0.0.1:5173/api/skills)
 3. The user’s rules, in their words: http://127.0.0.1:5173/api/checklist.md
 Task: Describe this pin from the plan: …
 Stay on this pin; ask before touching anything else.
 ```
 
-The `Task:` line is the view's default job (`defaultTask`); the user edits it in the dialog before pasting when they want something else.
+The `Task:` line is the view's default job (`defaultTask`), aware of the state of the subject: a pin that is described but has no yarn gets a different task from an undescribed one, a link pin from a detail pin, a planned frame from one left to the AI. The user edits it in the dialog before pasting when they want something else.
 
 ## Adding a view or a skill
 

@@ -1,3 +1,4 @@
+import { TellAgent } from './TellAgent';
 import { useRef, useState } from 'react';
 import {
   ArrowUpRight,
@@ -146,6 +147,13 @@ export function Library({
             Sketch library <span>{project.assets.length}</span>
           </h2>
         </div>
+        <TellAgent
+          project={project}
+          context={{ view: 'library' }}
+          label=""
+          title="Tell the agent about the library"
+          className="icon-button"
+        />
         <button
           className="icon-button"
           onClick={() => input.current?.click()}

@@ -10,12 +10,13 @@ export async function api<T>(url: string, options: RequestInit = {}): Promise<T>
   });
   if (!response.ok) {
     let message = 'The local server is unavailable.';
+    const status = response.status;
     try {
       message = (await response.json()).error || message;
     } catch {
       /* non-JSON server error */
     }
-    throw new Error(message);
+    throw Object.assign(new Error(message), { status });
   }
   return response.json();
 }

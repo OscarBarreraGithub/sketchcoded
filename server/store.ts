@@ -114,7 +114,7 @@ export class Store {
           const current = await this.read(project.id);
           if (current.revision !== project.revision)
             throw new AppError(
-              'This board was changed in another tab. Export your current work, then reload to continue safely.',
+              'This board was changed in another tab or by your agent. Take the newer copy, or export your current work first.',
               409,
             );
         }

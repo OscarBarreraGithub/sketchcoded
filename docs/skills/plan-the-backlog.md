@@ -11,4 +11,4 @@
 
 When you are working inside the Sketchcoded repository itself, also keep `docs/FUNCTIONALITY.md` in step with the board's backlog.
 
-Write back through the API (skill: talk-to-sketchcoded) and tell the user to reload.
+Write back through the API once, at the end (skill: talk-to-sketchcoded, which also says when to warn the user); the open board refreshes itself when the user has nothing unsaved.

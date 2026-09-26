@@ -13,11 +13,14 @@ export function TellAgent({
   project,
   context,
   label = 'Tell the agent',
+  title,
   className = 'button small',
 }: {
   project: Project;
   context: AgentContext;
+  /** Button text; empty for an icon-only button (then `title` names it). */
   label?: string;
+  title?: string;
   className?: string;
 }) {
   const [open, setOpen] = useState(false),
@@ -41,8 +44,15 @@ export function TellAgent({
   };
   return (
     <>
-      <button type="button" className={`${className} tell-agent`} onClick={start}>
-        <Bot size={15} /> {label}
+      <button
+        type="button"
+        className={`${className} tell-agent`}
+        aria-label={title ?? label}
+        title={title}
+        onClick={start}
+      >
+        <Bot size={15} />
+        {label ? ` ${label}` : null}
       </button>
       {open && (
         <Modal

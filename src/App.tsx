@@ -128,8 +128,20 @@ function Studio({
   projects: ProjectSummary[];
   onOpen: (p: Project) => void;
 }) {
-  const { project, update, status, error, flush, undo, redo, canUndo, canRedo, getCurrent } =
-    useProject(initial);
+  const {
+    project,
+    update,
+    status,
+    error,
+    flush,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    getCurrent,
+    refreshed,
+    takeServerCopy,
+  } = useProject(initial);
   const [menu, setMenu] = useState(false),
     [modal, setModal] = useState<'folder' | 'new' | 'help' | 'rename' | null>(null),
     [screen, setScreen] = useState<{ id: string; pin?: string; idea?: string } | null>(null),
@@ -159,6 +171,9 @@ function Studio({
     if (noticeTimer.current) clearTimeout(noticeTimer.current);
     noticeTimer.current = setTimeout(() => setNotice(''), 6500);
   };
+  useEffect(() => {
+    if (refreshed) notify('Updated from your agent. The board refreshed with the newest copy.');
+  }, [refreshed]);
   const issues = useMemo(
       () => analyze(project),
       [project.assets, project.screens, project.pins, project.transitions, project.layout],
@@ -564,6 +579,9 @@ function Studio({
           <span>{error}</span>
           <button className="text-button" onClick={() => void flush()}>
             Retry save
+          </button>
+          <button className="text-button" onClick={() => void takeServerCopy()}>
+            Take the newer copy
           </button>
           <button className="text-button" onClick={() => void doExport()}>
             Export current work

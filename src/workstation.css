@@ -1203,3 +1203,16 @@ kbd,
     height: calc(100dvh - 24px);
   }
 }
+.card-agent {
+  display: inline-flex;
+}
+.card-footer .tell-agent {
+  color: #7a7358;
+}
+.idea-controls .tell-agent {
+  margin-right: auto;
+}
+.library-heading .tell-agent {
+  margin-left: auto;
+  margin-right: 4px;
+}

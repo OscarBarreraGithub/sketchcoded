@@ -24,10 +24,11 @@ const asset = (id: string) => ({
   height: 80,
   importedAt: 'now',
 });
-/** Home (drawn, one pin with yarn to Board), Board (drawn), Help (planned). */
+/** Home (drawn; pin 1 with yarn to Board, pin 2 described but unconnected, pin 3 a link),
+ * Board (drawn), Help (planned), Closer (a detail sketch), and one unused sketch. */
 function board(): Project {
   const p = emptyProject('Little app', 'little');
-  p.assets = [asset('a'), asset('b')];
+  p.assets = [asset('a'), asset('b'), asset('c'), asset('d')];
   p.screens = [
     { id: 'home', assetId: 'a', title: 'Home', purpose: 'Landing', entry: true, role: 'screen' },
     {
@@ -46,11 +47,20 @@ function board(): Project {
       entry: false,
       role: 'modal',
     },
+    {
+      id: 'closer',
+      assetId: 'c',
+      title: 'Closer',
+      purpose: 'A zoom',
+      entry: false,
+      role: 'detail',
+    },
   ];
   p.layout = {
     home: { x: 0, y: 0, width: 300 },
     board: { x: 400, y: 0, width: 300 },
     help: { x: 800, y: 0, width: 300 },
+    closer: { x: 1200, y: 0, width: 300 },
   };
   p.pins = [
     {
@@ -60,6 +70,23 @@ function board(): Project {
       y: 0.5,
       title: 'Open the board',
       description: 'Goes to the studio.',
+    },
+    {
+      id: 'pin2',
+      screenId: 'home',
+      x: 0.2,
+      y: 0.8,
+      title: 'Settings',
+      description: 'Opens the settings.',
+    },
+    {
+      id: 'pin3',
+      screenId: 'home',
+      x: 0.8,
+      y: 0.8,
+      kind: 'link',
+      title: 'GitHub',
+      description: 'Opens https://example.com/repo',
     },
   ];
   p.transitions = [
@@ -104,19 +131,56 @@ describe('agent handoff: names, prompts and briefs', () => {
     expect(describeSubject(p, { view: 'screen-editor', screen: 'home' }).text).toBe(
       'frame “Home” (home)',
     );
+    expect(
+      describeSubject(p, { view: 'screen-editor', screen: 'home', layout: 'mobile' }).text,
+    ).toBe('frame “Home” (home), mobile layout');
     expect(describeSubject(p, { view: 'screen-editor', screen: 'home', pin: 'pin1' }).text).toBe(
       'pin 1 “Open the board” on frame “Home” (home)',
     );
     expect(describeSubject(p, { view: 'connection-editor', transition: 'yarn1' }).text).toContain(
       'yarn “Open” (yarn1) from pin “Open the board” on “Home” to Board',
     );
+    expect(describeSubject(p, { view: 'connection-editor' }).text).toBe(
+      'a yarn that is no longer on this board',
+    );
     expect(describeSubject(p, { view: 'review' }).text).toMatch(/^\d+ open findings?$/);
     expect(describeSubject(p, { view: 'test-flow', screen: 'board', trail: ['yarn1'] }).text).toBe(
       'Test flow at “Board” after 1 step',
     );
+    expect(describeSubject(p, { view: 'plan', idea: 'idea-search' }).text).toBe(
+      'idea “Search” (idea-search) on frame “Board” (board)',
+    );
+    expect(
+      describeSubject(p, { view: 'screen-editor', screen: 'board', idea: 'idea-search' }).text,
+    ).toBe('idea “Search” (idea-search) being placed on frame “Board” (board)');
+    expect(describeSubject(p, { view: 'library' }).text).toBe(
+      'the sketch library (4 sketches, 1 unused)',
+    );
     expect(describeSubject(p, { view: 'screen-editor', screen: 'ghost' }).text).toContain(
       'not on this board',
     );
+  });
+  it('gives each subject a task that fits its state', () => {
+    const p = board();
+    expect(defaultTask(p, { view: 'screen-editor', screen: 'home', pin: 'pin1' })).toContain(
+      'Check this pin’s description and its yarn',
+    );
+    expect(defaultTask(p, { view: 'screen-editor', screen: 'home', pin: 'pin2' })).toContain(
+      'described but has no yarn',
+    );
+    expect(defaultTask(p, { view: 'screen-editor', screen: 'home', pin: 'pin3' })).toContain(
+      'link pin',
+    );
+    expect(defaultTask(p, { view: 'screen-editor', screen: 'closer' })).toContain('detail sketch');
+    expect(defaultTask(p, { view: 'screen-editor', screen: 'help' })).toContain('no drawing yet');
+    expect(
+      defaultTask(leaveToAi(p, 'help', true), { view: 'screen-editor', screen: 'help' }),
+    ).toContain('left to the AI');
+    expect(
+      defaultTask(p, { view: 'screen-editor', screen: 'board', idea: 'idea-search' }),
+    ).toContain('I am placing the idea “Search”');
+    expect(defaultTask(p, { view: 'plan', idea: 'idea-search' })).toContain('Look at this idea');
+    expect(defaultTask(p, { view: 'library' })).toContain('unused sketch');
   });
   it('writes a prompt with the view, the subject, the brief address, the skills and the task', () => {
     const p = board(),
@@ -129,8 +193,10 @@ describe('agent handoff: names, prompts and briefs', () => {
       `${base}/api/projects/little/brief?view=screen-editor&screen=home&pin=pin1&layout=web`,
     );
     expect(prompt).toContain('talk-to-sketchcoded, read-a-board, describe-pins, build-rules');
+    expect(prompt).toContain(`(each linked from ${base}/api/skills)`);
+    expect(prompt).not.toContain('<name>');
     expect(prompt).toContain(`${base}/api/checklist.md`);
-    expect(prompt).toContain('Task: Describe this pin');
+    expect(prompt).toContain('Task: Check this pin');
     expect(prompt).toContain('Stay on this pin');
     expect(briefUrl(p, { view: 'test-flow', screen: 'board', trail: ['a', 'b'] }, base)).toBe(
       `${base}/api/projects/little/brief?view=test-flow&screen=board&trail=a%2Cb`,
@@ -144,19 +210,26 @@ describe('agent handoff: names, prompts and briefs', () => {
     });
     expect(() => contextSchema.parse({ view: 'nowhere' })).toThrow();
   });
-  it('briefs the screen editor with the frame, its pins, ideas, findings and drawings', () => {
+  it('briefs the screen editor with the frame, its pins, ideas, drawings and every finding about them', () => {
     const p = board(),
-      brief = agentBrief(p, { view: 'screen-editor', screen: 'board' }, base);
+      brief = agentBrief(p, { view: 'screen-editor', screen: 'home', pin: 'pin2' }, base);
     expect(brief).toContain('# Sketchcoded task brief');
-    expect(brief).toContain('Subject: frame “Board” (board)');
-    expect(brief).toContain(`- Web drawing: ${base}/assets/${'b'.repeat(64)}.webp`);
-    expect(brief).toContain('## Board');
-    expect(brief).toContain('- [ ] Search (idea-search)');
-    expect(brief).toContain('### Findings about this frame');
+    expect(brief).toContain('Subject: pin 2 “Settings” on frame “Home” (home)');
+    expect(brief).toContain('## The frame: Home (home)');
+    expect(brief).not.toContain('\n## Home\n');
+    expect(brief).toContain(`- Web drawing: ${base}/assets/${'a'.repeat(64)}.webp`);
+    expect(brief).toContain('Selected pin: 2 “Settings” (pin2)');
+    expect(brief).toContain('### Findings about the selected pin');
+    expect(brief).toContain('rule unconnected-pin');
+    expect(brief).toContain('### Findings about this frame, its pins and its yarn');
+    // The pin-level finding sits under the frame heading, not only under the pin.
+    const framePart = brief.slice(brief.indexOf('### Findings about this frame'));
+    expect(framePart).toContain('unconnected-pin:pin2');
     expect(brief).toContain(`${base}/api/skills/describe-pins.md`);
+    const ideas = agentBrief(p, { view: 'screen-editor', screen: 'board' }, base);
+    expect(ideas).toContain('- [ ] Search (idea-search)');
     const planned = agentBrief(p, { view: 'screen-editor', screen: 'help' }, base);
     expect(planned).toContain('No drawing yet: this frame is planned');
-    expect(planned).toContain('This frame has no drawing yet. Tell me what should be on it');
     const left = agentBrief(
       leaveToAi(p, 'help', true),
       { view: 'screen-editor', screen: 'help' },
@@ -164,24 +237,36 @@ describe('agent handoff: names, prompts and briefs', () => {
     );
     expect(left).toContain('Leave it up to the AI');
     expect(left).toContain('Propose the standard page');
+    const placing = agentBrief(
+      p,
+      { view: 'screen-editor', screen: 'board', idea: 'idea-search' },
+      base,
+    );
+    expect(placing).toContain('## The idea');
+    expect(placing).toContain('- Frame: “Board” (board)');
   });
-  it('briefs the yarn, the plan, the outline, the review and the trail', () => {
+  it('briefs the yarn, the plan, the outline, the review, the trail and the library', () => {
     const p = board();
     const yarn = agentBrief(p, { view: 'connection-editor', transition: 'yarn1' }, base);
     expect(yarn).toContain('## The yarn');
     expect(yarn).toContain('- Navigation: push · Fallback: no · Color: red');
+    expect(yarn).toContain('## The frame: Home (home)');
+    expect(yarn).toContain('## Where it goes: Board (board)');
     const fresh = agentBrief(p, { view: 'connection-editor', pin: 'pin1' }, base);
     expect(fresh).toContain('A new yarn from pin 1 “Open the board” (pin1)');
     const plan = agentBrief(p, { view: 'plan' }, base);
     expect(plan).toContain('## The plan');
-    expect(plan).toContain('### Help (modal · no drawing yet)');
+    expect(plan).toContain('#### Help (modal · no drawing yet)');
     const outline = agentBrief(p, { view: 'outline' }, base);
-    expect(outline).toContain('- Home (home) · entry · 1 pins · 1 yarn out');
+    expect(outline).toContain('- Home (home) · entry · 3 pins · 1 yarn out');
     const review = agentBrief(p, { view: 'review' }, base);
     expect(review).toContain('## Findings');
     expect(review).toContain('fingerprint');
-    const one = agentBrief(p, { view: 'review', finding: 'no-such:finding' }, base);
-    expect(one).toContain('is no longer reported');
+    const one = agentBrief(p, { view: 'review', finding: 'unconnected-pin:pin2' }, base);
+    expect(one).toContain('Subject: finding “');
+    expect(one).toContain('## The frame: Home (home)');
+    const gone = agentBrief(p, { view: 'review', finding: 'no-such:finding' }, base);
+    expect(gone).toContain('is no longer reported');
     const trail = agentBrief(
       p,
       { view: 'test-flow', screen: 'board', trail: ['yarn1', 'gone'] },
@@ -189,8 +274,14 @@ describe('agent handoff: names, prompts and briefs', () => {
     );
     expect(trail).toContain('1. “Home” → pin “Open the board” → “Open” (push) → Board');
     expect(trail).toContain('2. Yarn gone is not on this board any more.');
+    const library = agentBrief(p, { view: 'library' }, base);
+    expect(library).toContain('## The library');
+    expect(library).toContain('- d.png (d) · 100 × 80');
+    expect(library).toContain('unused');
+    expect(library).toContain('- “Help” (help) · 1 ideas planned');
     const whole = agentBrief(p, { view: 'board' }, base);
     expect(whole).toContain('## The board at a glance');
     expect(whole).toContain('- Help (help) · modal · planned, no drawing · 0 pins');
+    expect(whole).toContain('Unused sketches: 1.');
   });
 });
