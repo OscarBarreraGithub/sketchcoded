@@ -28,6 +28,10 @@ npm start
 
 `PORT=5176 npm run dev` uses a different port. `DRAWCODE_DATA_DIR=/absolute/path npm run dev` chooses a different project storage directory. The server binds to `127.0.0.1`.
 
+## Working with your agent
+
+Every view has a **Tell the agent** button. It copies a prompt that names what you are looking at (the board, a frame, a pin, a yarn, a finding, a Test flow trail), links the task brief the running app serves for exactly that (`/api/projects/<id>/brief?…`), lists the skills to read (`/api/skills/<name>.md`) and the rules in your words (`/api/checklist.md`), and states the default task, which you can edit before pasting. Your agent reads the live board from `http://127.0.0.1:5173` and writes back through the same API, so there is no export or back-and-forth for a change to one frame. Details: `docs/AGENT_HANDOFF.md`.
+
 ## Make a flow
 
 1. **Plan first, if you like.** Open **Planning** and write down every idea for the app: a title, details, which screen it belongs on, and where it leads. Screens you have not drawn yet can be planned as empty frames. See [Plan before you draw](#plan-before-you-draw).

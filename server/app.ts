@@ -1,7 +1,12 @@
 import express from 'express';
 import multer from 'multer';
 import { z } from 'zod';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 import { projectSchema } from '../shared/model';
+import { agentBrief, contextSchema, skillIds, skills } from '../shared/agent';
+import { flowDocument } from '../shared/flow-document';
+import { planningOutline } from '../shared/planning';
 import { AppError, Store } from './store';
 export function createApp(store: Store) {
   const app = express();
@@ -46,6 +51,36 @@ export function createApp(store: Store) {
     res.status(201).json(await store.create(name, demo));
   });
   app.get('/api/projects/:id', async (req, res) => res.json(await store.read(req.params.id)));
+  // Rule (2026-09-26): every view can hand its task to the agent. The agent reads these from the
+  // running app instead of asking the user: the brief for one task, the whole documents, the
+  // user's rules and the skills.
+  const base = (req: express.Request) => `http://${req.headers.host}`;
+  const markdown = (res: express.Response, text: string) =>
+    res.type('text/markdown; charset=utf-8').send(text);
+  app.get('/api/projects/:id/brief', async (req, res) => {
+    const project = await store.read(req.params.id);
+    markdown(res, agentBrief(project, contextSchema.parse(req.query), base(req)));
+  });
+  app.get('/api/projects/:id/flow.md', async (req, res) =>
+    markdown(res, flowDocument(await store.read(req.params.id))),
+  );
+  app.get('/api/projects/:id/outline.md', async (req, res) =>
+    markdown(res, planningOutline(await store.read(req.params.id))),
+  );
+  app.get('/api/checklist.md', async (_req, res) =>
+    markdown(res, await fs.readFile(path.resolve('docs/BUILD_CHECKLIST.md'), 'utf8')),
+  );
+  app.get('/api/skills', (req, res) =>
+    res.json(
+      skillIds.map((id) => ({ id, ...skills[id], url: `${base(req)}/api/skills/${id}.md` })),
+    ),
+  );
+  app.get('/api/skills/:name', async (req, res) => {
+    const name = req.params.name.replace(/\.md$/, '');
+    if (!(skillIds as readonly string[]).includes(name))
+      throw new AppError(`No skill named ${name}. See /api/skills.`, 404);
+    markdown(res, await fs.readFile(path.resolve('docs/skills', `${name}.md`), 'utf8'));
+  });
   app.put('/api/projects/:id', async (req, res) => {
     const p = projectSchema.parse(req.body);
     if (p.id !== req.params.id) throw new AppError('Project identifier mismatch.');

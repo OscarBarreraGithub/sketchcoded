@@ -40,6 +40,10 @@ A pin that leaves the app for a web address is a **link pin** (`kind: "link"`). 
 
 A frame may wear the “Leave it up to the AI” post-it (`leftToAi: true`, toggled in the screen editor). It means: build a standard, conventional page for this screen from its title, purpose, ideas and the yarn in and out; no drawing is expected and the review does not ask for one. Everything else on the board is the user's vision and is built as drawn. The export says this on the screen's section of `flow.md` and the planning outline flags it.
 
+## Handing a task to the agent
+
+Every work view has a **Tell the agent** button (`src/components/TellAgent.tsx`). It copies a prompt generated from `shared/agent.ts`: the view, the exact subject (board, frame, pin, yarn, idea, finding, trail), the URL of a task brief served by the running app (`/api/projects/:id/brief?view=…`), the skills to read (`/api/skills/:id.md`, files in `docs/skills/`) and the user's rules (`/api/checklist.md`). The agent reads the live board and writes back through `PUT /api/projects/:id`. Views, contexts and skills are registries; add to them, never hand-write a prompt. `docs/AGENT_HANDOFF.md` is the full description and the reviewer's checklist. When you are the agent receiving such a prompt: read the brief first, follow the named skills, stay on the named subject, and tell the user to reload after writing.
+
 ## Companion site
 
 The public landing page lives in a separate repository, `../sketchcoded-site` (static HTML, no build). Keep its copy consistent with `docs/FUNCTIONALITY.md` and the README: same name, tagline, setup prompt and feature list. Its `links.js` holds every external address in one place.

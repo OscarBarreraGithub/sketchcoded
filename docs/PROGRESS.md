@@ -171,3 +171,23 @@ What changed, in the order the user raised it:
 Verification: `npm run build` passes; `npm test` **74** unit tests pass (5 files); `npm run test:ui` **18** browser workflows pass, including real Chromium tab zoom at 125–250% with the new “page never scrolls” assertion, the emulated laptop at 150% (page, column, pill, pan clamp) and the post-it flow; `npm run format:check` passes. Visual checks with scratch data on an isolated server: the workstation and the screen editor at 1440×900 and 1280×720 for 150% and 200%; every view at three zoomed laptop sizes; the post-it on the board and in the editor.
 
 Open for the user: publish the two repositories (`gh repo create sketchcoded --private --source=. --push`, and the same in `../sketchcoded-site`), then confirm the addresses in the site's `links.js`. The web/mobile toggle question and the “Sketchcoded” versus “Sketch Code” naming on the site are still theirs to decide.
+
+## 2026-09-26 — Hand the task to the agent
+
+**Goal (set by the user):** the whole site plays well with the agent the user is working with. In every view where the user works, one button gives a prompt, copied to the clipboard and shown for manual copying, that tells the agent exactly what the user is looking at and where the task instructions are, so there is no confusion or back-and-forth. The agent talks to the running localhost directly. Views, instructions and skills are named so the prompt is generated modularly. A reviewer checks every place.
+
+**Places (the checklist):**
+
+- [x] Board: view toolbar (Board tab), the whole board.
+- [x] Screen editor: toolbar, the frame, the selected pin, the layout shown.
+- [x] Connection editor: dialog actions, the yarn (or a new yarn from its pin).
+- [x] Plan: header (whole plan) and each frame's folder (that frame's ideas).
+- [x] Ideas panel (left column): what is left, as a plan task.
+- [x] App outline: header (whole outline) and each screen.
+- [x] Review flow: heading (all open findings) and inside each finding.
+- [x] Test flow: footer, the current screen and the trail.
+- [x] Help dialog explains the button; README, `docs/FUNCTIONALITY.md`, the site guide and `AGENTS.md` describe it; `docs/AGENT_HANDOFF.md` is the full description with the reviewer's checklist.
+
+**How it is built:** `shared/agent.ts` (registries `views`, `skills`, `contextSchema`; `agentPrompt`, `agentBrief`, `briefUrl`), `src/components/TellAgent.tsx` (button and dialog), server routes `/api/projects/:id/brief`, `/flow.md`, `/outline.md`, `/api/checklist.md`, `/api/skills`, `/api/skills/:id.md`; skills in `docs/skills/` (eight files), shipped in exports under `skills/`.
+
+**Verification:** `npm run build` passes; `npm test` **83** unit tests pass (6 files, including `tests/agent.test.ts`: registries against the skill files, subjects, prompts, briefs for every view); `npm run test:ui` **19** browser workflows pass, including `tests/e2e/agent.spec.ts` (every button clicked, the clipboard read back, every brief fetched as Markdown, skills and documents served, a wrong skill name rejected); `npm run format:check` passes. The live app on port 5173 serves `/api/skills` and `/api/checklist.md`; the Sketchcoded board's backlog lists the feature. A reviewer agent checked placements, names, briefs on real data, docs and tests; its findings and what was done about them are recorded below.

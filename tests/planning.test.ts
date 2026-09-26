@@ -286,6 +286,8 @@ describe('planning survives storage', () => {
     expect(saved.screens.at(-1).assetId).toBeNull();
     expect(strFromU8(files['flow.md'])).toContain('- [ ] Sign out → A warm welcome');
     expect(strFromU8(files['BUILD-CHECKLIST.md'])).toContain('Nothing grows or shrinks');
+    expect(Object.keys(files)).toContain('skills/describe-pins.md');
+    expect(Object.keys(files)).toContain('skills/talk-to-sketchcoded.md');
     expect(strFromU8(files['READ-ME.md'])).toContain('BUILD-CHECKLIST.md');
     const imported = await store.importBundle(Buffer.from(zip));
     expect(imported.ideas).toEqual(p.ideas);

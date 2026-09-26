@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ArrowRight, Link2, Trash2 } from 'lucide-react';
 import { colors, isHistory, type Project, type Transition } from '../../shared/model';
 import { Modal } from './Modal';
+import { TellAgent } from './TellAgent';
 export function EdgeEditor({
   project,
   edge,
@@ -190,6 +191,15 @@ export function EdgeEditor({
               <Trash2 size={15} /> Remove yarn
             </button>
           )}
+          <TellAgent
+            project={project}
+            context={{
+              view: 'connection-editor',
+              transition: isNew ? undefined : draft.id,
+              pin: draft.pinId,
+              screen: source?.id,
+            }}
+          />
           <button type="button" className="button" onClick={onClose}>
             Cancel
           </button>

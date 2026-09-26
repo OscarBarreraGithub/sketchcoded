@@ -1,3 +1,4 @@
+import { TellAgent } from './TellAgent';
 import { AutoTextarea } from './AutoTextarea';
 import { useMemo, useRef, useState } from 'react';
 import {
@@ -55,6 +56,7 @@ export function ReviewPanel({
           Check for missing paths, screens you cannot reach, and ways back. Open each finding to fix
           it or record why a one-way path is intentional—for example, after signing in.
         </p>
+        <TellAgent project={project} context={{ view: 'review' }} />
       </div>
       <div className="review-tabs">
         <button
@@ -128,6 +130,7 @@ export function ReviewPanel({
                   <button className="text-button" onClick={() => onLocate(issue)}>
                     Show me where <ArrowUpRight size={14} />
                   </button>
+                  <TellAgent project={project} context={{ view: 'review', finding: issue.id }} />
                   {decision.status === 'accepted' ? (
                     <div className="accepted-reason">
                       <CheckCheck size={16} />

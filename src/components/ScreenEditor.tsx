@@ -47,6 +47,7 @@ import {
 } from '../../shared/model';
 import type { Update } from '../useProject';
 import { StickyNote } from 'lucide-react';
+import { TellAgent } from './TellAgent';
 import { Modal, Confirm } from './Modal';
 import { ScrollHints } from './ScrollHints';
 type Placing =
@@ -311,6 +312,10 @@ export function ScreenEditor({
                 <MapPin size={15} /> Add a pin
               </button>
             )}
+            <TellAgent
+              project={project}
+              context={{ view: 'screen-editor', screen: s.id, pin: selected ?? undefined, layout }}
+            />
           </div>
           <div className={`sketch-stage layout-stage ${layout} ${placing ? 'placing' : ''}`}>
             <div className="layout-caption">

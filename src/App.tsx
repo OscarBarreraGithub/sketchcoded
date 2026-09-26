@@ -44,6 +44,7 @@ import { Library } from './components/Library';
 import { IdeasPanel } from './components/IdeasPanel';
 import { ScrollArea, ScrollHints } from './components/ScrollHints';
 import { Modal, Confirm } from './components/Modal';
+import { TellAgent } from './components/TellAgent';
 import { ScreenEditor } from './components/ScreenEditor';
 import { EdgeEditor } from './components/EdgeEditor';
 import { ReviewPanel } from './components/ReviewPanel';
@@ -681,6 +682,7 @@ function Studio({
             <button className="button library-toggle" onClick={() => setLibraryOpen(true)}>
               <Images size={17} /> Sketch library
             </button>
+            {viewMode === 'board' && <TellAgent project={project} context={{ view: 'board' }} />}
             <p id="review-explanation">
               Review flow finds missing paths and ways back. You decide which exceptions make sense.
             </p>
@@ -975,6 +977,11 @@ function Studio({
                 '06',
                 'Check & play',
                 'Review potential dead ends and intentional one-way routes. Keep a reason for each exception. Test flow lets you choose branches, switch between web and mobile, and try the sketches.',
+              ],
+              [
+                '07',
+                'Hand it to your agent',
+                'Every view has a Tell the agent button. It copies a prompt naming exactly what you are looking at, with the brief, the skills and your rules served by this running app, so your agent reads the board itself and writes back through the same local API.',
               ],
             ].map(([n, title, detail]) => (
               <div key={n}>

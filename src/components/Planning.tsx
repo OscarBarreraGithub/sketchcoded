@@ -1,3 +1,4 @@
+import { TellAgent } from './TellAgent';
 import { useMemo, useState, type FormEvent } from 'react';
 import {
   ArrowRight,
@@ -254,6 +255,7 @@ export function Planning({
             <button className="button small" onClick={() => onBoard(screen.id)}>
               <Focus size={14} /> Show on board
             </button>
+            <TellAgent project={project} context={{ view: 'plan', screen: screen.id }} />
           </div>
         </div>
         {!ideas.length && (
@@ -288,6 +290,7 @@ export function Planning({
             <Check size={15} /> {counts.placed} pinned
           </span>
           <div>
+            <TellAgent project={project} context={{ view: 'plan' }} />
             <button className="button small" onClick={() => void copy()}>
               <ClipboardCopy size={15} /> {copied ? 'Copied' : 'Copy as text'}
             </button>

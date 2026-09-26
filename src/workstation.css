@@ -1132,3 +1132,74 @@ kbd,
 .paper-title {
   font-size: max(27px, calc(13px / var(--board-zoom)));
 }
+
+/* Rule (2026-09-26): every view can hand its task to the agent. */
+.tell-agent {
+  white-space: nowrap;
+}
+.modal.agent-modal {
+  width: 720px;
+  height: min(72dvh, 640px);
+  display: flex;
+  flex-direction: column;
+}
+.modal.agent-modal .modal-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+.agent-status {
+  margin: 0;
+  font-size: 13px;
+  color: #5f6b56;
+}
+.agent-modal textarea {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  resize: none;
+  padding: 14px 16px;
+  border: 1px solid #d9dccc;
+  border-radius: 8px;
+  background: #fffef8;
+  color: var(--ink);
+  font:
+    13px/1.55 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  scrollbar-width: thin;
+}
+.agent-modal .modal-actions {
+  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.agent-modal .modal-actions .button {
+  text-decoration: none;
+}
+.outline-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+.ideas-actions {
+  display: flex;
+  padding: 0 14px 10px;
+}
+.review-heading .tell-agent {
+  margin-top: 12px;
+}
+.issue-body .tell-agent {
+  margin-top: 8px;
+}
+@media (max-height: 650px) {
+  .modal.agent-modal {
+    height: calc(100dvh - 24px);
+  }
+}

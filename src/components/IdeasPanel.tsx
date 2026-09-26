@@ -1,3 +1,4 @@
+import { TellAgent } from './TellAgent';
 import { useState } from 'react';
 import { ArrowRight, ChevronDown, ListChecks, MapPin } from 'lucide-react';
 import { ideaStatus, isPlanned, type Project } from '../../shared/model';
@@ -32,6 +33,9 @@ export function IdeasPanel({
       </button>
       {open && (
         <>
+          <div className="ideas-actions">
+            <TellAgent project={project} context={{ view: 'plan' }} />
+          </div>
           <div className="ideas-scroll">
             {pool.length > 0 && (
               <details className="ideas-group" open>

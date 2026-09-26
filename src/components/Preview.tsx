@@ -24,6 +24,7 @@ import {
 import { follow, startPreview, type PreviewState } from '../../shared/navigation';
 import { Modal } from './Modal';
 import { ScrollHints } from './ScrollHints';
+import { TellAgent } from './TellAgent';
 export function Preview({ project, onClose }: { project: Project; onClose: () => void }) {
   const appScreens = project.screens.filter((s) => s.role !== 'detail');
   const initial = appScreens.find((s) => s.entry)?.id ?? appScreens[0]?.id;
@@ -352,6 +353,10 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
         >
           <Undo2 size={15} /> Rewind test
         </button>
+        <TellAgent
+          project={project}
+          context={{ view: 'test-flow', screen: current.screenId, trail: state.trail, layout }}
+        />
         <span>Rewind is a testing control. App back navigation must be drawn on the board.</span>
         <span className="preview-step">
           <Play size={13} /> {state.trail.length} steps

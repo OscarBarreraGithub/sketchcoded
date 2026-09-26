@@ -1,0 +1,12 @@
+# Connect screens
+
+Yarn is navigation. Fill in a yarn so a builder and Test flow both understand it.
+
+- `summary`: the label on the yarn and the option in Test flow. Short, specific, at most about 40 characters (“Signed in”, “Open settings”).
+- `navigation`: `push` opens the destination and keeps history; `replace` swaps the current screen; `reset` starts fresh (after signing out, for example); `modal` opens the destination as a dialog over the current screen; `back` returns to the actual previous screen; `dismiss` closes the current dialog. `back` and `dismiss` have `target: null`.
+- `condition` (when does this happen), `logic` (what happens along the way), `context` (what data or information is needed): plain language. They are read by people and builders; nothing executes them.
+- `fallback: true`: exactly one branch per pin when its conditions do not cover every case. Two fallbacks on one pin is a finding.
+- A `link` pin never has yarn. A `detail` pin is not navigation.
+- Keep the navigation kind the user chose unless the brief says otherwise. Do not add a destination screen that is not on the board; ask.
+
+Write back through the API (skill: talk-to-sketchcoded) and tell the user to reload.

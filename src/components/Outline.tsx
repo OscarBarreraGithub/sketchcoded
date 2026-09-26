@@ -1,3 +1,4 @@
+import { TellAgent } from './TellAgent';
 import { useRef, useState } from 'react';
 import {
   ArrowRight,
@@ -100,11 +101,14 @@ export function Outline({
             loops stay simple.
           </p>
         </div>
-        <button className="button" onClick={toggleAll}>
-          {expanded.length === project.screens.length && project.screens.length
-            ? 'Collapse screens'
-            : 'Expand screens'}
-        </button>
+        <div className="outline-actions">
+          <TellAgent project={project} context={{ view: 'outline' }} className="button" />
+          <button className="button" onClick={toggleAll}>
+            {expanded.length === project.screens.length && project.screens.length
+              ? 'Collapse screens'
+              : 'Expand screens'}
+          </button>
+        </div>
       </div>
       <label className="outline-search">
         <Search size={18} />
@@ -176,6 +180,7 @@ export function Outline({
                         <button className="button small" onClick={() => onBoard(s.id)}>
                           <Focus size={16} /> Show on board
                         </button>
+                        <TellAgent project={project} context={{ view: 'outline', screen: s.id }} />
                       </div>
                     </div>
                     {project.ideas.some((idea) => idea.screenId === s.id && !idea.pinId) && (
