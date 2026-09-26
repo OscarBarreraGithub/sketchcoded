@@ -25,9 +25,14 @@
   overflow: visible;
   flex: 0 0 auto;
 }
-.left-column .library .library-scroll {
-  min-height: 120px;
-  max-height: 38vh;
+/* Inside the left column, the column is the only scroller: the library list and the ideas list
+   lay out at full height and the More below pill is the one signal. */
+.left-column .library .library-scroll,
+.left-column .ideas-scroll {
+  min-height: 0;
+  max-height: none;
+  flex: 0 0 auto;
+  overflow: visible;
 }
 .left-column .library-footer {
   display: none;
