@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Bot, Check, ClipboardCopy, ExternalLink, TriangleAlert } from 'lucide-react';
 import {
   agentPrompt,
@@ -11,6 +11,7 @@ import {
 } from '../../shared/agent';
 import type { Project } from '../../shared/model';
 import { Modal } from './Modal';
+import { ScrollHints } from './ScrollHints';
 
 /**
  * Rule (2026-09-26): every view can hand its task to the agent. One button copies a generated
@@ -42,6 +43,7 @@ export function TellAgent({
   /** Render no button of its own; used with `openSignal`. */
   hideButton?: boolean;
 }) {
+  const terminal = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false),
     [copied, setCopied] = useState<'yes' | 'no' | 'pending'>('pending'),
     [flash, setFlash] = useState(false);
@@ -150,6 +152,7 @@ export function TellAgent({
               <em>prompt · {prompt.split('\n').length} lines · what your agent receives</em>
             </div>
             <textarea
+              ref={terminal}
               className="agent-terminal-text"
               aria-label="Prompt for your agent"
               value={prompt}
@@ -157,6 +160,7 @@ export function TellAgent({
               spellCheck={false}
               onFocus={(e) => e.currentTarget.select()}
             />
+            <ScrollHints target={terminal} label="More of the prompt" />
           </div>
           <div className="modal-actions">
             <a

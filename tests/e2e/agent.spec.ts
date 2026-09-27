@@ -23,6 +23,10 @@ async function handoff(page: Page, button: ReturnType<Page['getByRole']>, expect
   for (const e of expectations) expect(text).toMatch(e);
   expect(text).toContain('/api/checklist.md');
   await expect(dialog.getByRole('status')).toContainText('Copied to your clipboard');
+  // Rule: when the prompt continues off screen, the terminal says so.
+  const box = dialog.getByRole('textbox', { name: 'Prompt for your agent' });
+  if (await box.evaluate((el) => el.scrollHeight > el.clientHeight + 4))
+    await expect(dialog.locator('.agent-terminal .scroll-more.below')).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(text);
   const url = text.match(/https?:\/\/\S+\/brief\?\S+/)![0];
   const brief = await page.request.get(url);
