@@ -1,4 +1,10 @@
-import { emptyProject, type Asset, type Project, type Transition } from './model';
+import {
+  defaultColorLabels,
+  emptyProject,
+  type Asset,
+  type Project,
+  type Transition,
+} from './model';
 export function demoProject(assets: Asset[], id?: string): Project {
   const p = emptyProject('Little chat', id);
   p.assets = assets;
@@ -106,7 +112,6 @@ export function demoProject(assets: Asset[], id?: string): Project {
       condition: 'Credentials are valid and a session has been established.',
       logic:
         'Clear the signed-out history. Invalid credentials remain on the welcome screen with an inline error.',
-      color: 'olive',
     }),
     edge('chat-allowed', 'open-chat', 'conversation', 'You can message them', {
       condition: 'Neither participant has blocked the other and the conversation is available.',
@@ -123,12 +128,15 @@ export function demoProject(assets: Asset[], id?: string): Project {
     }),
     edge('chat-return', 'chat-back', null, 'Back to your people', {
       navigation: 'back',
-      color: 'blue',
+      color: 'olive',
     }),
     edge('blocked-return', 'blocked-back', null, 'Back to your people', {
       navigation: 'back',
-      color: 'blue',
+      color: 'olive',
     }),
   ];
+  p.colorLabels = { ...defaultColorLabels };
+  delete p.colorLabels.violet;
+  delete p.colorLabels.teal;
   return p;
 }
