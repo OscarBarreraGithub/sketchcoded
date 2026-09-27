@@ -10,12 +10,12 @@ Frames are `F1, F2, …`, sketches `S1, S2, …`, ideas `I1, I2, …` (the `code
 
 - `title`, `purpose` (what it is for), `role`: `screen`, `auth` (login or onboarding), `modal` (dialog or overlay), `terminal` (intentional ending), `detail` (an enlarged sketch, not an app page).
 - `entry: true` means the app can start here.
-- `assetId` is the web drawing; `mobileAssetId` an optional mobile drawing of the same screen. `assetId: null` means a **planned frame**: no drawing yet. Planned frames are backlog, not spec, unless `leftToAi: true`.
+- `assetId` is the web drawing; `mobileAssetId` an optional mobile drawing of the same screen. `assetId: null` means a **planned frame**: no drawing yet. Planned frames are backlog, not spec, unless `leftToAi: true`. A planned frame may already carry provisional pins and their yarn, so the flow is tied before it is drawn.
 - `leftToAi: true` is the “Leave it up to the AI” post-it: build a standard, conventional page from title, purpose, ideas and yarn. No drawing expected.
 
 ## Pins
 
-A pin is an interaction on a drawing. `x`, `y` are fractions of the web image (0..1 from the top left); `mobile: {x, y}` the position on the mobile drawing. `title` and `description` are the intent in the user's words. `kind`: `interaction` (default), `detail` (opens a closer look, never navigation), `link` (leaves the app for the first URL in its description; no yarn, no destination frame). `color` is one of red, olive, blue, gold; the board's `colorLabels` say what each color means on this project.
+A pin is an interaction on a drawing. `x`, `y` are fractions of the web image (0..1 from the top left); `mobile: {x, y}` the position on the mobile drawing. `provisional: true` means the position is a placeholder: the pin was written before its frame had a drawing (a planned frame can carry pins and real yarn); the user places it once the drawing arrives. `title` and `description` are the intent in the user's words. `kind`: `interaction` (default), `detail` (opens a closer look, never navigation), `link` (leaves the app for the first URL in its description; no yarn, no destination frame). `color` is one of red, olive, blue, gold; the board's `colorLabels` say what each color means on this project.
 
 ## Yarn (transitions)
 

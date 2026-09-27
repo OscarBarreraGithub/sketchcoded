@@ -312,7 +312,10 @@ export function Board({
     const a = position(source),
       b = position(target),
       asset = project.assets.find((a) => a.id === source.assetId);
-    const imageHeight = asset ? ((a.width - 24) * asset.height) / asset.width : 200;
+    // A planned card is a 2:1 box in board units (see screenSize), so yarn leaves from its slots.
+    const imageHeight = asset
+      ? ((a.width - 24) * asset.height) / asset.width
+      : (a.width - 24) * 0.5;
     const x1 = a.x + 12 + pin.x * (a.width - 24),
       y1 = a.y + 30 + pin.y * imageHeight;
     const x2 = b.x + b.width * 0.5,
@@ -463,10 +466,10 @@ export function Board({
                   )}
                   {pins.map((pin, i) => (
                     <button
-                      className={`board-pin ${pinColor(pin)} ${pin.kind === 'detail' ? 'reference-pin' : ''} ${pin.kind === 'link' ? 'link-pin' : ''} ${connecting === pin.id ? 'selected' : ''}`}
+                      className={`board-pin ${pinColor(pin)} ${pin.kind === 'detail' ? 'reference-pin' : ''} ${pin.kind === 'link' ? 'link-pin' : ''} ${pin.provisional ? 'provisional' : ''} ${connecting === pin.id ? 'selected' : ''}`}
                       key={pin.id}
                       style={{ left: `${pin.x * 100}%`, top: `${pin.y * 100}%` }}
-                      title={`${pin.title} — ${pin.kind === 'detail' ? 'choose a detail sketch' : pin.kind === 'link' ? 'links out; click to edit' : 'click to connect'}`}
+                      title={`${pin.title}${pin.provisional ? ' (not placed yet; open the frame to place it)' : ''} — ${pin.kind === 'detail' ? 'choose a detail sketch' : pin.kind === 'link' ? 'links out; click to edit' : 'click to connect'}`}
                       aria-label={
                         pin.kind === 'link' ? `Edit link ${pin.title}` : `Connect ${pin.title}`
                       }
@@ -491,16 +494,19 @@ export function Board({
                 </div>
                 <div className="card-footer">
                   <span>
-                    <b className="item-code">{codeOf(s)}</b> ·{' '}
-                    {s.role === 'detail'
-                      ? 'DETAIL REFERENCE'
-                      : s.role === 'auth'
-                        ? 'AUTHENTICATION'
-                        : s.role === 'modal'
-                          ? 'DIALOG'
-                          : s.role === 'terminal'
-                            ? 'ENDING'
-                            : 'SCREEN'}
+                    <b className="item-code">{codeOf(s)}</b>
+                    <span className="frame-role">
+                      {' · '}
+                      {s.role === 'detail'
+                        ? 'DETAIL REFERENCE'
+                        : s.role === 'auth'
+                          ? 'AUTHENTICATION'
+                          : s.role === 'modal'
+                            ? 'DIALOG'
+                            : s.role === 'terminal'
+                              ? 'ENDING'
+                              : 'SCREEN'}
+                    </span>
                     {mobile && (
                       <i className="layout-flag" title="Has a mobile layout">
                         <Smartphone size={11} />
@@ -538,7 +544,7 @@ export function Board({
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => (connecting ? onConnect(connecting, s.id) : onScreen(s.id))}
               >
-                {s.title}
+                <span className="paper-title-text">{s.title}</span>
                 {s.entry && <Flag size={14} />}
               </button>
             </article>

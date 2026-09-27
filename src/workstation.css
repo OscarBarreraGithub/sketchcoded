@@ -1447,3 +1447,112 @@ kbd,
   width: 100%;
   justify-content: flex-start;
 }
+
+/* Planned frames keep a fixed size in board units, the same 2:1 box the layout math assumes
+   (screenSize), so text that grows to stay legible at low zoom cannot change the geometry: rows
+   never run into each other and Fit is exact. Under 40% the text steps aside and a planned frame
+   is plain dashed paper; the tape title always trims to its tape instead of spilling out. */
+.screen-card.planned .card-image {
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+}
+.screen-card.planned .card-image .frame-planned {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  padding: 10px 12px;
+  overflow: hidden;
+  gap: 6px;
+}
+.board.zoomed-out .frame-planned > * {
+  display: none;
+}
+.board.zoomed-out .frame-role,
+.board.zoomed-out .card-footer .card-agent,
+.board.zoomed-out .card-footer > .icon-button,
+.board.zoomed-out .layout-flag {
+  display: none;
+}
+.board.zoomed-out .post-it {
+  width: calc(14px / var(--board-zoom));
+  height: calc(14px / var(--board-zoom));
+  padding: 0;
+  font-size: 0;
+  top: calc(-4px / var(--board-zoom));
+}
+.board.zoomed-out .post-it::before {
+  display: none;
+}
+.paper-title {
+  min-width: 0;
+  max-width: 100%;
+  left: 0;
+}
+.paper-title-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* A provisional pin: written before the drawing, waiting to be placed. Dashed ring. */
+.board-pin.provisional,
+.editor-pin.provisional {
+  border: 2px dashed #fff7e7;
+  box-shadow:
+    0 0 0 3px #f5edcf99,
+    1px 3px 5px #553d2855;
+}
+.frame-planned .waiting-pins {
+  color: #7a6a3a;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+/* How much the agent builds: a three-position switch in the handoff dialog for a new or empty
+   board. The active level is filled; the note under it keeps one height so nothing moves. */
+.agent-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.agent-level-switch {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f3f2ea;
+}
+.agent-level-switch button {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: 600 13px var(--sans);
+  color: #4c5648;
+  cursor: pointer;
+}
+.agent-level-switch button:hover {
+  background: #e6e8dc;
+}
+.agent-level-switch button[aria-checked='true'] {
+  background: var(--green);
+  color: #fffef8;
+}
+.agent-level-note {
+  margin: 0;
+  min-height: 38px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #6f7767;
+}
+.modal.agent-modal {
+  height: min(88dvh, 740px);
+}
+.agent-terminal {
+  min-height: 100px;
+}
+.agent-levels {
+  gap: 6px;
+}

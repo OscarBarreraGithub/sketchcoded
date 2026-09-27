@@ -3,11 +3,15 @@ import { Bot, Check, ChevronDown, ClipboardCopy, ExternalLink, TriangleAlert } f
 import {
   agentPrompt,
   briefUrl,
+  buildModeIds,
+  buildModes,
   checklistUrl,
+  defaultBuildMode,
   describeSubject,
   skillsIndexUrl,
   views,
   type AgentContext,
+  type BuildMode,
 } from '../../shared/agent';
 import type { Project } from '../../shared/model';
 import { Modal } from './Modal';
@@ -64,11 +68,17 @@ export function TellAgent({
   const terminal = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false),
     [copied, setCopied] = useState<'yes' | 'no' | 'pending'>('pending'),
-    [flash, setFlash] = useState(false);
+    [flash, setFlash] = useState(false),
+    [mode, setMode] = useState<BuildMode>(context.mode ?? defaultBuildMode);
   const base = window.location.origin;
-  const subject = describeSubject(project, context),
-    view = views[context.view],
-    prompt = agentPrompt(project, context, base);
+  // A new board, or an empty one, is written at one of three levels; the dialog offers the switch.
+  const levels =
+    context.view === 'boards' ||
+    (context.view === 'board' && !project.screens.length && !project.ideas.length);
+  const ctx: AgentContext = levels ? { ...context, mode } : context;
+  const subject = describeSubject(project, ctx),
+    view = views[ctx.view],
+    prompt = agentPrompt(project, ctx, base);
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
@@ -88,6 +98,10 @@ export function TellAgent({
     setCopied('pending');
     setOpen(true);
     void copy(prompt);
+  };
+  const choose = (next: BuildMode) => {
+    setMode(next);
+    void copy(agentPrompt(project, { ...context, mode: next }, base));
   };
   useEffect(() => {
     if (openSignal) start();
@@ -130,7 +144,7 @@ export function TellAgent({
               <span>
                 {copied === 'no'
                   ? 'Select the prompt below and copy it yourself.'
-                  : 'Paste it into your agent. It reads this board and your rules from the app running here and gets to work.'}
+                  : 'Paste it into your agent. It reads this board and your rules from here.'}
               </span>
             </div>
           </div>
@@ -141,16 +155,16 @@ export function TellAgent({
                 {code && <b className="item-code">{code}</b>} {rest}
               </dd>
             </div>
-            <div>
-              <dt>In</dt>
-              <dd>
-                {context.view === 'boards' ? view.label : `${view.label} · board “${project.name}”`}
-              </dd>
-            </div>
+            {context.view !== 'boards' && (
+              <div>
+                <dt>In</dt>
+                <dd>{`${view.label} · board “${project.name}”`}</dd>
+              </div>
+            )}
             <div>
               <dt>The agent reads</dt>
               <dd className="agent-links">
-                <a href={briefUrl(project, context, base)} target="_blank" rel="noreferrer">
+                <a href={briefUrl(project, ctx, base)} target="_blank" rel="noreferrer">
                   the brief for this task <ExternalLink size={12} />
                 </a>
                 <a href={skillsIndexUrl(base)} target="_blank" rel="noreferrer">
@@ -162,6 +176,28 @@ export function TellAgent({
               </dd>
             </div>
           </dl>
+          {levels && (
+            <div className="agent-levels">
+              <div
+                className="agent-level-switch"
+                role="radiogroup"
+                aria-label="How much the agent builds"
+              >
+                {buildModeIds.map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="radio"
+                    aria-checked={mode === id}
+                    onClick={() => choose(id)}
+                  >
+                    {buildModes[id].label}
+                  </button>
+                ))}
+              </div>
+              <p className="agent-level-note">{buildModes[mode].summary}</p>
+            </div>
+          )}
           <div className="agent-terminal">
             <div className="agent-terminal-bar" aria-hidden="true">
               <span />
@@ -190,7 +226,7 @@ export function TellAgent({
           <div className="modal-actions">
             <a
               className="button"
-              href={briefUrl(project, context, base)}
+              href={briefUrl(project, ctx, base)}
               target="_blank"
               rel="noreferrer"
             >

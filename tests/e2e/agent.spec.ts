@@ -21,7 +21,9 @@ async function handoff(page: Page, button: ReturnType<Page['getByRole']>, expect
   await expect(dialog).toBeVisible();
   const text = await dialog.getByRole('textbox', { name: 'Prompt for your agent' }).inputValue();
   for (const e of expectations) expect(text).toMatch(e);
-  expect(text).toContain('/api/checklist.md');
+  // Three lines: the subject, the brief's address, and that what follows is the task.
+  expect(text.split('\n')).toHaveLength(3);
+  expect(text).toMatch(/Anything I add below this line is part of the task\.$/);
   await expect(dialog.getByRole('status')).toContainText('Copied to your clipboard');
   // Rule: when the prompt continues off screen, the terminal says so, twice: a pill over the
   // text and a "scrolls" chip in its bar, which turns into "end of prompt" at the bottom.
@@ -46,6 +48,9 @@ async function handoff(page: Page, button: ReturnType<Page['getByRole']>, expect
   const body = await brief.text();
   expect(body).toContain('# Sketchcoded task brief');
   expect(body).toContain('## The task');
+  // The brief carries the rules and the skills the prompt no longer repeats.
+  expect(body).toContain('/api/checklist.md');
+  expect(body).toContain('/api/skills/');
   await dialog.getByRole('button', { name: 'Close dialog', exact: true }).click();
   return { text, body };
 }
@@ -101,10 +106,15 @@ test('every view hands its task to the agent, and the agent can read everything 
   const newBoard = await handoff(
     page,
     page.locator('.project-menu').getByRole('button', { name: 'New board with your agent' }),
-    [/· a new board for another project on this computer · Boards/, /brief\?view=boards/],
+    [
+      /· a new board for another project on this computer · frames and strings · Boards/,
+      /brief\?view=boards/,
+    ],
   );
-  expect(newBoard.text).toContain('POST http://127.0.0.1:5174/api/projects');
+  // The task, with the create step, is in the brief; the prompt only points at it.
+  expect(newBoard.body).toContain('POST http://127.0.0.1:5174/api/projects');
   expect(newBoard.body).toContain('## Boards on this computer');
+  expect(newBoard.body).toContain('Build: Frames and strings');
   await expect(page.locator('.project-menu')).toHaveCount(0);
   // Ideas panel (left column).
   const ideas = page.locator('.ideas-panel');
@@ -135,7 +145,7 @@ test('every view hands its task to the agent, and the agent can read everything 
     /· F\d+ “[^”]+” \([^)]+\) · Plan/,
     /brief\?view=plan&screen=/,
   ]);
-  expect(folderText.text).toContain('what should go on this frame');
+  expect(folderText.body).toContain('what should go on this frame');
   // Outline: the whole outline and one screen.
   await page.getByRole('button', { name: 'App outline', exact: true }).click();
   await handoff(

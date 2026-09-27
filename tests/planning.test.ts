@@ -120,10 +120,19 @@ describe('planning backlog', () => {
     expect(dialog.transitions.at(-1)).toMatchObject({ target: 'help', navigation: 'modal' });
     expect(placeIdea(dialog, 'how', { x: 0.2, y: 0.2 })).toBe(dialog);
   });
-  it('refuses to place on a frame without a drawing and on unassigned ideas', () => {
+  it('places on a frame without a drawing as a provisional pin, and refuses unassigned ideas', () => {
     let p = plan();
     p = assignIdea(p, 'dark', 'help');
-    expect(placeIdea(p, 'dark', { x: 0.5, y: 0.5 })).toBe(p);
+    // The strings can be tied before the drawing: the pin takes a slot and waits to be placed.
+    const early = placeIdea(p, 'dark', { x: 0.5, y: 0.5 }, { pin: 'pin-dark', transition: 't' });
+    expect(early.pins.at(-1)).toMatchObject({
+      id: 'pin-dark',
+      screenId: 'help',
+      x: 0.86,
+      y: 0.12,
+      provisional: true,
+    });
+    expect(early.ideas.find((i) => i.id === 'dark')?.pinId).toBe('pin-dark');
     expect(placeIdea(p, 'missing', { x: 0.5, y: 0.5 })).toBe(p);
     const pool = plan();
     expect(placeIdea(pool, 'dark', { x: 0.5, y: 0.5 })).toBe(pool);

@@ -45,6 +45,8 @@ import {
   type PinColor,
   type Project,
   type Screen,
+  addProvisionalPin,
+  placePin,
 } from '../../shared/model';
 import type { Update } from '../useProject';
 import { StickyNote } from 'lucide-react';
@@ -165,13 +167,9 @@ export function ScreenEditor({
       setSelected(placing.pinId);
     } else if (placing.mode === 'move') {
       const id = placing.pinId;
-      update(
-        (p) =>
-          layout === 'web'
-            ? { ...p, pins: p.pins.map((v) => (v.id === id ? { ...v, ...pos } : v)) }
-            : placeOnMobile(p, id, pos),
-        { group: `move-pin:${layout}:${id}` },
-      );
+      update((p) => (layout === 'web' ? placePin(p, id, pos) : placeOnMobile(p, id, pos)), {
+        group: `move-pin:${layout}:${id}`,
+      });
       setSelected(id);
     } else return;
     setPlacing(null);
@@ -188,7 +186,7 @@ export function ScreenEditor({
           pins: p.pins.map((pin) =>
             pin.id === v.id
               ? layout === 'web'
-                ? { ...pin, ...next }
+                ? { ...pin, ...next, provisional: undefined }
                 : { ...pin, mobile: next }
               : pin,
           ),
@@ -198,7 +196,7 @@ export function ScreenEditor({
     };
     return (
       <button
-        className={`editor-pin ${pinColor(v)} ${v.kind === 'link' ? 'link-pin' : ''} ${v.id === selected ? 'selected' : ''}`}
+        className={`editor-pin ${pinColor(v)} ${v.kind === 'link' ? 'link-pin' : ''} ${v.provisional ? 'provisional' : ''} ${v.id === selected ? 'selected' : ''}`}
         key={v.id}
         style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
         aria-label={`Pin ${index + 1}: ${v.title || 'Untitled interaction'}${layout === 'mobile' ? ' (mobile)' : ''}`}
@@ -306,10 +304,19 @@ export function ScreenEditor({
             ) : (
               <button
                 className="button small"
-                disabled={!asset}
-                title={asset ? undefined : 'Choose a web drawing first'}
+                title={
+                  asset
+                    ? undefined
+                    : 'No drawing yet: the pin gets a placeholder spot; you place it when the drawing arrives'
+                }
                 onClick={() => {
                   switchLayout('web');
+                  if (!asset) {
+                    const id = uid();
+                    update((p) => addProvisionalPin(p, s.id, id));
+                    setSelected(id);
+                    return;
+                  }
                   setPlacing({ mode: 'new' });
                   setSelected(null);
                 }}
@@ -392,6 +399,13 @@ export function ScreenEditor({
                       </select>
                     </label>
                     <small>Or drop a sketch onto this frame on the board.</small>
+                    {pins.length > 0 && (
+                      <small className="waiting-pins">
+                        {pins.length} {pins.length === 1 ? 'pin waits' : 'pins wait'} here with{' '}
+                        {pins.length === 1 ? 'its' : 'their'} yarn; place{' '}
+                        {pins.length === 1 ? 'it' : 'them'} when the drawing arrives.
+                      </small>
+                    )}
                     {ideas.length > 0 && (
                       <ul>
                         {ideas.map((idea) => (
@@ -406,6 +420,25 @@ export function ScreenEditor({
                 {active && pins.filter((v) => layout === 'web' || v.mobile).map(stagePin)}
               </div>
             </div>
+            {layout === 'web' && asset && pins.some((v) => v.provisional) && (
+              <div className="unplaced-strip provisional-strip">
+                <span>Place on the drawing:</span>
+                {pins
+                  .filter((v) => v.provisional)
+                  .map((v) => (
+                    <button
+                      key={v.id}
+                      className="button small"
+                      onClick={() => {
+                        setSelected(v.id);
+                        setPlacing({ mode: 'move', pinId: v.id });
+                      }}
+                    >
+                      <MapPin size={13} /> {pins.indexOf(v) + 1} · {v.title || 'Untitled'}
+                    </button>
+                  ))}
+              </div>
+            )}
             {layout === 'mobile' && mobileAsset && pins.some((v) => !v.mobile) && (
               <div className="unplaced-strip">
                 <span>Not on mobile yet:</span>
@@ -875,9 +908,14 @@ export function ScreenEditor({
                   ))}
                   <button
                     className="button full"
-                    disabled={!asset}
                     onClick={() => {
                       switchLayout('web');
+                      if (!asset) {
+                        const id = uid();
+                        update((p) => addProvisionalPin(p, s.id, id));
+                        setSelected(id);
+                        return;
+                      }
                       setSelected(null);
                       setPlacing({ mode: 'new' });
                     }}
@@ -944,10 +982,19 @@ export function ScreenEditor({
                       ) : (
                         <button
                           className="button small"
-                          disabled={!asset}
-                          title={asset ? undefined : 'Choose a drawing first'}
+                          title={
+                            asset
+                              ? undefined
+                              : 'No drawing yet: the pin takes a placeholder spot and its yarn is tied; you place it when the drawing arrives'
+                          }
                           onClick={() => {
                             switchLayout('web');
+                            if (!asset) {
+                              const ids = { pin: uid(), transition: uid() };
+                              update((p) => placeIdea(p, idea.id, null, ids));
+                              setSelected(ids.pin);
+                              return;
+                            }
                             setSelected(null);
                             setPlacing({ mode: 'idea', ideaId: idea.id });
                           }}

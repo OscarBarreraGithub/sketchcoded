@@ -62,7 +62,7 @@ export function createApp(store: Store) {
     const context = contextSchema.safeParse(req.query);
     if (!context.success)
       throw new AppError(
-        `Unknown brief context: ${context.error.issues[0]?.message ?? 'bad query'}. Use view=board|screen-editor|connection-editor|plan|outline|review|test-flow|library|boards with optional screen, pin, layout, transition, idea, finding, trail.`,
+        `Unknown brief context: ${context.error.issues[0]?.message ?? 'bad query'}. Use view=board|screen-editor|connection-editor|plan|outline|review|test-flow|library|boards with optional screen, pin, layout, transition, idea, finding, trail, mode (list|frames|built).`,
         400,
       );
     const extras = context.data.view === 'boards' ? { boards: await store.list() } : {};

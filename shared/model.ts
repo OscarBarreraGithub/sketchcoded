@@ -40,6 +40,9 @@ export const pinSchema = z.object({
   color: z.enum(['red', 'olive', 'blue', 'gold']).optional(),
   title: z.string().max(200),
   description: prose,
+  /** The position is a placeholder: the pin was written before its frame had a drawing (strings
+   * tied on a planned frame). The user places it once the drawing arrives; placing clears it. */
+  provisional: z.boolean().optional(),
 });
 export const navigationSchema = z.enum(['push', 'replace', 'reset', 'modal', 'back', 'dismiss']);
 export const transitionSchema = z.object({
@@ -141,6 +144,37 @@ export const pinUrl = (pin: Pin): string | null => pin.description.match(urlPatt
 export const isHistory = (t: Transition) => t.navigation === 'back' || t.navigation === 'dismiss';
 export const assetUrl = (asset?: Asset) => (asset ? `/assets/${asset.file}` : '');
 export const isPlanned = (s: Screen) => s.assetId === null;
+export const isProvisional = (pin: Pin) => pin.provisional === true;
+/** Where a provisional pin sits on its frame until the user places it: a column down the right
+ * side of the card, one slot per pin, so its yarn has somewhere to leave from. */
+export const slotPosition = (p: Project, screenId: string) => {
+  const n = p.pins.filter((pin) => pin.screenId === screenId).length;
+  return { x: 0.86, y: Math.min(0.92, 0.12 + n * 0.16) };
+};
+/** A pin on a frame that has no drawing yet: a placeholder position, marked provisional. */
+export function addProvisionalPin(p: Project, screenId: string, id: string = uid()): Project {
+  const screen = p.screens.find((s) => s.id === screenId);
+  if (!screen) return p;
+  const pin: Pin = {
+    id,
+    screenId,
+    ...slotPosition(p, screenId),
+    title: '',
+    description: '',
+    kind: screen.role === 'detail' ? 'detail' : 'interaction',
+    provisional: true,
+  };
+  return { ...p, pins: [...p.pins, pin] };
+}
+/** The user clicks where a pin goes on the web drawing; a provisional pin becomes placed. */
+export function placePin(p: Project, pinId: string, pos: { x: number; y: number }): Project {
+  return {
+    ...p,
+    pins: p.pins.map((pin) =>
+      pin.id === pinId ? { ...pin, x: pos.x, y: pos.y, provisional: undefined } : pin,
+    ),
+  };
+}
 /**
  * Rule (2026-09-26): everything the user and the agent talk about has a short code. Frames are
  * F1, F2, …; sketches S1, S2, …; ideas I1, I2, …. A code is given once, when the item first
@@ -290,17 +324,21 @@ export function assignIdea(p: Project, ideaId: string, screenId: string | null):
 export function placeIdea(
   p: Project,
   ideaId: string,
-  pos: { x: number; y: number },
+  pos?: { x: number; y: number } | null,
   ids: { pin: string; transition: string } = { pin: uid(), transition: uid() },
 ): Project {
   const idea = p.ideas.find((idea) => idea.id === ideaId);
   const screen = idea?.screenId ? p.screens.find((s) => s.id === idea.screenId) : undefined;
-  if (!idea || !screen || !screen.assetId || idea.pinId) return p;
+  if (!idea || !screen || idea.pinId) return p;
+  // On a frame without a drawing the pin is provisional: it takes a slot and waits to be placed.
+  const provisional = !screen.assetId || !pos;
+  const at = provisional ? slotPosition(p, screen.id) : pos!;
   const pin: Pin = {
     id: ids.pin,
     screenId: screen.id,
-    x: pos.x,
-    y: pos.y,
+    x: at.x,
+    y: at.y,
+    ...(provisional ? { provisional: true } : {}),
     title: idea.title,
     description: idea.detail,
     kind:

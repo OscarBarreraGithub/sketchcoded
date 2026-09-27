@@ -44,6 +44,7 @@ export const skillIds = [
   'plan-the-backlog',
   'resolve-findings',
   'walk-the-flow',
+  'start-a-board',
 ] as const;
 export type SkillId = (typeof skillIds)[number];
 
@@ -81,6 +82,11 @@ export const skills: Record<SkillId, { title: string; summary: string }> = {
     title: 'Walk the flow',
     summary: 'Follow a Test flow trail and find the first missing step.',
   },
+  'start-a-board': {
+    title: 'Start a board',
+    summary:
+      'The three build levels for a new board, what each writes, and how to write for the builder.',
+  },
 };
 
 export const views: Record<ViewId, { label: string; skills: SkillId[] }> = {
@@ -112,11 +118,50 @@ export const views: Record<ViewId, { label: string; skills: SkillId[] }> = {
   },
   boards: {
     label: 'Boards',
-    skills: ['talk-to-sketchcoded', 'read-a-board', 'plan-the-backlog'],
+    skills: [
+      'talk-to-sketchcoded',
+      'read-a-board',
+      'start-a-board',
+      'plan-the-backlog',
+      'connect-screens',
+    ],
   },
 };
 /** What the brief route can add that the project itself does not know. */
 export type BriefExtras = { boards?: { id: string; name: string; screenCount: number }[] };
+
+/** How much of a new board the agent writes. The user picks the level in the handoff dialog;
+ * the default is the middle one, so a later change of mind is a tweak, not a rebuild. */
+export const buildModeIds = ['list', 'frames', 'built'] as const;
+export type BuildMode = (typeof buildModeIds)[number];
+export const defaultBuildMode: BuildMode = 'frames';
+export const buildModes: Record<BuildMode, { label: string; summary: string }> = {
+  list: {
+    label: 'Just the list',
+    summary:
+      'A to-do list of what to draw and what to connect. No frames and no strings: you make them.',
+  },
+  frames: {
+    label: 'Frames and strings',
+    summary:
+      'The list, plus planned frames waiting for your drawings, with the yarn already tied between them. You draw and place the pins.',
+  },
+  built: {
+    label: 'Built out',
+    summary:
+      'Frames and strings with every frame left to the AI: a whole site of standard pages. Take the post-it off the one or two frames you want to draw yourself.',
+  },
+};
+/** What the agent writes into a new or empty board, per level. `<base>` is filled in later. */
+const fillPlan = (mode: BuildMode) =>
+  ({
+    list: 'Write the to-do list into it: every screen the app needs and everything that goes on each screen, as ideas in the pool (screenId null), each idea’s detail starting with the screen it belongs on, so I know what to draw and what to connect. No frames, no pins, no yarn: I make those.',
+    frames:
+      'Write the plan into it: the screens as planned frames (assetId null, a layout position each, on a grid with room between), the functionality as ideas assigned to those frames, and the strings: for every idea that leads somewhere, a provisional pin on its frame (provisional: true, at a slot position) with its yarn to the destination, so the whole flow is tied before anything is drawn. Do not draw.',
+    built:
+      'Write the plan into it as frames and strings (planned frames, ideas, provisional pins and their yarn), then mark every frame Leave it up to the AI (leftToAi: true): a whole site of standard pages, tied together. I take the post-it off the one or two frames I want to draw myself.',
+  })[mode] +
+  ' The skill start-a-board says exactly what to write and how to write it for the builder: <base>/api/skills/start-a-board.md.';
 
 /** What the user is looking at. Ids refer to the project; unknown ids are reported, not thrown. */
 export const contextSchema = z.object({
@@ -127,6 +172,7 @@ export const contextSchema = z.object({
   transition: z.string().max(200).optional(),
   idea: z.string().max(200).optional(),
   finding: z.string().max(500).optional(),
+  mode: z.enum(buildModeIds).optional(),
   trail: z
     .union([z.string(), z.array(z.string())])
     .optional()
@@ -144,6 +190,7 @@ export type AgentContext = {
   transition?: string;
   idea?: string;
   finding?: string;
+  mode?: BuildMode;
   trail?: string[];
 };
 
@@ -184,7 +231,10 @@ export function describeSubject(p: Project, ctx: AgentContext): { noun: string; 
     finding = ctx.finding ? analyze(p).find((i) => i.id === ctx.finding) : undefined,
     mobile = ctx.layout === 'mobile' ? ', mobile layout' : '';
   if (ctx.view === 'boards')
-    return { noun: 'board', text: 'a new board for another project on this computer' };
+    return {
+      noun: 'board',
+      text: `a new board for another project on this computer · ${buildModes[ctx.mode ?? defaultBuildMode].label.toLowerCase()}`,
+    };
   if (ctx.view === 'library') {
     const unused = unusedAssets(p).length;
     return {
@@ -256,10 +306,10 @@ export function defaultTask(p: Project, ctx: AgentContext): string {
   switch (ctx.view) {
     case 'board':
       if (!p.screens.length && !p.ideas.length)
-        return `This board is empty. Read the project I am working in, or ask me for two lines about it, then write the first plan into this board: the screens the app needs as planned frames (assetId null, each with a layout position on the cork), the functionality as ideas on those frames, and where each idea leads. Do not draw anything. ${write}`;
+        return `This board is empty. Read the project I am working in, or ask me for two lines about it. ${fillPlan(ctx.mode ?? defaultBuildMode)} ${write}`;
       return 'Read the board and tell me, in a short list, what is drawn, what is planned, what is left to the AI, and what the open findings are. Then wait for my instruction.';
     case 'boards':
-      return `Create a new Sketchcoded board for the project I am working in, named after it: POST <base>/api/projects with {"name": "…"} and the header X-Drawcode-Client: local (the skill talk-to-sketchcoded has the details). Then read this project's code, or ask me for two lines about it, and write the first plan into that board: the screens the app needs as planned frames (assetId null, each with a layout position on the cork), the functionality as ideas on those frames, and where each idea leads. Do not draw anything. Finish by telling me the board's name so I can open it from the Boards menu and start drawing.`;
+      return `Create a new Sketchcoded board for the project I am working in, named after it: POST <base>/api/projects with {"name": "…"} and the header X-Drawcode-Client: local (the skill talk-to-sketchcoded has the details). Then read this project's code, or ask me for two lines about it. ${fillPlan(ctx.mode ?? defaultBuildMode)} Finish by telling me the board's name so I can open it from the landing page.`;
     case 'library':
       return 'For each unused sketch, tell me which frame it belongs to, from the plan and its file name; propose a planned frame when it fits none. Do not attach sketches yourself; I drop them on the board.';
     case 'screen-editor': {
@@ -312,18 +362,21 @@ const params = (ctx: AgentContext) => {
   search.set('view', ctx.view);
   for (const key of ['screen', 'pin', 'layout', 'transition', 'idea', 'finding'] as const)
     if (ctx[key]) search.set(key, ctx[key]!);
+  if (ctx.mode) search.set('mode', ctx.mode);
   if (ctx.trail?.length) search.set('trail', ctx.trail.join(','));
   return search.toString();
 };
 export const briefUrl = (p: Project, ctx: AgentContext, base: string) =>
   ctx.view === 'boards'
-    ? `${base}/api/brief?view=boards`
+    ? `${base}/api/brief?view=boards&mode=${ctx.mode ?? defaultBuildMode}`
     : `${base}/api/projects/${p.id}/brief?${params(ctx)}`;
 export const skillUrl = (base: string, skill: SkillId) => `${base}/api/skills/${skill}.md`;
 export const skillsIndexUrl = (base: string) => `${base}/api/skills`;
 export const checklistUrl = (base: string) => `${base}/api/checklist.md`;
 
-/** The text that goes to the clipboard: where the user is, where the instructions are, the task. */
+/** The text that goes to the clipboard: where the user is and where the instructions are. Three
+ * lines; the brief the running app serves holds the task, the skills and the rules, so the prompt
+ * stays compact and only the address changes from view to view. */
 export function agentPrompt(p: Project, ctx: AgentContext, base: string): string {
   const view = views[ctx.view],
     subject = describeSubject(p, ctx);
@@ -331,14 +384,31 @@ export function agentPrompt(p: Project, ctx: AgentContext, base: string): string
     ctx.view === 'boards'
       ? `Sketchcoded task · ${subject.text} · ${view.label}`
       : `Sketchcoded task · ${subject.text} · ${view.label} · board ${q(p.name)}`,
-    `Sketchcoded is running at ${base}. Read before asking; everything you need is there:`,
-    `1. The brief for exactly this task (read first): ${briefUrl(p, ctx, base)}`,
-    `2. Skills to follow: ${view.skills.join(', ')} (each linked from ${skillsIndexUrl(base)})`,
-    `3. The user’s rules, in their words: ${checklistUrl(base)}`,
-    `Task: ${defaultTask(p, ctx).replace('<base>', base)}`,
-    `Stay on this ${subject.noun}; ask before touching anything else. Anything I add below this line is part of the task.`,
+    `Read this brief first and follow it; it holds the task, the skills to use and my rules: ${briefUrl(p, ctx, base)}`,
+    'Anything I add below this line is part of the task.',
   ].join('\n');
 }
+
+/** The exact shapes to write for each build level; the skill start-a-board says how to word them. */
+const levelSteps = (mode: BuildMode): string[] => {
+  const frames = [
+    '3. Planned frames: screens[] entries with assetId null, a title the user would call the page, a purpose written for the builder (one to three sentences on what the screen is for), role (screen, auth, modal, terminal) and entry (true only for real ways into the app); layout[<screenId>] = {x, y, width: 360} on a grid, 450 apart across and 380 apart down, one row per theme.',
+    '4. Ideas: ideas[] entries with screenId set to their frame, leadsTo set when the idea opens another screen, pinId null; one capability per idea, titled as the user would say it, details in detail.',
+    '5. Strings: for every idea with a leadsTo, a pin on its frame {id, screenId, x: 0.86, y: a slot down the right side (0.12, 0.28, 0.44, 0.60, 0.76, 0.92), title: the idea title, description: the idea detail, kind: "interaction", provisional: true}; set the idea’s pinId to it; and a transition {id, pinId, target: the leadsTo screen, summary: the idea title (short), condition: "", logic: "", context: "", fallback: false, navigation: "push" ("modal" when the target is a dialog), color: "red"}. Ideas without a destination stay ideas. Do not attach drawings or place pins on a drawing: the user drops the drawings on the frames and places the pins; the yarn follows.',
+  ];
+  return {
+    list: [
+      '3. Ideas only: ideas[] entries with screenId null, pinId null and leadsTo null; a title of a few words; a detail that starts with the screen the idea belongs on (“Home: …”) and says what it does. No screens, no pins, no transitions: the user makes the frames and ties the strings from this list.',
+      '4. Tell the user the board’s name.',
+    ],
+    frames: [...frames, '6. Tell the user the board’s name.'],
+    built: [
+      ...frames,
+      '6. Then set leftToAi: true on every screen: the whole site is standard pages tied together, and the user takes the post-it off the frames they want to draw themselves.',
+      '7. Tell the user the board’s name.',
+    ],
+  }[mode];
+};
 
 const findingLines = (p: Project, issue: Issue, level = 3) => {
   const decision = decisionFor(issue, p.reviews);
@@ -451,8 +521,8 @@ export function agentBrief(
     '# Sketchcoded task brief',
     '',
     ctx.view === 'boards'
-      ? `View: ${view.label} · Subject: ${subject.text}`
-      : `Board: ${q(p.name)} (${p.id}) · View: ${view.label} · Subject: ${subject.text}`,
+      ? `View: ${view.label} · Build: ${buildModes[ctx.mode ?? defaultBuildMode].label} · Subject: ${subject.text}`
+      : `Board: ${q(p.name)} (${p.id}) · View: ${view.label}${ctx.mode ? ` · Build: ${buildModes[ctx.mode].label}` : ''} · Subject: ${subject.text}`,
     '',
     ctx.view === 'boards'
       ? `Sketchcoded runs at ${base}. The boards on this computer: GET ${base}/api/projects. How to create one and write back is in the skill talk-to-sketchcoded and below.`
@@ -460,9 +530,9 @@ export function agentBrief(
     '',
     '## The task',
     '',
-    defaultTask(p, ctx).replace('<base>', base),
+    defaultTask(p, ctx).replaceAll('<base>', base),
     '',
-    `Stay on this ${subject.noun}; ask before touching anything else.`,
+    `Stay on this ${subject.noun}; ask before touching anything else. Anything the user typed under the prompt they pasted is part of the task too.`,
     '',
     '## Skills to follow (read each)',
     '',
@@ -627,11 +697,11 @@ export function agentBrief(
           `- ${q(b.name)} (${b.id}) · ${b.screenCount} screens${b.id === p.id ? ' · open now' : ''}`,
       ),
       '',
-      '## How to create and fill a board',
+      `## How to create and fill a board · ${buildModes[ctx.mode ?? defaultBuildMode].label}`,
       '',
       `1. POST ${base}/api/projects with header X-Drawcode-Client: local and body {"name": "<project name>"}; the answer is the new board (note its id).`,
-      `2. GET ${base}/api/projects/<id>, add planned frames (screens with assetId null and a layout entry {x, y, width}) and ideas (screenId, leadsTo), then PUT the whole project back once. Codes are assigned by the server.`,
-      '3. Do not add pins or yarn: the user draws first, then places pins. Tell the user the board’s name.',
+      `2. GET ${base}/api/projects/<id>, add what this level asks for, then PUT the whole project back once. Codes are assigned by the server: leave code out of new things.`,
+      ...levelSteps(ctx.mode ?? defaultBuildMode),
       '',
     );
   }

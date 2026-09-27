@@ -29,7 +29,9 @@ export function screenSection(p: Project, screen: Screen): string[] {
     );
   else if (isPlanned(screen))
     lines.push(
-      '_No drawing yet. This frame is planned; its intended interactions are listed in the planning backlog._',
+      p.pins.some((pin) => pin.screenId === screen.id)
+        ? '_No drawing yet. This frame is planned. Its pins below are provisional: their positions are placeholders until the drawing arrives and the user places them; their yarn is real._'
+        : '_No drawing yet. This frame is planned; its intended interactions are listed in the planning backlog._',
       '',
     );
   if (asset)
@@ -54,7 +56,7 @@ export function screenSection(p: Project, screen: Screen): string[] {
     lines.push(
       `### ${pin.title || 'Unnamed interaction'}`,
       '',
-      `${pinLabel(p, pin)} · Pin ID: ${pin.id} · Web coordinate: (${pin.x}, ${pin.y})${mobilePosition}, normalized from the top-left`,
+      `${pinLabel(p, pin)} · Pin ID: ${pin.id} · Web coordinate: (${pin.x}, ${pin.y})${pin.provisional ? ' (provisional: not yet placed on the drawing)' : ''}${mobilePosition}, normalized from the top-left`,
       '',
       pin.description || '_Interaction intent is missing._',
       '',

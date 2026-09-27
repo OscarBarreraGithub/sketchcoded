@@ -305,6 +305,15 @@ export function analyze(p: Project): Issue[] {
         { title: pin.title, description: pin.description },
       );
     const branches = byPin.get(pin.id) ?? [];
+    if (pin.provisional && screenById.get(pin.screenId)?.assetId)
+      add(
+        'pin-not-placed',
+        'warning',
+        [pin.id],
+        `${pin.title || 'A pin'} has not been placed on the drawing yet`,
+        'This pin was written before the frame had a drawing, so its position is a placeholder. Open the frame and click where the pin goes; its yarn follows.',
+        { title: pin.title, screenId: pin.screenId },
+      );
     if (screenById.get(pin.screenId)?.mobileAssetId && !pin.mobile)
       add(
         'mobile-pin-missing',

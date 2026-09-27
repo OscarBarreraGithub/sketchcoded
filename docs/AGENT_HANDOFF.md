@@ -32,16 +32,17 @@ A **context** is `{ view, screen?, pin?, layout?, transition?, idea?, finding?, 
 
 A **skill** is one instruction document in `docs/skills/<id>.md`, served at `/api/skills/<id>.md`, listed at `/api/skills`, and shipped in every export under `skills/`.
 
-| Skill id              | What it covers                                                        | Used by                        |
-| --------------------- | --------------------------------------------------------------------- | ------------------------------ |
-| `talk-to-sketchcoded` | Read the live board and write back through the local API              | every view                     |
-| `read-a-board`        | What screens, pins, yarn, ideas and findings mean                     | every view                     |
-| `build-rules`         | The user's layout and interaction rules (short form of the checklist) | board, screen editor           |
-| `describe-pins`       | Write what each pin does, from the plan, and tie its yarn             | screen editor                  |
-| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                | connection editor              |
-| `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                   | plan, outline, library, boards |
-| `resolve-findings`    | What each review rule means; fix the board or accept with a reason    | review                         |
-| `walk-the-flow`       | Follow a Test flow trail and find the first missing step              | test flow                      |
+| Skill id              | What it covers                                                          | Used by                        |
+| --------------------- | ----------------------------------------------------------------------- | ------------------------------ |
+| `talk-to-sketchcoded` | Read the live board and write back through the local API                | every view                     |
+| `read-a-board`        | What screens, pins, yarn, ideas and findings mean                       | every view                     |
+| `build-rules`         | The user's layout and interaction rules (short form of the checklist)   | board, screen editor           |
+| `start-a-board`       | The three build levels for a new board and how to write for the builder | boards                         |
+| `describe-pins`       | Write what each pin does, from the plan, and tie its yarn               | screen editor                  |
+| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                  | connection editor              |
+| `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                     | plan, outline, library, boards |
+| `resolve-findings`    | What each review rule means; fix the board or accept with a reason      | review                         |
+| `walk-the-flow`       | Follow a Test flow trail and find the first missing step                | test flow                      |
 
 ## What the agent reads from the running app
 
@@ -58,15 +59,23 @@ All `GET`, all local only, all Markdown unless noted:
 
 ```
 Sketchcoded task · F1 pin 2 “Read more” on “Home” (pin-landing-guide) · Screen editor · board “Sketchcoded”
-Sketchcoded is running at http://127.0.0.1:5173. Read before asking; everything you need is there:
-1. The brief for exactly this task (read first): http://127.0.0.1:5173/api/projects/<id>/brief?view=screen-editor&screen=home&pin=<pin>&layout=web
-2. Skills to follow: talk-to-sketchcoded, read-a-board, describe-pins, build-rules (each linked from http://127.0.0.1:5173/api/skills)
-3. The user’s rules, in their words: http://127.0.0.1:5173/api/checklist.md
-Task: Describe this pin from the plan: …
-Stay on this pin; ask before touching anything else. Anything I add below this line is part of the task.
+Read this brief first and follow it; it holds the task, the skills to use and my rules: http://127.0.0.1:5173/api/projects/<id>/brief?view=screen-editor&screen=home&pin=<pin>&layout=web
+Anything I add below this line is part of the task.
 ```
 
-The `Task:` line is the view's default job (`defaultTask`), aware of the state of the subject: a pin that is described but has no yarn gets a different task from an undescribed one, a link pin from a detail pin, a planned frame from one left to the AI. The prompt ends by telling the agent that anything the user types after it is part of the task, so there is no task box to edit: the user adds what they want in their agent's chat.
+Three lines, and only the address changes from view to view. The brief (`agentBrief`) is the instruction file: the task (`defaultTask`, aware of the state of the subject: a pin that is described but has no yarn gets a different task from an undescribed one, a link pin from a detail pin, a planned frame from one left to the AI), the skills to read, the user's rules, and the slice of the board the view is about. There is no task box: the user types what they want under the prompt in their agent's chat, and the brief says that text is part of the task.
+
+## Build levels for a new board
+
+The Boards view (landing page and Boards menu) and an empty board carry a `mode` chosen in the dialog with a three-position switch; the brief address carries it (`/api/brief?view=boards&mode=frames`) and the brief lists the exact shapes to write.
+
+| Level                        | `mode`   | The agent writes                                                                                                                                           |
+| ---------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Just the list                | `list`   | Ideas in the pool (`screenId: null`), each detail starting with the screen it belongs on. No frames, no strings.                                           |
+| Frames and strings (default) | `frames` | Planned frames with layout, ideas assigned, and for every idea that leads somewhere a provisional pin (`provisional: true`, slot positions) with its yarn. |
+| Built out                    | `built`  | Frames and strings, then `leftToAi: true` on every frame; the user takes the post-it off the frames they draw themselves.                                  |
+
+The skill `start-a-board` holds the levels and the writing rules for the builder (purposes without stage notes or disclaimers; ideas that are things on a screen, not checklists).
 
 ## Adding a view or a skill
 

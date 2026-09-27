@@ -96,7 +96,8 @@ export function Landing({
               />
               <p className="landing-hint">
                 Blank: you draw first. With your agent: it reads the project you’re working in and
-                writes the first plan into a new board; you open it here and draw.
+                writes a new board at the level you choose: just the to-do list, frames with the
+                strings already tied, or a whole site of standard pages you fine-tune.
               </p>
             </section>
           </div>

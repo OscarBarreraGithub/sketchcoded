@@ -157,7 +157,7 @@ describe('agent handoff: names, prompts and briefs', () => {
       'the sketch library (4 sketches, 1 unused)',
     );
     expect(describeSubject(p, { view: 'boards' }).text).toBe(
-      'a new board for another project on this computer',
+      'a new board for another project on this computer · frames and strings',
     );
     expect(describeSubject(p, { view: 'screen-editor', screen: 'ghost' }).text).toContain(
       'not on this board',
@@ -185,26 +185,68 @@ describe('agent handoff: names, prompts and briefs', () => {
     expect(defaultTask(p, { view: 'plan', idea: 'idea-search' })).toContain('Look at this idea');
     expect(defaultTask(p, { view: 'library' })).toContain('unused sketch');
     expect(defaultTask(p, { view: 'boards' })).toContain('POST <base>/api/projects');
-    expect(agentPrompt(p, { view: 'boards' }, base)).toContain(`POST ${base}/api/projects`);
-    expect(agentPrompt(p, { view: 'boards' }, base)).not.toContain('<base>');
+    expect(agentBrief(p, { view: 'boards' }, base)).toContain(`POST ${base}/api/projects`);
+    expect(agentBrief(p, { view: 'boards' }, base)).not.toContain('<base>');
+  });
+  it('writes a new or empty board at one of three levels', () => {
+    const p = board();
+    expect(briefUrl(p, { view: 'boards' }, base)).toBe(`${base}/api/brief?view=boards&mode=frames`);
+    expect(briefUrl(p, { view: 'boards', mode: 'list' }, base)).toBe(
+      `${base}/api/brief?view=boards&mode=list`,
+    );
+    expect(describeSubject(p, { view: 'boards', mode: 'built' }).text).toContain('built out');
+    expect(defaultTask(p, { view: 'boards', mode: 'list' })).toContain('screenId null');
+    expect(defaultTask(p, { view: 'boards', mode: 'list' })).toContain(
+      'No frames, no pins, no yarn',
+    );
+    expect(defaultTask(p, { view: 'boards', mode: 'frames' })).toContain('provisional: true');
+    expect(defaultTask(p, { view: 'boards', mode: 'built' })).toContain('leftToAi: true');
+    expect(defaultTask(p, { view: 'boards' })).toContain('start-a-board');
+    const brief = agentBrief(p, { view: 'boards', mode: 'built' }, base);
+    expect(brief).toContain('Build: Built out');
+    expect(brief).toContain('## How to create and fill a board · Built out');
+    expect(brief).toContain('5. Strings: for every idea with a leadsTo');
+    expect(brief).toContain('6. Then set leftToAi: true on every screen');
+    expect(brief).toContain(`${base}/api/skills/start-a-board.md`);
+    const list = agentBrief(p, { view: 'boards', mode: 'list' }, base);
+    expect(list).toContain('3. Ideas only');
+    expect(list).not.toContain('Strings:');
+    // An empty board takes the same levels.
+    const empty = emptyProject('Blank', 'blank');
+    expect(defaultTask(empty, { view: 'board', mode: 'built' })).toContain('leftToAi: true');
+    expect(briefUrl(empty, { view: 'board', mode: 'list' }, base)).toContain('&mode=list');
+    expect(agentBrief(empty, { view: 'board', mode: 'list' }, base)).toContain(
+      'Build: Just the list',
+    );
+    expect(() => contextSchema.parse({ view: 'boards', mode: 'everything' })).toThrow();
+    expect(contextSchema.parse({ view: 'boards', mode: 'built' }).mode).toBe('built');
   });
   it('writes a prompt with the view, the subject, the brief address, the skills and the task', () => {
     const p = board(),
       ctx = { view: 'screen-editor' as const, screen: 'home', pin: 'pin1', layout: 'web' as const };
     const prompt = agentPrompt(p, ctx, base);
+    // Three lines: where the user is, where the brief is, and that what follows is the task.
+    expect(prompt.split('\n')).toHaveLength(3);
     expect(prompt).toContain(
       'Sketchcoded task · F1 pin 1 “Open the board” on “Home” (pin1) · Screen editor · board “Little app”',
     );
     expect(prompt).toContain(
       `${base}/api/projects/little/brief?view=screen-editor&screen=home&pin=pin1&layout=web`,
     );
-    expect(prompt).toContain('talk-to-sketchcoded, read-a-board, describe-pins, build-rules');
-    expect(prompt).toContain(`(each linked from ${base}/api/skills)`);
-    expect(prompt).not.toContain('<name>');
-    expect(prompt).toContain(`${base}/api/checklist.md`);
-    expect(prompt).toContain('Task: Check this pin');
-    expect(prompt).toContain('Stay on this pin');
     expect(prompt).toContain('Anything I add below this line is part of the task.');
+    // The brief carries what the prompt no longer repeats: the task, the skills and the rules.
+    const brief = agentBrief(p, ctx, base);
+    expect(brief).toContain('## The task');
+    expect(brief).toContain('Check this pin');
+    expect(brief).toContain('Stay on this pin');
+    expect(brief).toContain(
+      'Anything the user typed under the prompt they pasted is part of the task too.',
+    );
+    expect(brief).toContain(`${base}/api/skills/describe-pins.md`);
+    expect(brief).toContain(`${base}/api/skills/build-rules.md`);
+    expect(brief).toContain(`${base}/api/checklist.md`);
+    expect(brief).not.toContain('<name>');
+    expect(brief).not.toContain('<base>');
     expect(briefUrl(p, { view: 'test-flow', screen: 'board', trail: ['a', 'b'] }, base)).toBe(
       `${base}/api/projects/little/brief?view=test-flow&screen=board&trail=a%2Cb`,
     );

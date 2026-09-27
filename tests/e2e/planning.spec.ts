@@ -208,3 +208,83 @@ test('a frame left to the AI wears its post-it on the board, in the outline and 
     /## F\d+ Guide \(left to the AI\)/,
   );
 });
+
+test('strings are tied before the drawing: a provisional pin waits, then is placed when the drawing lands', async ({
+  page,
+}) => {
+  const project = await fresh(page);
+  // Two planned frames and an idea on the first that opens the second, written like an agent would.
+  const full = await (await page.request.get(`/api/projects/${project.id}`)).json();
+  full.screens.push(
+    {
+      id: 'wait-a',
+      assetId: null,
+      title: 'Waiting one',
+      purpose: 'First',
+      entry: false,
+      role: 'screen',
+    },
+    {
+      id: 'wait-b',
+      assetId: null,
+      title: 'Waiting two',
+      purpose: 'Second',
+      entry: false,
+      role: 'screen',
+    },
+  );
+  full.layout['wait-a'] = { x: 1400, y: 900, width: 360 };
+  full.layout['wait-b'] = { x: 1900, y: 900, width: 360 };
+  full.ideas.push({
+    id: 'idea-open-two',
+    title: 'Open two',
+    detail: 'Goes to the second frame',
+    screenId: 'wait-a',
+    pinId: null,
+    leadsTo: 'wait-b',
+    author: 'Agent',
+    createdAt: new Date().toISOString(),
+  });
+  expect(
+    (await page.request.put(`/api/projects/${project.id}`, { headers, data: full })).ok(),
+  ).toBeTruthy();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
+  const yarnBefore = await page.locator('.yarn').count();
+  // Place the idea on the undrawn frame: a provisional pin with its yarn, no drawing needed.
+  await page.getByRole('button', { name: 'Edit Waiting one', exact: true }).click();
+  const editor = page.getByRole('dialog', { name: /Waiting one/ });
+  await expect(editor.getByText('Waiting for a drawing.')).toBeVisible();
+  await editor.getByRole('button', { name: 'Place', exact: true }).click();
+  await expect(editor.getByText(/1 pin waits here with its yarn/)).toBeVisible();
+  await close(page);
+  await expect(page.locator('.yarn')).toHaveCount(yarnBefore + 1);
+  await expect(page.locator('.board-pin.provisional')).toHaveCount(1);
+  await expect(page.getByText('All changes saved')).toBeVisible();
+  // The drawing lands: the editor asks to place the waiting pin, and the review warns until then.
+  await page.getByRole('button', { name: 'Edit Waiting one', exact: true }).click();
+  await editor.getByLabel('Choose a web drawing').selectOption({ index: 1 });
+  const strip = editor.locator('.provisional-strip');
+  await expect(strip).toContainText('Place on the drawing:');
+  await expect(page.getByText('All changes saved')).toBeVisible();
+  const warned = await (
+    await page.request.get(`/api/projects/${project.id}/brief?view=review`)
+  ).text();
+  expect(warned).toContain('rule pin-not-placed');
+  await strip.getByRole('button', { name: /Open two/ }).click();
+  const image = editor.locator('.editable-image img').first();
+  await expect(image).toBeVisible();
+  const box = (await image.boundingBox())!;
+  await image.click({ position: { x: box.width * 0.3, y: box.height * 0.6 } });
+  await expect(strip).toHaveCount(0);
+  await expect(editor.locator('.editor-pin.provisional')).toHaveCount(0);
+  await expect(editor.locator('.editor-pin')).toHaveCount(1);
+  await close(page);
+  await expect(page.locator('.board-pin.provisional')).toHaveCount(0);
+  await expect(page.locator('.yarn')).toHaveCount(yarnBefore + 1);
+  await expect(page.getByText('All changes saved')).toBeVisible();
+  const placed = await (
+    await page.request.get(`/api/projects/${project.id}/brief?view=review`)
+  ).text();
+  expect(placed).not.toContain('rule pin-not-placed');
+});

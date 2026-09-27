@@ -16,7 +16,7 @@ Use `curl -s` (or your fetch tool) from the machine the app runs on. `{base}` is
 
 ## Create a board
 
-`POST {base}/api/projects` with header `X-Drawcode-Client: local` and body `{"name": "<project name>"}` returns the new board (note its `id`). A board is one project: name it after the codebase or product it describes. All boards live in the running app's data folder, side by side; the user switches between them in the Boards menu. To keep a copy inside a codebase, the user exports a ZIP from the app (or you read `GET {base}/api/projects/{id}` and `flow.md`).
+`POST {base}/api/projects` with header `X-Drawcode-Client: local` and body `{"name": "<project name>"}` returns the new board (note its `id`). What to write into it, at which level, is the skill start-a-board. A board is one project: name it after the codebase or product it describes. All boards live in the running app's data folder, side by side; the user switches between them in the Boards menu. To keep a copy inside a codebase, the user exports a ZIP from the app (or you read `GET {base}/api/projects/{id}` and `flow.md`).
 
 ## Write back
 

@@ -22,7 +22,8 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 
 - The site's design: the name, the tagline, a short lede; runs on your computer, sketches never leave it.
 - Your boards: every board with its screen count and last edit, the last opened one marked; click one to open the workstation at `/board/<id>`.
-- Start a board: a name and New blank board, or New board with your agent (a prompt that has the agent create the board through the local API and write its first plan).
+- Start a board: a name and New blank board, or New board with your agent (a prompt that has the agent create the board through the local API and write it at the level you choose).
+- Three build levels, a three-position switch in the handoff dialog (also for an empty board): Just the list (ideas in the pool, a to-do list of what to draw and connect; no frames, no strings), Frames and strings (planned frames waiting for drawings with the yarn already tied through provisional pins; the default, so later changes are tweaks), Built out (frames and strings with every frame left to the AI; you take the post-it off the one or two pages you draw yourself). The prompt re-copies when the level changes.
 - The brand at the top left of the workstation is the way back to this page.
 - To do, later: an interactive tutorial of five or six panels that teaches the app.
 
@@ -33,7 +34,7 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - The chat example: a ready-made board with branches, an intentional one-way login and Back actions.
 - Import a project from a `.sketchcoded.zip`; it becomes a separate board and never overwrites one.
 - Rename a board.
-- New board with your agent: a prompt that has the agent create a board for the project it is working in (through the local API), write the first plan as planned frames and ideas, and report the board's name; you then open it from this menu and draw.
+- New board with your agent: a prompt that has the agent create a board for the project it is working in (through the local API), write it at the chosen level (just the list, frames and strings, or built out) and report the board's name; you then open it from the landing page and draw.
 
 ## The board (the studio)
 
@@ -41,13 +42,14 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - Connect a folder on this computer; new and changed images appear every 20 seconds; refresh checks now.
 - Import files or drop images: PNG, JPEG, WebP, GIF, TIFF and SVG from this computer. Also allow drag to upload.
 - Drag a sketch onto the board: a tack, a paper title, a spot on the cork.
-- Planned frames: frames from the planning stage wait as empty dashed paper listing their ideas; drop a sketch to fill one.
+- Planned frames: frames from the planning stage wait as empty dashed paper listing their ideas; drop a sketch to fill one. A planned frame keeps a fixed 2:1 box on the cork and, zoomed out under 40%, shows only its tape and code so thirty of them still read as a map.
+- Strings before drawings: a planned frame can carry provisional pins (placeholder spots down its right side) with real yarn, written by the agent or added in the editor (Add a pin, or Place on an idea). When a drawing lands on the frame, the editor shows “Place on the drawing” for each waiting pin; click one, click the drawing, and the yarn follows. Review flow warns until every waiting pin is placed.
 - Pins and yarn: numbered pins on each sketch; click a pin then a card to tie color-coded yarn; labels show the branch summary.
 - Ideas panel beside the library: organized ideas, expand, scroll, and make clear what is still left to do.
 - Project name in the header; a ? button opens How it works.
 - A little home marker on the frame where the landing page starts.
 - Codes: every frame (F1, F2, …), sketch (S1, …) and idea (I1, …) carries a short code, shown on the frame footer, in the library, the outline, the plan, the editor title and Test flow; a pin is “F3 pin 2”. Prompts, briefs and the export lead with them.
-- Tell the agent (view toolbar): copies a prompt naming this board, the task brief served by the running app, the skills to read and the rules; the same button appears on every frame's footer, in the screen editor (frame, selected pin, idea being placed), the connection editor (the yarn), Plan (whole plan, per frame, per idea), the Ideas panel, App outline (whole and per screen), Review flow (all findings and each finding), Test flow (current screen and trail), the Detail view and the sketch library. The open board refreshes itself when the agent writes and nothing is unsaved. See `docs/AGENT_HANDOFF.md`.
+- Tell the agent (view toolbar): copies a three-line prompt naming this board and the task brief served by the running app (which carries the task, the skills to read and the rules); the same button appears on every frame's footer, in the screen editor (frame, selected pin, idea being placed), the connection editor (the yarn), Plan (whole plan, per frame, per idea), the Ideas panel, App outline (whole and per screen), Review flow (all findings and each finding), Test flow (current screen and trail), the Detail view and the sketch library. The open board refreshes itself when the agent writes and nothing is unsaved. See `docs/AGENT_HANDOFF.md`.
 - Leave it up to the AI: a post-it on a frame (toggle in the screen editor) says the builder should generate a standard, conventional page for it from the title, purpose, ideas and yarn. No drawing needed; the flow review stops asking for one; the export says so. For example, the Guide.
 - Click to resize a frame. No overlap, lots of space.
 - Planned connections are read in the Plan view and the text outline. The board draws only real yarn; a second, dashed kind of line was confusing and messy (removed 2026-09-26).

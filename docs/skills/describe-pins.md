@@ -10,4 +10,4 @@ The user draws and places pins; you write down what each pin is. Work on the fra
 6. Keep positions (`x`, `y`, `mobile`) exactly as the user placed them.
 7. Write back the whole project through the API once, at the end (skill: talk-to-sketchcoded, which also says when to warn the user); the open board refreshes itself when the user has nothing unsaved. Then list what you wrote and what is still open, one line per pin.
 
-Never place new pins: only the user places pins. A planned frame (no drawing) gets no pins; tell the user what should be on it from its ideas instead.
+Never place a pin on a drawing: only the user does that. A planned frame (no drawing) may carry **provisional pins** (`provisional: true`, placeholder positions down its right side) so its yarn exists before the drawing; the user places them when the drawing arrives (skill: start-a-board). Describe those like any other pin.
