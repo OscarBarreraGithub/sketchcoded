@@ -11,7 +11,7 @@ async function openFresh(page: Page, demo = true) {
   expect(response.ok()).toBeTruthy();
   const project = await response.json();
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
-  await page.goto('/');
+  await page.goto(`/board/${project.id}`);
   await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
   await expect(page.getByText('All changes saved', { exact: true })).toBeAttached();
   return project;
@@ -329,7 +329,7 @@ test('two-tab conflicts preserve the server version and allow exporting unsaved 
   const p = await openFresh(page);
   await page.waitForTimeout(800);
   const second = await context.newPage();
-  await second.goto('/');
+  await second.goto(`/board/${p.id}`);
   await expect(second.getByRole('heading', { name: p.name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Rename board', exact: true }).click();
   await page.getByLabel('Board name', { exact: true }).fill('First tab saved');
@@ -358,7 +358,7 @@ test('looking around the board is not a change: the save indicator stays put whi
   });
   const project = await response.json();
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
-  await page.goto('/');
+  await page.goto(`/board/${project.id}`);
   await expect(page.getByRole('heading', { name: 'Quiet viewport', exact: true })).toBeVisible();
   const status = page.locator('.save-status');
   await expect(status).toHaveText(/All changes saved/);

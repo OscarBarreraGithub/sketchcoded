@@ -8,17 +8,17 @@ Nothing is hand-written. Three registries in `shared/agent.ts` generate everythi
 
 A **view id** names where the user is. Each view has a label and the skills its task needs.
 
-| View id             | Label             | Where the button is                                                                               | Subject the prompt names                                            |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `board`             | Board             | View toolbar, beside Sketch library (Board tab only); an icon in every frame's footer on the cork | the whole board; one frame (as `screen-editor`)                     |
-| `screen-editor`     | Screen editor     | Editor toolbar, beside Add a pin; the Detail view's actions                                       | the frame; the selected pin; the layout; the idea being placed      |
-| `connection-editor` | Connection editor | Dialog actions, beside Cancel                                                                     | the yarn (or a new yarn from its pin)                               |
-| `plan`              | Plan              | Plan header beside Copy as text; each frame's folder; each idea card; the Ideas panel             | the whole plan; one frame's ideas; one idea                         |
-| `outline`           | App outline       | Outline header beside Expand screens; each screen's actions                                       | the whole outline; one screen                                       |
-| `review`            | Review flow       | Review heading; inside each finding                                                               | all open findings; one finding                                      |
-| `test-flow`         | Test flow         | Footer, beside Rewind test                                                                        | the current screen and the trail of yarn taken                      |
-| `library`           | Sketch library    | Library heading, beside the import button (icon)                                                  | the sketches, used and unused, and the frames still waiting         |
-| `boards`            | Boards            | Boards menu, “New board with your agent”                                                          | a new board for another project: create it and write its first plan |
+| View id             | Label             | Where the button is                                                                                                                  | Subject the prompt names                                            |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `board`             | Board             | View toolbar, beside Sketch library (Board tab only); an icon in every frame's footer on the cork                                    | the whole board; one frame (as `screen-editor`)                     |
+| `screen-editor`     | Screen editor     | Editor toolbar, beside Add a pin; the Detail view's actions                                                                          | the frame; the selected pin; the layout; the idea being placed      |
+| `connection-editor` | Connection editor | Dialog actions, beside Cancel                                                                                                        | the yarn (or a new yarn from its pin)                               |
+| `plan`              | Plan              | Plan header beside Copy as text; each frame's folder; each idea card; the Ideas panel                                                | the whole plan; one frame's ideas; one idea                         |
+| `outline`           | App outline       | Outline header beside Expand screens; each screen's actions                                                                          | the whole outline; one screen                                       |
+| `review`            | Review flow       | Review heading; inside each finding                                                                                                  | all open findings; one finding                                      |
+| `test-flow`         | Test flow         | Footer, beside Rewind test                                                                                                           | the current screen and the trail of yarn taken                      |
+| `library`           | Sketch library    | Library heading, beside the import button (icon)                                                                                     | the sketches, used and unused, and the frames still waiting         |
+| `boards`            | Boards            | The landing page's Start a board, and the Boards menu, “New board with your agent”; its brief is `/api/brief?view=boards` (no board) | a new board for another project: create it and write its first plan |
 
 ## Codes
 
@@ -63,10 +63,10 @@ Sketchcoded is running at http://127.0.0.1:5173. Read before asking; everything 
 2. Skills to follow: talk-to-sketchcoded, read-a-board, describe-pins, build-rules (each linked from http://127.0.0.1:5173/api/skills)
 3. The user’s rules, in their words: http://127.0.0.1:5173/api/checklist.md
 Task: Describe this pin from the plan: …
-Stay on this pin; ask before touching anything else.
+Stay on this pin; ask before touching anything else. Anything I add below this line is part of the task.
 ```
 
-The `Task:` line is the view's default job (`defaultTask`), aware of the state of the subject: a pin that is described but has no yarn gets a different task from an undescribed one, a link pin from a detail pin, a planned frame from one left to the AI. The user edits it in the dialog before pasting when they want something else.
+The `Task:` line is the view's default job (`defaultTask`), aware of the state of the subject: a pin that is described but has no yarn gets a different task from an undescribed one, a link pin from a detail pin, a planned frame from one left to the AI. The prompt ends by telling the agent that anything the user types after it is part of the task, so there is no task box to edit: the user adds what they want in their agent's chat.
 
 ## Adding a view or a skill
 

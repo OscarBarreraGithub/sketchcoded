@@ -3,7 +3,7 @@ import multer from 'multer';
 import { z } from 'zod';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { projectSchema } from '../shared/model';
+import { emptyProject, projectSchema } from '../shared/model';
 import { agentBrief, contextSchema, skillIds, skills } from '../shared/agent';
 import { flowDocument } from '../shared/flow-document';
 import { planningOutline } from '../shared/planning';
@@ -67,6 +67,20 @@ export function createApp(store: Store) {
       );
     const extras = context.data.view === 'boards' ? { boards: await store.list() } : {};
     markdown(res, agentBrief(project, context.data, base(req), extras));
+  });
+  app.get('/api/brief', async (req, res) => {
+    const context = contextSchema.safeParse(req.query);
+    if (!context.success || context.data.view !== 'boards')
+      throw new AppError(
+        'This address serves the boards brief only: /api/brief?view=boards. A board’s own views live at /api/projects/:id/brief.',
+        400,
+      );
+    markdown(
+      res,
+      agentBrief(emptyProject('Sketchcoded', 'sketchcoded'), context.data, base(req), {
+        boards: await store.list(),
+      }),
+    );
   });
   app.get('/api/projects/:id/flow.md', async (req, res) =>
     markdown(res, flowDocument(await store.read(req.params.id))),

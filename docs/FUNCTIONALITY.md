@@ -18,6 +18,14 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - See more projects: science with agents, also a link pin.
 - The landing page itself lives in the separate `sketchcoded-site` repository.
 
+## Landing page (the app's front door, at `/`)
+
+- The site's design: the name, the tagline, a short lede; runs on your computer, sketches never leave it.
+- Your boards: every board with its screen count and last edit, the last opened one marked; click one to open the workstation at `/board/<id>`.
+- Start a board: a name and New blank board, or New board with your agent (a prompt that has the agent create the board through the local API and write its first plan).
+- The brand at the top left of the workstation is the way back to this page.
+- To do, later: an interactive tutorial of five or six panels that teaches the app.
+
 ## Boards (dialog)
 
 - Your boards, with screen counts and last edit; the current one is marked.

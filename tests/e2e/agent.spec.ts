@@ -8,7 +8,7 @@ async function fresh(page: Page) {
   expect(response.ok()).toBeTruthy();
   const project = (await response.json()) as { id: string; name: string };
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
-  await page.goto('/');
+  await page.goto(`/board/${project.id}`);
   await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
   return project;
 }

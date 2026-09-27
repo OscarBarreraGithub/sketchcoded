@@ -204,6 +204,7 @@ describe('agent handoff: names, prompts and briefs', () => {
     expect(prompt).toContain(`${base}/api/checklist.md`);
     expect(prompt).toContain('Task: Check this pin');
     expect(prompt).toContain('Stay on this pin');
+    expect(prompt).toContain('Anything I add below this line is part of the task.');
     expect(briefUrl(p, { view: 'test-flow', screen: 'board', trail: ['a', 'b'] }, base)).toBe(
       `${base}/api/projects/little/brief?view=test-flow&screen=board&trail=a%2Cb`,
     );

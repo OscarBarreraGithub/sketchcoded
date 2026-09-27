@@ -660,6 +660,15 @@ export function Board({
             <br />
             Give it a name. See where it takes you.
           </p>
+          <div className="board-empty-agent">
+            <TellAgent
+              project={project}
+              context={{ view: 'board' }}
+              label="Plan it with your agent"
+              className="button primary"
+            />
+            <small>It reads the project you’re working in and writes the first plan here.</small>
+          </div>
           <span className="handwritten">
             start with a sketch <ArrowDownRight size={24} />
           </span>

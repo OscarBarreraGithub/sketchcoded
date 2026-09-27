@@ -50,84 +50,120 @@ import { ScreenEditor } from './components/ScreenEditor';
 import { EdgeEditor } from './components/EdgeEditor';
 import { ReviewPanel } from './components/ReviewPanel';
 import { Preview } from './components/Preview';
+import { Brand } from './components/Brand';
+import { Landing } from './components/Landing';
 
 type ProjectSummary = Awaited<ReturnType<typeof getProjects>>[number];
+type Route = { kind: 'landing' } | { kind: 'board'; id: string };
+/** `/` is the landing page with your boards; `/board/<id>` is the workstation. */
+const readRoute = (): Route => {
+  const m = window.location.pathname.match(/^\/board\/([A-Za-z0-9_-]+)\/?$/);
+  return m ? { kind: 'board', id: m[1] } : { kind: 'landing' };
+};
 export default function App() {
-  const [project, setProject] = useState<Project | null>(null),
+  const [route, setRoute] = useState<Route>(readRoute),
+    [project, setProject] = useState<Project | null>(null),
     [projects, setProjects] = useState<ProjectSummary[]>([]),
-    [error, setError] = useState('');
-  const load = async () => {
-    try {
-      setError('');
-      const list = await getProjects();
-      setProjects(list);
-      let saved: string | null = null;
+    [error, setError] = useState(''),
+    [lastId, setLastId] = useState<string | null>(() => {
       try {
-        saved = localStorage.getItem('drawcode:last-board');
+        return localStorage.getItem('drawcode:last-board');
       } catch {
-        /* optional preference */
+        return null;
       }
-      const id = list.find((p) => p.id === saved)?.id ?? list[0]?.id;
-      if (!id)
-        throw new Error('No project found. Restart the local server to create a starter board.');
-      setProject(await api<Project>(`/api/projects/${id}`));
-    } catch (e) {
-      setError((e as Error).message);
-    }
+    });
+  const refresh = () =>
+    getProjects()
+      .then(setProjects)
+      .catch((e: Error) => setError(e.message));
+  const go = (next: Route) => {
+    const path = next.kind === 'board' ? `/board/${next.id}` : '/';
+    if (window.location.pathname !== path) window.history.pushState(null, '', path);
+    setRoute(next);
   };
   useEffect(() => {
-    void load();
+    void refresh();
+    const back = () => setRoute(readRoute());
+    window.addEventListener('popstate', back);
+    return () => window.removeEventListener('popstate', back);
   }, []);
-  const open = (p: Project) => {
-    try {
-      localStorage.setItem('drawcode:last-board', p.id);
-    } catch {
-      /* optional preference */
+  useEffect(() => {
+    if (route.kind === 'landing') {
+      setProject(null);
+      void refresh();
+      return;
     }
+    let stale = false;
+    setError('');
+    api<Project>(`/api/projects/${route.id}`)
+      .then((p) => {
+        if (stale) return;
+        try {
+          localStorage.setItem('drawcode:last-board', p.id);
+        } catch {
+          /* optional preference */
+        }
+        setLastId(p.id);
+        setProject(p);
+      })
+      .catch((e: Error) => {
+        if (stale) return;
+        setError(`That board could not be opened: ${e.message}`);
+        go({ kind: 'landing' });
+      });
+    return () => {
+      stale = true;
+    };
+  }, [route]);
+  const open = (p: Project) => {
     setProject(p);
-    void getProjects()
-      .then(setProjects)
-      .catch(() => {});
+    go({ kind: 'board', id: p.id });
   };
-  if (!project)
+  const create = async (name: string) => {
+    const made = await api<Project>('/api/projects', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    open(made);
+  };
+  if (route.kind === 'landing')
+    return (
+      <Landing
+        boards={projects}
+        lastId={lastId}
+        error={error}
+        onOpen={(id) => go({ kind: 'board', id })}
+        onCreate={create}
+      />
+    );
+  if (!project || project.id !== route.id)
     return (
       <div className="boot-screen">
         <Brand />
-        <h1>{error ? 'A small snag.' : 'Making room for your ideas…'}</h1>
-        {error ? (
-          <>
-            <p>{error}</p>
-            <button className="button primary" onClick={() => void load()}>
-              <RefreshCw size={16} /> Try again
-            </button>
-          </>
-        ) : (
-          <LoaderCircle className="spin" />
-        )}
+        <h1>Making room for your ideas…</h1>
+        <LoaderCircle className="spin" />
       </div>
     );
-  return <Studio key={project.id} initial={project} projects={projects} onOpen={open} />;
-}
-function Brand() {
   return (
-    <div className="brand">
-      <span className="brand-mark" aria-hidden="true">
-        <Pencil size={23} />
-      </span>
-      <span>
-        sketchcoded<span className="brand-period">.</span>
-      </span>
-    </div>
+    <Studio
+      key={project.id}
+      initial={project}
+      projects={projects}
+      onOpen={open}
+      onHome={() => go({ kind: 'landing' })}
+    />
   );
 }
 function Studio({
   initial,
   projects,
   onOpen,
+  onHome,
 }: {
   initial: Project;
   projects: ProjectSummary[];
   onOpen: (p: Project) => void;
+  onHome: () => void;
 }) {
   const {
     project,
@@ -482,7 +518,9 @@ function Studio({
   return (
     <div className={`app-shell ${libraryOpen ? 'library-open' : ''}`}>
       <header className="app-header">
-        <Brand />
+        <button className="brand-link" onClick={onHome} aria-label="Back to your boards">
+          <Brand />
+        </button>
         <div className="header-separator" />
         <div className="project-switcher">
           <button

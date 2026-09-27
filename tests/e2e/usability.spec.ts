@@ -21,7 +21,7 @@ async function fresh(page: Page, customize?: (p: Project) => void) {
     p = await saved.json();
   }
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), p.id);
-  await page.goto('http://127.0.0.1:5174/');
+  await page.goto(`http://127.0.0.1:5174/board/${p.id}`);
   await expect(page.getByRole('heading', { name: p.name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Fit board', exact: true }).click();
   return p;

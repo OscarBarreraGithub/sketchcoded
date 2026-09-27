@@ -1,0 +1,261 @@
+/* The app's front door, in the design of the public site: your boards and a way to start one.
+   Rules: the page never scrolls beyond its content; text ≥ 12px; targets ≥ 44px. */
+.landing {
+  --paper: #faf9f4;
+  --muted: #6c7467;
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+.landing-header {
+  width: min(1120px, 100% - 40px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.landing-header .brand {
+  font-size: 22px;
+}
+.landing-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+.landing-main {
+  width: min(1120px, 100% - 40px);
+  margin: 0 auto;
+  flex: 1;
+  padding-bottom: 48px;
+}
+.landing-error {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #fbe9e6;
+  border: 1px solid #e6b9b1;
+  color: #6b2b23;
+}
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 48px;
+  align-items: start;
+  padding: 56px 0 24px;
+}
+.landing-intro h1 {
+  font: 400 clamp(44px, 6vw, 72px) / 1 var(--serif);
+  letter-spacing: -1px;
+  margin: 0 0 18px;
+}
+.landing-tagline {
+  font: 500 clamp(19px, 2vw, 24px) / 1.4 var(--sans);
+  max-width: 26ch;
+  margin: 0;
+}
+.landing-tagline b {
+  display: block;
+  color: var(--green);
+  font-weight: 600;
+}
+.landing-tagline u {
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.landing-lede {
+  color: var(--muted);
+  margin: 18px 0 0;
+  max-width: 46ch;
+  line-height: 1.6;
+}
+.landing-start {
+  margin-top: 34px;
+  padding: 22px;
+  background: #fffef8;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.landing-start h2,
+.landing-boards h2 {
+  font: 400 28px/1.15 var(--serif);
+  margin: 0;
+}
+.landing-start form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.landing-start label {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.landing-start input {
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fffef8;
+  font: 15px var(--sans);
+  color: var(--ink);
+}
+.landing-start .button {
+  min-height: 48px;
+}
+.landing-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.landing-or::before,
+.landing-or::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--line);
+}
+.landing-start .tell-agent {
+  align-self: flex-start;
+}
+.landing-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.landing-boards {
+  background: #fffef5;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 1px 6px 22px #55452a24;
+}
+.landing-boards-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 6px 14px;
+}
+.landing-boards-head span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.landing-boards ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(60dvh, 620px);
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.landing-empty {
+  color: var(--muted);
+  padding: 6px;
+}
+.landing-board {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 12px 14px;
+  min-height: 64px;
+  border: 1px solid #e9e6da;
+  border-radius: 10px;
+  background: #fffef8;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+}
+.landing-board:hover,
+.landing-board:focus-visible {
+  background: #f1f3e9;
+  border-color: var(--green);
+}
+.landing-board-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #e9ecdf;
+  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.landing-board-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.landing-board-text strong {
+  font: 600 16px var(--sans);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.landing-board-text small {
+  font-size: 13px;
+  color: var(--muted);
+}
+/* The brand in the workstation header is the way back to this page. */
+.brand-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
+}
+.brand-link:hover .brand,
+.brand-link:focus-visible .brand {
+  color: var(--green);
+}
+/* An empty canvas leads with the agent. */
+.board-empty .board-empty-agent {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.board-empty .board-empty-agent small {
+  font-size: 13px;
+  color: #6f6a55;
+}
+@media (max-width: 900px) {
+  .landing-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding-top: 32px;
+  }
+}
+@media (max-width: 700px) {
+  .landing-note {
+    display: none;
+  }
+}

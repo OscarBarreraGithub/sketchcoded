@@ -12,6 +12,7 @@ import './styles.css';
 import './usability.css';
 import './planning.css';
 import './workstation.css';
+import './landing.css';
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: boolean }> {
   state = { error: false };
   static getDerivedStateFromError() {

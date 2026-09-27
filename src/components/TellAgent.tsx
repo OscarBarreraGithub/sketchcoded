@@ -44,13 +44,12 @@ export function TellAgent({
   hideButton?: boolean;
 }) {
   const [open, setOpen] = useState(false),
-    [task, setTask] = useState(''),
-    [copied, setCopied] = useState<'yes' | 'no' | 'pending' | 'stale'>('pending'),
+    [copied, setCopied] = useState<'yes' | 'no' | 'pending'>('pending'),
     [flash, setFlash] = useState(false);
   const base = window.location.origin;
   const subject = describeSubject(project, context),
     view = views[context.view],
-    prompt = agentPrompt(project, context, base, task);
+    prompt = agentPrompt(project, context, base);
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
@@ -67,11 +66,9 @@ export function TellAgent({
   }, [flash]);
   const start = () => {
     onStart?.();
-    const fresh = defaultTask(project, context).replace('<base>', base);
-    setTask(fresh);
     setCopied('pending');
     setOpen(true);
-    void copy(agentPrompt(project, context, base, fresh));
+    void copy(prompt);
   };
   useEffect(() => {
     if (openSignal) start();
@@ -107,16 +104,14 @@ export function TellAgent({
               <strong>
                 {copied === 'yes'
                   ? 'Copied to your clipboard'
-                  : copied === 'stale'
-                    ? 'You changed the task. Copy again to update your clipboard.'
-                    : copied === 'no'
-                      ? 'Your browser did not allow copying'
-                      : 'Copying…'}
+                  : copied === 'no'
+                    ? 'Your browser did not allow copying'
+                    : 'Copying…'}
               </strong>
               <span>
                 {copied === 'no'
                   ? 'Select the prompt below and copy it yourself.'
-                  : 'Paste it into your agent. It will read this board, this task and your rules from the app running here, then get to work.'}
+                  : 'Paste it into your agent and add anything more you want after it. It reads this board, the task and your rules from the app running here, then gets to work.'}
               </span>
             </div>
           </div>
@@ -147,21 +142,15 @@ export function TellAgent({
                 </a>
               </dd>
             </div>
-            <div className="agent-task">
-              <dt>
-                <label htmlFor="agent-task">Task</label>
-              </dt>
-              <dd>
-                <textarea
-                  id="agent-task"
-                  rows={3}
-                  value={task}
-                  onChange={(e) => {
-                    setTask(e.target.value);
-                    setCopied('stale');
-                  }}
-                />
+            <div>
+              <dt>Task</dt>
+              <dd className="agent-task-text">
+                {defaultTask(project, context).replace('<base>', base)}
               </dd>
+            </div>
+            <div>
+              <dt>Then</dt>
+              <dd>Type anything more you want right after the prompt, in your agent’s chat.</dd>
             </div>
           </dl>
           <div className="agent-terminal">
@@ -195,7 +184,7 @@ export function TellAgent({
               onClick={() => void copy(prompt)}
             >
               {flash ? <Check size={15} /> : <ClipboardCopy size={15} />}{' '}
-              {flash ? 'Copied' : copied === 'stale' ? 'Copy the new prompt' : 'Copy again'}
+              {flash ? 'Copied' : 'Copy again'}
             </button>
           </div>
         </Modal>

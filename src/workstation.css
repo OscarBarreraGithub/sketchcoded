@@ -1169,7 +1169,6 @@ kbd,
   border-color: #dcdfd0;
   color: #5f6b56;
 }
-.agent-copied.stale,
 .agent-copied.no {
   background: #fbf1dc;
   border-color: #e7d3a4;
@@ -1189,7 +1188,6 @@ kbd,
 .agent-copied.pending .agent-copied-mark {
   background: #b3b9a8;
 }
-.agent-copied.stale .agent-copied-mark,
 .agent-copied.no .agent-copied-mark {
   background: #b39a2b;
 }
@@ -1244,21 +1242,8 @@ kbd,
   text-underline-offset: 3px;
   min-height: 32px;
 }
-.agent-task dt {
-  padding-top: 10px;
-}
-.agent-task textarea {
-  width: 100%;
-  min-height: 72px;
-  resize: none;
-  padding: 10px 12px;
-  border: 1px solid #d9dccc;
-  border-radius: 8px;
-  background: #fffef8;
-  color: var(--ink);
-  font: inherit;
-  font-size: 14px;
-  line-height: 1.5;
+.agent-task-text {
+  color: #4a5648;
 }
 .agent-terminal {
   flex: 1 1 0;

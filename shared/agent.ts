@@ -255,6 +255,8 @@ export function defaultTask(p: Project, ctx: AgentContext): string {
     'Update the board through the API, once, at the end, and tell me when to expect the refresh.';
   switch (ctx.view) {
     case 'board':
+      if (!p.screens.length && !p.ideas.length)
+        return `This board is empty. Read the project I am working in, or ask me for two lines about it, then write the first plan into this board: the screens the app needs as planned frames (assetId null, each with a layout position on the cork), the functionality as ideas on those frames, and where each idea leads. Do not draw anything. ${write}`;
       return 'Read the board and tell me, in a short list, what is drawn, what is planned, what is left to the AI, and what the open findings are. Then wait for my instruction.';
     case 'boards':
       return `Create a new Sketchcoded board for the project I am working in, named after it: POST <base>/api/projects with {"name": "…"} and the header X-Drawcode-Client: local (the skill talk-to-sketchcoded has the details). Then read this project's code, or ask me for two lines about it, and write the first plan into that board: the screens the app needs as planned frames (assetId null, each with a layout position on the cork), the functionality as ideas on those frames, and where each idea leads. Do not draw anything. Finish by telling me the board's name so I can open it from the Boards menu and start drawing.`;
@@ -314,28 +316,27 @@ const params = (ctx: AgentContext) => {
   return search.toString();
 };
 export const briefUrl = (p: Project, ctx: AgentContext, base: string) =>
-  `${base}/api/projects/${p.id}/brief?${params(ctx)}`;
+  ctx.view === 'boards'
+    ? `${base}/api/brief?view=boards`
+    : `${base}/api/projects/${p.id}/brief?${params(ctx)}`;
 export const skillUrl = (base: string, skill: SkillId) => `${base}/api/skills/${skill}.md`;
 export const skillsIndexUrl = (base: string) => `${base}/api/skills`;
 export const checklistUrl = (base: string) => `${base}/api/checklist.md`;
 
 /** The text that goes to the clipboard: where the user is, where the instructions are, the task. */
-export function agentPrompt(
-  p: Project,
-  ctx: AgentContext,
-  base: string,
-  task: string = defaultTask(p, ctx),
-): string {
+export function agentPrompt(p: Project, ctx: AgentContext, base: string): string {
   const view = views[ctx.view],
     subject = describeSubject(p, ctx);
   return [
-    `Sketchcoded task · ${subject.text} · ${view.label} · board ${q(p.name)}`,
+    ctx.view === 'boards'
+      ? `Sketchcoded task · ${subject.text} · ${view.label}`
+      : `Sketchcoded task · ${subject.text} · ${view.label} · board ${q(p.name)}`,
     `Sketchcoded is running at ${base}. Read before asking; everything you need is there:`,
     `1. The brief for exactly this task (read first): ${briefUrl(p, ctx, base)}`,
     `2. Skills to follow: ${view.skills.join(', ')} (each linked from ${skillsIndexUrl(base)})`,
     `3. The user’s rules, in their words: ${checklistUrl(base)}`,
-    `Task: ${(task.trim() || defaultTask(p, ctx)).replace('<base>', base)}`,
-    `Stay on this ${subject.noun}; ask before touching anything else.`,
+    `Task: ${defaultTask(p, ctx).replace('<base>', base)}`,
+    `Stay on this ${subject.noun}; ask before touching anything else. Anything I add below this line is part of the task.`,
   ].join('\n');
 }
 
@@ -449,9 +450,13 @@ export function agentBrief(
   const lines: string[] = [
     '# Sketchcoded task brief',
     '',
-    `Board: ${q(p.name)} (${p.id}) · View: ${view.label} · Subject: ${subject.text}`,
+    ctx.view === 'boards'
+      ? `View: ${view.label} · Subject: ${subject.text}`
+      : `Board: ${q(p.name)} (${p.id}) · View: ${view.label} · Subject: ${subject.text}`,
     '',
-    `Sketchcoded runs at ${base}. Live data: GET ${base}/api/projects/${p.id} (the whole project, schemaVersion ${p.schemaVersion}). Whole documents: ${base}/api/projects/${p.id}/flow.md and ${base}/api/projects/${p.id}/outline.md. How to write back, and when to warn the user, is in the skill talk-to-sketchcoded.`,
+    ctx.view === 'boards'
+      ? `Sketchcoded runs at ${base}. The boards on this computer: GET ${base}/api/projects. How to create one and write back is in the skill talk-to-sketchcoded and below.`
+      : `Sketchcoded runs at ${base}. Live data: GET ${base}/api/projects/${p.id} (the whole project, schemaVersion ${p.schemaVersion}). Whole documents: ${base}/api/projects/${p.id}/flow.md and ${base}/api/projects/${p.id}/outline.md. How to write back, and when to warn the user, is in the skill talk-to-sketchcoded.`,
     '',
     '## The task',
     '',
