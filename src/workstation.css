@@ -1657,3 +1657,159 @@ kbd,
     transition: none;
   }
 }
+
+/* Threads by category. A color is a category; filtering to one shows that journey and lets the
+   rest of the board step back: its yarn fades, and the frames that category never touches shrink
+   a little and dull. They keep their place, so the shape of the board is never lost. */
+.screen-card {
+  transform: translate(var(--nudge-x, 0px), var(--nudge-y, 0px)) scale(var(--shrink, 1));
+  transform-origin: center center;
+}
+.screen-card.off-category {
+  --shrink: 0.88;
+  opacity: 0.42;
+}
+.screen-card.off-category .card-paper {
+  box-shadow: 1px 2px 3px #52432a1c;
+}
+.yarn-thread.off-category {
+  opacity: 0.07;
+}
+.yarn-label-button.off-category {
+  opacity: 0;
+  pointer-events: none;
+}
+.history-tag.off-category {
+  opacity: 0.14;
+}
+.board.filtered .yarn-thread:not(.off-category) .yarn {
+  stroke-width: 3.6;
+}
+.category-control {
+  position: relative;
+  display: flex;
+}
+.category-button {
+  gap: 8px;
+}
+.category-button.filtering {
+  border-color: var(--green);
+  background: #eef1e6;
+}
+.category-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.category-menu {
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  min-width: 240px;
+  z-index: 22;
+}
+.category-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.category-menu button > span {
+  margin-left: auto;
+  font-size: 12px;
+  color: #8b937f;
+}
+.category-menu button[aria-pressed='true'] {
+  background: #e9ecdf;
+  font-weight: 600;
+}
+.category-menu .menu-more {
+  border-top: 1px solid #e4e7da;
+  color: #5f6e55;
+}
+.menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: none;
+  border: 0;
+  cursor: default;
+}
+.project-menu {
+  z-index: 22;
+}
+.category-modal {
+  width: 520px;
+}
+.category-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 4px;
+}
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+.category-row input {
+  flex: 1;
+  min-height: 48px;
+  margin: 0;
+}
+.category-row small {
+  width: 74px;
+  text-align: right;
+  font-size: 12px;
+  color: #8b937f;
+}
+.legend-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-category i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.legend-category.off {
+  opacity: 0.35;
+}
+
+/* The chrome above the board earns its height: the board is the work. The board's own tagline is
+   gone, the title is smaller, and the two rows are tighter. */
+.workspace-header {
+  height: 84px;
+  min-height: 0;
+  padding: 12px 33px 10px;
+  flex-wrap: nowrap;
+}
+.workspace-header p {
+  display: none;
+}
+.board-title {
+  margin-top: 4px;
+}
+.board-title h1 {
+  font-size: 25px;
+  letter-spacing: -0.6px;
+}
+.board-summary {
+  gap: 8px;
+}
+.view-toolbar {
+  padding: 7px 28px;
+  gap: 8px 14px;
+}
+.view-toolbar p {
+  font-size: 12px;
+  line-height: 1.35;
+  max-width: 330px;
+}
+.view-switch button {
+  padding: 9px 14px;
+}

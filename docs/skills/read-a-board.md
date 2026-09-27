@@ -15,7 +15,7 @@ Frames are `F1, F2, …`, sketches `S1, S2, …`, ideas `I1, I2, …` (the `code
 
 ## Pins
 
-A pin is an interaction on a drawing. `x`, `y` are fractions of the web image (0..1 from the top left); `mobile: {x, y}` the position on the mobile drawing. `provisional: true` means the position is a placeholder: the pin was written before its frame had a drawing (a planned frame can carry pins and real yarn); the user places it once the drawing arrives. `title` and `description` are the intent in the user's words. `kind`: `interaction` (default), `detail` (opens a closer look, never navigation), `link` (leaves the app for the first URL in its description; no yarn, no destination frame). `color` is one of red, olive, blue, gold; the board's `colorLabels` say what each color means on this project.
+A pin is an interaction on a drawing. `x`, `y` are fractions of the web image (0..1 from the top left); `mobile: {x, y}` the position on the mobile drawing. `provisional: true` means the position is a placeholder: the pin was written before its frame had a drawing (a planned frame can carry pins and real yarn); the user places it once the drawing arrives. `title` and `description` are the intent in the user's words. `kind`: `interaction` (default), `detail` (opens a closer look, never navigation), `link` (leaves the app for the first URL in its description; no yarn, no destination frame). `color` is the yarn's category, one of red, gold, blue, olive, violet, teal; `colorLabels` names them on this board (by default red is the main path, gold a branch, blue a detour, olive the way back). The user filters the board to one category at a time, so keep colors meaningful.
 
 ## Yarn (transitions)
 

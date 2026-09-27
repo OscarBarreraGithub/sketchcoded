@@ -27,7 +27,24 @@ Everything in the board is read later by the agent that builds the app, and by t
 - **Somewhere back.** When a frame can be reached but nothing returns, the review raises a one-way finding. Plan a way back (a pin with `navigation: "back"`, or a link to the screen before) unless the one-way trip is the point, as after signing in.
 - **An external site is never a frame.** A web address is a **link pin** on the frame that leads there, with the address written in the pin's description and no yarn. Do not create a screen for a public site, a documentation page or another product.
 - **`entry: true` means a way into this app**: where someone actually starts, such as the home screen, a sign-in, or a shared link. A marketing site, a separate product or an external destination is not an entry.
-- **Colors carry meaning or stay plain.** Leave `color: "red"` on the yarn unless the board's `colorLabels` say what the colors mean; if you use several, set `colorLabels` so the board's legend explains them.
+
+## Color every yarn by category
+
+A color is a category of yarn, and the user reads the board one category at a time (the Threads button filters to one and lets the rest step back). Use these four unless the board already says otherwise, and set `colorLabels` so the legend names them:
+
+| Color   | Category  | What belongs in it                                                                         |
+| ------- | --------- | ------------------------------------------------------------------------------------------ |
+| `red`   | Main path | The journey you expect: one screen to the next, the way it usually goes.                   |
+| `gold`  | Branch    | A different outcome from the same place: a condition, an error, an empty or blocked state. |
+| `blue`  | Detour    | A side trip the user comes back from: settings, help, a profile, a closer look.            |
+| `olive` | Way back  | Returning, cancelling, signing out, an ending.                                             |
+
+```json
+"colorLabels": { "red": "Main path", "gold": "Branch", "blue": "Detour", "olive": "Way back" }
+```
+
+Two more colors exist, `violet` and `teal`, for a category this board really needs and the four do not cover. Name it in `colorLabels` when you use it; leave both out otherwise, so the legend shows only what the board uses.
+
 - Ids are yours to choose (letters, digits, `-`, `_`); codes (`F1`, `I1`) are assigned by the server, so leave `code` out of new things.
 
 Create the board with `POST {base}/api/projects` (header `X-Drawcode-Client: local`, body `{"name": "<project name>"}`), fill it with one `PUT` at the end (skill: talk-to-sketchcoded), and tell the user the board's name.

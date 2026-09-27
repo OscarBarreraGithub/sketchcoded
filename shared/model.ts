@@ -37,7 +37,7 @@ export const pinSchema = z.object({
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
   mobile: point.nullable().optional(),
-  color: z.enum(['red', 'olive', 'blue', 'gold']).optional(),
+  color: z.enum(['red', 'olive', 'blue', 'gold', 'violet', 'teal']).optional(),
   title: z.string().max(200),
   description: prose,
   /** The position is a placeholder: the pin was written before its frame had a drawing (strings
@@ -55,7 +55,7 @@ export const transitionSchema = z.object({
   context: prose,
   fallback: z.boolean(),
   navigation: navigationSchema,
-  color: z.enum(['red', 'olive', 'blue', 'gold']),
+  color: z.enum(['red', 'olive', 'blue', 'gold', 'violet', 'teal']),
 });
 export const reviewSchema = z.object({
   issueId: z.string().max(500),
@@ -105,7 +105,7 @@ export const projectSchema = z.object({
   reviews: z.array(reviewSchema).max(10000),
   /** What each pin color means on this board, e.g. gold = "needs a decision". */
   colorLabels: z
-    .partialRecord(z.enum(['red', 'olive', 'blue', 'gold']), z.string().max(60))
+    .partialRecord(z.enum(['red', 'olive', 'blue', 'gold', 'violet', 'teal']), z.string().max(60))
     .optional(),
 });
 export type Asset = z.infer<typeof assetSchema>;
@@ -134,9 +134,51 @@ export const emptyProject = (name = 'Untitled board', projectId: string = uid())
   folders: [],
   reviews: [],
 });
-export const colors = { red: '#b95144', olive: '#718060', blue: '#547c91', gold: '#b98c43' };
+export const colors = {
+  red: '#b95144',
+  gold: '#b98c43',
+  blue: '#547c91',
+  olive: '#718060',
+  violet: '#7b5e93',
+  teal: '#3d8585',
+};
 export type PinColor = keyof typeof colors;
 export const colorNames = Object.keys(colors) as PinColor[];
+/**
+ * The categories of yarn a board starts with: the smallest set that covers how someone moves
+ * through an app. A board can rename them or name one of the spare colors for something of its
+ * own; the two spares start unnamed so the legend only shows what the board actually uses.
+ */
+export const defaultColorLabels: Record<PinColor, string> = {
+  red: 'Main path',
+  gold: 'Branch',
+  blue: 'Detour',
+  olive: 'Way back',
+  violet: '',
+  teal: '',
+};
+/** What each category means, for the legend, the agent's brief and the categories dialog. */
+export const categoryHelp: Record<PinColor, string> = {
+  red: 'The journey you expect: one screen to the next, the way it usually goes.',
+  gold: 'A different outcome from the same place: a condition, an error, an empty or blocked state.',
+  blue: 'A side trip you come back from: settings, help, a profile, a closer look.',
+  olive: 'The way back or out: returning, cancelling, signing out, an ending.',
+  violet: 'A category of this board’s own.',
+  teal: 'A category of this board’s own.',
+};
+export const categoryLabel = (p: Project, color: PinColor) =>
+  p.colorLabels?.[color] || defaultColorLabels[color];
+/** The yarn in one category, and every frame it touches. Frames outside it are still on the board. */
+export function threadsInCategory(p: Project, color: PinColor) {
+  const yarn = p.transitions.filter((t) => t.color === color);
+  const frames = new Set<string>();
+  for (const t of yarn) {
+    const from = p.pins.find((pin) => pin.id === t.pinId)?.screenId;
+    if (from) frames.add(from);
+    if (t.target) frames.add(t.target);
+  }
+  return { yarn, frames };
+}
 export const pinColor = (pin: Pin): PinColor => pin.color ?? 'red';
 /** A link pin leaves the app for a web address written in its description. No yarn, no frame. */
 export const urlPattern = /https?:\/\/[^\s)\]}>"']+|\bwww\.[^\s)\]}>"']+/i;

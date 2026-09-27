@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import {
   assetUrl,
+  categoryLabel,
+  colorNames,
   colors,
   isHistory,
   codeOf,
@@ -28,9 +30,12 @@ import {
   isPlanned,
   pinColor,
   screenSize,
+  threadsInCategory,
   type Asset,
+  type PinColor,
   type Project,
   type Screen,
+  type Transition,
 } from '../../shared/model';
 import type { Update } from '../useProject';
 import { clampView, fitView, frameRects } from '../boardView';
@@ -52,6 +57,7 @@ export function Board({
   fitSignal,
   focusRequest,
   onFocusHandled,
+  category,
 }: {
   project: Project;
   update: Update;
@@ -69,6 +75,8 @@ export function Board({
   fitSignal: number;
   focusRequest: { id: string; nonce: number } | null;
   onFocusHandled: () => void;
+  /** Looking at one category of yarn only; everything else steps back. */
+  category: PinColor | null;
 }) {
   const ref = useRef<HTMLDivElement>(null),
     [view, setView] = useState(project.viewport),
@@ -242,6 +250,9 @@ export function Board({
     frames.delete(focus ?? '');
     return { frames, yarn };
   })();
+  // Filtering by category: the yarn of one color stays, and the frames it never touches shrink a
+  // little and step back. They keep their place, so the shape of the board is never lost.
+  const inCategory = category ? threadsInCategory(project, category) : null;
   const NUDGE = 26;
   const nudge = (s: Screen) => {
     if (!focus || !ties.frames.has(s.id)) return { x: 0, y: 0 };
@@ -261,6 +272,12 @@ export function Board({
   // With many threads the labels would cover everything, so they wait until a frame is picked.
   const threads = project.transitions.filter((t) => !isHistory(t) && t.target);
   const crowded = threads.length > 8;
+  const used = colorNames.filter((c) => project.transitions.some((t) => t.color === c));
+  // A label says its words when there is room for them: a quiet board, the frame you picked, or a
+  // category small enough to read at once. Otherwise it waits as a mark.
+  const wordy = (t: Transition) =>
+    ties.yarn.has(t.id) ||
+    (category ? t.color === category && inCategory!.yarn.length <= 8 : !crowded);
   const position = (s: Screen) => {
     const base = project.layout[s.id] ?? { x: 0, y: 0, width: 300 };
     if (moving?.id === s.id) return { ...base, x: moving.x, y: moving.y };
@@ -382,7 +399,7 @@ export function Board({
   return (
     <main
       ref={ref}
-      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''} ${view.zoom < 0.4 ? 'zoomed-out' : ''} ${focus ? 'has-focus' : ''} ${crowded ? 'crowded' : ''}`}
+      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''} ${view.zoom < 0.4 ? 'zoomed-out' : ''} ${focus ? 'has-focus' : ''} ${crowded ? 'crowded' : ''} ${category ? 'filtered' : ''}`}
       style={{ '--board-zoom': view.zoom } as CSSProperties}
       aria-label="Design board"
       onPointerDown={(e) => {
@@ -453,7 +470,7 @@ export function Board({
             <article
               key={s.id}
               data-screen={s.id}
-              className={`screen-card ${moving?.id === s.id ? 'moving' : ''} ${isPlanned(s) ? 'planned' : ''} ${focus === s.id ? 'focused' : ''} ${ties.frames.has(s.id) ? 'tied' : ''}`}
+              className={`screen-card ${moving?.id === s.id ? 'moving' : ''} ${isPlanned(s) ? 'planned' : ''} ${focus === s.id ? 'focused' : ''} ${ties.frames.has(s.id) ? 'tied' : ''} ${inCategory && !inCategory.frames.has(s.id) ? 'off-category' : ''}`}
               style={
                 {
                   left: pos.x,
@@ -657,7 +674,7 @@ export function Board({
               return p ? (
                 <g
                   key={t.id}
-                  className={`yarn-thread ${focus && !ties.yarn.has(t.id) ? 'aside' : ''} ${ties.yarn.has(t.id) ? 'picked' : ''}`}
+                  className={`yarn-thread ${focus && !ties.yarn.has(t.id) ? 'aside' : ''} ${ties.yarn.has(t.id) ? 'picked' : ''} ${category && t.color !== category ? 'off-category' : ''}`}
                 >
                   <path d={p.d} className="yarn-shadow" />
                   <path
@@ -678,7 +695,7 @@ export function Board({
             return p ? (
               <button
                 key={t.id}
-                className={`yarn-label-button ${crowded && !ties.yarn.has(t.id) ? 'as-dot' : ''} ${focus && !ties.yarn.has(t.id) ? 'aside' : ''}`}
+                className={`yarn-label-button ${wordy(t) ? '' : 'as-dot'} ${focus && !ties.yarn.has(t.id) ? 'aside' : ''} ${category && t.color !== category ? 'off-category' : ''}`}
                 style={{ left: p.x, top: p.y }}
                 aria-label={`Edit connection: ${t.summary}`}
                 title={t.summary}
@@ -698,7 +715,7 @@ export function Board({
           return history.map((t, i) => (
             <button
               key={t.id}
-              className="history-tag"
+              className={`history-tag ${category && t.color !== category ? 'off-category' : ''}`}
               style={{ left: pos.x + 15, top: pos.y + size.height + 12 + i * 31 }}
               onClick={() => onEdge(t.id)}
             >
@@ -774,9 +791,25 @@ export function Board({
         <i /> <span>Scroll to zoom · Shift + scroll to pan</span>
       </div>
       <div className="board-legend">
-        <span className="legend-line" /> A thread of an idea
+        {used.length > 1 ? (
+          used.map((c) => (
+            <span key={c} className={`legend-category ${category && category !== c ? 'off' : ''}`}>
+              <i style={{ background: colors[c] }} /> {categoryLabel(project, c)}
+            </span>
+          ))
+        ) : (
+          <>
+            <span className="legend-line" /> A thread of an idea
+          </>
+        )}
         {view.zoom < 0.4 && <span className="legend-note">Zoom in for pins and labels</span>}
-        {view.zoom >= 0.4 && crowded && (
+        {category && (
+          <span className="legend-note">
+            {inCategory!.yarn.length} {inCategory!.yarn.length === 1 ? 'thread' : 'threads'} ·{' '}
+            {inCategory!.frames.size} of {project.screens.length} frames
+          </span>
+        )}
+        {!category && view.zoom >= 0.4 && crowded && (
           <span className="legend-note">
             {focus
               ? `${project.screens.find((s) => s.id === focus)?.title ?? 'This frame'}: ${ties.yarn.size} ${ties.yarn.size === 1 ? 'thread' : 'threads'} · click the cork to let go`

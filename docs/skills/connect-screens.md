@@ -9,6 +9,6 @@ Yarn is navigation. Fill in a yarn so a builder and Test flow both understand it
 - A `link` pin never has yarn. A `detail` pin is not navigation.
 - Keep the navigation kind the user chose unless the brief says otherwise. Do not add a destination screen that is not on the board; ask.
 - **A way back, or a reason.** Before you leave a screen with no route out, either tie one (a `back` pin, or a link onward) or make it `role: "terminal"` with a purpose saying why it ends there. One-way trips are fine when they are the point (after signing in, after a reset); say so in the review rather than leaving it silent.
-- **Colors need labels.** Use a single color unless `colorLabels` gives the colors meaning on this board; if you introduce one, set its label too.
+- **Color is the category.** `red` the main path, `gold` a branch (condition, error, empty or blocked), `blue` a detour the user comes back from, `olive` the way back or out; `violet` and `teal` are spare. Keep `colorLabels` naming whatever you use, because the board filters and reads by these names.
 
 Write back through the API once, at the end (skill: talk-to-sketchcoded, which also says when to warn the user); the open board refreshes itself when the user has nothing unsaved.

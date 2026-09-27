@@ -157,7 +157,7 @@ const fillPlan = (mode: BuildMode) =>
   ({
     list: 'Write the to-do list into it: every screen the app needs and everything that goes on each screen, as ideas in the pool (screenId null), each idea’s detail starting with the screen it belongs on, so I know what to draw and what to connect. No frames, no pins, no yarn: I make those.',
     frames:
-      'Write the plan into it: the screens as planned frames (assetId null, a layout position each, on a grid with room between), the functionality as ideas assigned to those frames, and the strings: for every idea that leads somewhere, a provisional pin on its frame (provisional: true, at a slot position) with its yarn to the destination, so the whole flow is tied before anything is drawn. Do not draw.',
+      'Write the plan into it: the screens as planned frames (assetId null, a layout position each, on a grid with room between), the functionality as ideas assigned to those frames, and the strings: for every idea that leads somewhere, a provisional pin on its frame (provisional: true, at a slot position) with its yarn to the destination, colored by category (main path, branch, detour, way back), so the whole flow is tied before anything is drawn and I can read it one journey at a time. Do not draw.',
     built:
       'Write the plan into it as frames and strings (planned frames, ideas, provisional pins and their yarn), then mark every frame Leave it up to the AI (leftToAi: true). Sketchcoded builds each of those frames a real page from its title, purpose, ideas and yarn, and Test flow walks the whole site, so write them as if describing a page to a designer: pin titles become the buttons, ideas become the cards and fields, the purpose becomes the line under the heading. I take the post-it off the one or two frames I want to draw myself.',
   })[mode] +
@@ -395,18 +395,19 @@ const levelSteps = (mode: BuildMode): string[] => {
     '3. Planned frames: screens[] entries with assetId null, a title the user would call the page, a purpose written for the builder (one to three sentences on what the screen is for), role (screen, auth, modal, terminal) and entry (true only for real ways into this app, never an external site); layout[<screenId>] = {x, y, width: 360} on a grid, 520 apart across and 440 apart down, one row per theme.',
     '4. Ideas: ideas[] entries with screenId set to their frame, leadsTo set when the idea opens another screen, pinId null; one capability per idea, titled as the user would say it, details in detail.',
     '5. Strings: for every idea with a leadsTo, a pin on its frame {id, screenId, x: 0.86, y: a slot down the right side (0.12, 0.28, 0.44, 0.60, 0.76, 0.92), title: the idea title, description: the idea detail, kind: "interaction", provisional: true}; set the idea’s pinId to it; and a transition {id, pinId, target: the leadsTo screen, summary: the idea title (short), condition: "", logic: "", context: "", fallback: false, navigation: "push" ("modal" when the target is a dialog), color: "red"}. Ideas without a destination stay ideas. Do not attach drawings or place pins on a drawing: the user drops the drawings on the frames and places the pins; the yarn follows.',
-    '6. No accidental dead ends and no frame for an outside site: every frame either leads somewhere or is role "terminal" with a purpose saying why it ends; a web address is a link pin (kind "link", the address in its description, no yarn) on the frame that leads there. Leave every yarn color "red" unless you also set colorLabels to say what the colors mean.',
+    '6. Color every yarn by category, so the board can be read one journey at a time: "red" the main path (the journey you expect), "gold" a branch (a different outcome from the same place: a condition, an error, an empty or blocked state), "blue" a detour the user comes back from (settings, help, a profile, a closer look), "olive" the way back or out (returning, cancelling, signing out, an ending). Set colorLabels to {"red": "Main path", "gold": "Branch", "blue": "Detour", "olive": "Way back"} so the legend names them; only reach for "violet" or "teal" when something really does not fit, and name it too.',
+    '7. No accidental dead ends and no frame for an outside site: every frame either leads somewhere or is role "terminal" with a purpose saying why it ends; a web address is a link pin (kind "link", the address in its description, no yarn) on the frame that leads there.',
   ];
   return {
     list: [
       '3. Ideas only: ideas[] entries with screenId null, pinId null and leadsTo null; a title of a few words; a detail that starts with the screen the idea belongs on (“Home: …”) and says what it does. No screens, no pins, no transitions: the user makes the frames and ties the strings from this list.',
       '4. Tell the user the board’s name.',
     ],
-    frames: [...frames, '7. Tell the user the board’s name.'],
+    frames: [...frames, '8. Tell the user the board’s name.'],
     built: [
       ...frames,
-      '7. Then set leftToAi: true on every screen. Sketchcoded builds each frame a page from what you wrote and Test flow walks the site, so make the words carry it: pin titles are the buttons (two to five words, what the user would press), ideas are the cards and fields, the purpose is the line under the heading. The user takes the post-it off the frames they want to draw themselves.',
-      '8. Tell the user the board’s name.',
+      '8. Then set leftToAi: true on every screen. Sketchcoded builds each frame a page from what you wrote and Test flow walks the site, so make the words carry it: pin titles are the buttons (two to five words, what the user would press), ideas are the cards and fields, the purpose is the line under the heading. The user takes the post-it off the frames they want to draw themselves.',
+      '9. Tell the user the board’s name.',
     ],
   }[mode];
 };

@@ -13,25 +13,33 @@ import {
   ListChecks,
   ListTree,
   Images,
+  Layers,
   Link2,
   LoaderCircle,
   MapPin,
+  Palette,
   Pencil,
   Play,
   Plus,
   RefreshCw,
   ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
   Upload,
   X,
 } from 'lucide-react';
 import {
   attachDetail,
+  categoryLabel,
+  colorNames,
+  colors,
+  defaultColorLabels,
   ideaStatus,
   removeScreen,
   setDrawing,
   uid,
   type Asset,
+  type PinColor,
   type Project,
   type Transition,
 } from '../shared/model';
@@ -180,7 +188,10 @@ function Studio({
     takeServerCopy,
   } = useProject(initial);
   const [menu, setMenu] = useState(false),
-    [modal, setModal] = useState<'folder' | 'new' | 'help' | 'rename' | null>(null),
+    [modal, setModal] = useState<'folder' | 'new' | 'help' | 'rename' | 'categories' | null>(null),
+    // Looking at one category of yarn at a time, so the board shows one kind of journey.
+    [category, setCategory] = useState<PinColor | null>(null),
+    [categoryMenu, setCategoryMenu] = useState(false),
     [screen, setScreen] = useState<{ id: string; pin?: string; idea?: string } | null>(null),
     [edge, setEdge] = useState<{ draft: Transition; isNew: boolean } | null>(null),
     [preview, setPreview] = useState(false),
@@ -751,13 +762,76 @@ function Studio({
                 {waitingIdeas > 0 && <span className="view-badge">{waitingIdeas}</span>}
               </button>
             </div>
+            <div className="category-control">
+              <button
+                className={`button category-button ${category ? 'filtering' : ''}`}
+                aria-expanded={categoryMenu}
+                aria-haspopup="menu"
+                onClick={() => setCategoryMenu((open) => !open)}
+              >
+                {category ? (
+                  <i className="category-dot" style={{ background: colors[category] }} />
+                ) : (
+                  <Palette size={16} />
+                )}
+                {category ? categoryLabel(project, category) : 'Threads'}
+                <ChevronDown size={14} />
+              </button>
+              {categoryMenu && (
+                <>
+                  <button
+                    className="menu-scrim"
+                    aria-label="Close the thread menu"
+                    onClick={() => setCategoryMenu(false)}
+                  />
+                  <div className="project-menu category-menu" role="menu">
+                    <button
+                      aria-pressed={!category}
+                      onClick={() => {
+                        setCategory(null);
+                        setCategoryMenu(false);
+                      }}
+                    >
+                      <Layers size={15} /> All threads
+                      <span>{project.transitions.length}</span>
+                    </button>
+                    {colorNames.map((c) => {
+                      const count = project.transitions.filter((t) => t.color === c).length;
+                      if (!count && !project.colorLabels?.[c]) return null;
+                      return (
+                        <button
+                          key={c}
+                          aria-pressed={category === c}
+                          onClick={() => {
+                            setCategory(c);
+                            setViewMode('board');
+                            setCategoryMenu(false);
+                          }}
+                        >
+                          <i className="category-dot" style={{ background: colors[c] }} />
+                          {categoryLabel(project, c)}
+                          <span>{count}</span>
+                        </button>
+                      );
+                    })}
+                    <button
+                      className="menu-more"
+                      onClick={() => {
+                        setCategoryMenu(false);
+                        setModal('categories');
+                      }}
+                    >
+                      <SlidersHorizontal size={15} /> Name and add categories
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             <button className="button library-toggle" onClick={() => setLibraryOpen(true)}>
               <Images size={17} /> Sketch library
             </button>
             {viewMode === 'board' && <TellAgent project={project} context={{ view: 'board' }} />}
-            <p id="review-explanation">
-              Review flow finds missing paths and ways back. You decide which exceptions make sense.
-            </p>
+            <p id="review-explanation">Review flow finds missing paths and ways back.</p>
           </div>
           <div className="board-and-review">
             {viewMode === 'planning' ? (
@@ -797,6 +871,7 @@ function Studio({
                 redo={redo}
                 canUndo={canUndo}
                 canRedo={canRedo}
+                category={category}
                 fitSignal={fitSignal}
                 focusRequest={focusRequest}
                 onFocusHandled={() => setFocusRequest(null)}
@@ -978,6 +1053,60 @@ function Studio({
               <strong>The chat example</strong>
               <span>Explore a connected idea.</span>
               <ArrowRight size={17} />
+            </button>
+          </div>
+        </Modal>
+      )}
+      {modal === 'categories' && (
+        <Modal
+          title="What the threads mean."
+          onClose={() => setModal(null)}
+          className="category-modal"
+        >
+          <p className="field-help">
+            A color is a category of yarn. Name them however you think about this app; the board’s
+            legend and your agent both read these names. A category with no name and no yarn stays
+            out of the way until you use it.
+          </p>
+          <div className="category-rows">
+            {colorNames.map((c) => {
+              const count = project.transitions.filter((t) => t.color === c).length;
+              return (
+                <label key={c} className="category-row">
+                  <i className="category-dot" style={{ background: colors[c] }} />
+                  <input
+                    aria-label={`Name for the ${c} threads`}
+                    maxLength={60}
+                    placeholder={defaultColorLabels[c] || 'Name this category'}
+                    value={project.colorLabels?.[c] ?? ''}
+                    onChange={(e) =>
+                      update(
+                        (p) => ({
+                          ...p,
+                          colorLabels: { ...p.colorLabels, [c]: e.target.value },
+                        }),
+                        { group: `category:${c}` },
+                      )
+                    }
+                  />
+                  <small>
+                    {count} {count === 1 ? 'thread' : 'threads'}
+                  </small>
+                </label>
+              );
+            })}
+          </div>
+          <div className="modal-actions">
+            <button
+              className="button"
+              onClick={() =>
+                update((p) => ({ ...p, colorLabels: { ...defaultColorLabels, ...p.colorLabels } }))
+              }
+            >
+              Use the usual four
+            </button>
+            <button className="button primary" onClick={() => setModal(null)}>
+              Done
             </button>
           </div>
         </Modal>
