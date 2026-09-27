@@ -595,31 +595,66 @@ hr {
 .asset-caption > svg {
   color: #a6ae9a;
 }
+/* One place to bring sketches in: drop them here, browse files, take a whole folder, or connect
+   a folder so new images keep arriving. There used to be a second box further down. */
 .import-zone {
+  display: flex;
+  flex-direction: column;
+  margin: 0 19px 18px;
+  border: 1px dashed #cbd2bf;
+  border-radius: 7px;
+  color: #8c997e;
+  background: #f3f5ed;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.import-main {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin: 8px 20px 13px;
-  border: 1px dashed #cbd2bf;
-  border-radius: 5px;
-  min-height: 102px;
-  color: #8c997e;
-  background: #f3f5ed;
-  flex-shrink: 0;
+  gap: 6px;
+  padding: 18px 12px 16px;
+  min-height: 104px;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.import-main:hover {
+  background: #edf1e3;
 }
 .import-zone strong {
-  font-size: 11px;
-  font-weight: 500;
-  color: #7b896e;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6f7e62;
 }
-.import-zone span {
-  font-size: 9px;
-  color: #a0a892;
+.import-zone .import-main > span {
+  font-size: 12px;
+  color: #939c85;
 }
-.import-zone:hover {
-  background: #edf1e3;
+.import-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 9px 10px;
+  border-top: 1px dashed #d5dbc9;
+  background: #eff2e7;
+}
+.import-more .text-button {
+  font-size: 12px;
+  min-height: 34px;
+  color: #5f6e55;
+}
+.import-divider {
+  width: 1px;
+  height: 14px;
+  background: #cdd4c1;
+}
+.import-zone.busy {
+  opacity: 0.75;
 }
 .library-footer {
   display: flex;

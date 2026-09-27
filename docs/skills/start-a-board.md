@@ -6,7 +6,7 @@ A new board (or an empty one) is written at one of three levels. The user picks 
 
 - **Just the list.** Ideas only, in the pool: `ideas[]` with `screenId: null`, `pinId: null`, `leadsTo: null`. Each idea is one thing to draw or connect; its `detail` starts with the screen it belongs on (“Home: …”). No screens, no pins, no transitions. The user makes the frames and ties the strings from this list.
 - **Frames and strings** (the default). Planned frames (`assetId: null`, a `layout` position each) with their ideas assigned (`screenId`) and, for every idea that opens another screen, a **provisional pin** on its frame with the yarn already tied to the destination. Nothing is drawn; the flow is complete before the first drawing, so a later change of mind is a tweak, not a rebuild.
-- **Built out.** Frames and strings, then `leftToAi: true` on every frame: a whole site of standard pages, tied together. The user takes the post-it off the one or two frames they want to draw themselves and leaves the rest to the AI.
+- **Built out.** Frames and strings, then `leftToAi: true` on every frame. This is not a label: Sketchcoded builds each frame a real page from its title, purpose, ideas and yarn, and **Test flow walks the whole site** — scrolling pages, buttons, forms, dialogs, with the real redirects and nothing behind them. The user takes the post-it off the one or two frames they want to draw themselves and leaves the rest. So write these frames as if describing a page to a designer: the pin titles become its buttons, the ideas become its cards and fields, and the purpose becomes the line under the heading.
 
 ## Provisional pins
 
@@ -19,7 +19,15 @@ Everything in the board is read later by the agent that builds the app, and by t
 - **Purpose** says what the screen is for and what someone does there, in one to three sentences. No stage numbers, priorities, build order, disclaimers (“not authorization to build”) or notes to yourself. Those belong in your own project's notes, not in the board.
 - **An idea is one thing on a screen**: a control, a section, a behavior. Titled as the user would say it, in a few words; the detail says what it does. Not a checklist, not a layout contract, not a rule that applies to every screen: the user's general rules already live in the checklist, and restating them as ideas duplicates them.
 - **Frame titles** are what the user would call the page. **Entry** is true only for real ways into the app. **Role**: `screen`, `auth` for sign-in and onboarding, `modal` for a dialog, `terminal` for an intentional ending.
-- **Layout**: `{x, y, width: 360}` on a grid, 450 apart across and 380 apart down, one row per theme, the entry frame first. A planned card is a 2:1 box under its tape; leave the room.
+- **Layout**: `{x, y, width: 360}` on a grid, **520 apart across and 440 apart down**, one row per theme, the entry frame first. A planned card is a 2:1 box under its tape; leave the room, so the yarn between frames can be read.
+
+## Every frame needs its way onward
+
+- **No accidental dead ends.** A frame with no pin leading anywhere is a dead end. Either give it the ideas and strings that lead on, or set `role: "terminal"` and write in its purpose why the flow ends there. Review flow asks about every other one.
+- **Somewhere back.** When a frame can be reached but nothing returns, the review raises a one-way finding. Plan a way back (a pin with `navigation: "back"`, or a link to the screen before) unless the one-way trip is the point, as after signing in.
+- **An external site is never a frame.** A web address is a **link pin** on the frame that leads there, with the address written in the pin's description and no yarn. Do not create a screen for a public site, a documentation page or another product.
+- **`entry: true` means a way into this app**: where someone actually starts, such as the home screen, a sign-in, or a shared link. A marketing site, a separate product or an external destination is not an entry.
+- **Colors carry meaning or stay plain.** Leave `color: "red"` on the yarn unless the board's `colorLabels` say what the colors mean; if you use several, set `colorLabels` so the board's legend explains them.
 - Ids are yours to choose (letters, digits, `-`, `_`); codes (`F1`, `I1`) are assigned by the server, so leave `code` out of new things.
 
 Create the board with `POST {base}/api/projects` (header `X-Drawcode-Client: local`, body `{"name": "<project name>"}`), fill it with one `PUT` at the end (skill: talk-to-sketchcoded), and tell the user the board's name.

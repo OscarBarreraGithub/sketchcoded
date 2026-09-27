@@ -35,6 +35,7 @@ export function Library({
   onClose: () => void;
 }) {
   const input = useRef<HTMLInputElement>(null),
+    folder = useRef<HTMLInputElement>(null),
     [query, setQuery] = useState(''),
     [drag, setDrag] = useState(false),
     [expandedAsset, setExpandedAsset] = useState<string | null>(null),
@@ -162,16 +163,29 @@ export function Library({
           <Plus size={19} />
         </button>
       </div>
-      <button className="folder-button" onClick={onFolder}>
-        <span className="folder-icon">
-          <FolderOpen size={19} />
-        </span>
-        <span>
-          <strong>Connect a folder</strong>
-          <small>From your computer</small>
-        </span>
-        <ArrowUpRight size={15} />
-      </button>
+      {/* One place to bring sketches in: drop them, browse files, take a whole folder, or
+          connect a folder so new images keep arriving. */}
+      <div className={`import-zone ${busy ? 'busy' : ''}`}>
+        <button
+          className="import-main"
+          disabled={busy}
+          onClick={() => input.current?.click()}
+          aria-label="Drop sketches here or browse your files"
+        >
+          <ImagePlus size={20} />
+          <strong>{busy ? 'Bringing in your sketches…' : 'Drop sketches here'}</strong>
+          <span>or click to browse your files</span>
+        </button>
+        <div className="import-more">
+          <button className="text-button" disabled={busy} onClick={() => folder.current?.click()}>
+            <FolderOpen size={14} /> Add a folder
+          </button>
+          <span className="import-divider" />
+          <button className="text-button" disabled={busy} onClick={onFolder}>
+            <RefreshCw size={13} /> Connect a folder to watch it
+          </button>
+        </div>
+      </div>
       <input
         ref={input}
         type="file"
@@ -180,6 +194,21 @@ export function Library({
         accept="image/*,.tif,.tiff"
         onChange={(e) => {
           onImport(Array.from(e.target.files ?? []));
+          e.target.value = '';
+        }}
+      />
+      <input
+        ref={folder}
+        type="file"
+        hidden
+        multiple
+        // A whole folder from this computer, in one go; the images inside come in, nothing is watched.
+        {...({ webkitdirectory: '', directory: '' } as Record<string, string>)}
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []).filter(
+            (f) => f.type.startsWith('image/') || /\.tiff?$/i.test(f.name),
+          );
+          if (files.length) onImport(files);
           e.target.value = '';
         }}
       />
@@ -240,7 +269,7 @@ export function Library({
                 ? 'No new sketches match.'
                 : project.assets.length
                   ? 'Every sketch is on the board. Drop more below.'
-                  : 'Connect a folder or drop your images below.'}
+                  : 'Drop your images in the box above, or add a folder.'}
             </p>
           )}
         </details>
@@ -263,11 +292,6 @@ export function Library({
           )}
         </details>
       </div>
-      <button className="import-zone" disabled={busy} onClick={() => input.current?.click()}>
-        <ImagePlus size={20} />
-        <strong>{busy ? 'Bringing in your sketches…' : 'Drop sketches here'}</strong>
-        <span>or click to browse your files</span>
-      </button>
       <div className="library-footer">
         <span className="local-dot" /> Just you & your ideas. Saved locally.
       </div>

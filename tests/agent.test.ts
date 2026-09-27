@@ -206,7 +206,8 @@ describe('agent handoff: names, prompts and briefs', () => {
     expect(brief).toContain('Build: Built out');
     expect(brief).toContain('## How to create and fill a board · Built out');
     expect(brief).toContain('5. Strings: for every idea with a leadsTo');
-    expect(brief).toContain('6. Then set leftToAi: true on every screen');
+    expect(brief).toContain('7. Then set leftToAi: true on every screen');
+    expect(brief).toContain('Test flow walks the site');
     expect(brief).toContain(`${base}/api/skills/start-a-board.md`);
     const list = agentBrief(p, { view: 'boards', mode: 'list' }, base);
     expect(list).toContain('3. Ideas only');

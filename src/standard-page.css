@@ -1,0 +1,271 @@
+/* A frame left to the AI, built out. Test flow renders this instead of a drawing: a conventional
+   page made from the plan, scrollable, with only its redirects working. It deliberately looks like
+   a plain modern site rather than the cork board, so it is obvious you are looking at the app.
+   The user's rules apply here too: nothing under 12px, targets 44px, fields 48px, the page never
+   scrolls as a whole (the inner column does, with its hints), nothing overlaps. */
+.preview-built {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+.preview-built.narrow {
+  padding: 0 8px;
+}
+.std-page {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d9ddd0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 10px 30px #3c3a2a1f;
+  --fade: #ffffff;
+  color: #1f2a24;
+  text-align: left;
+}
+.std-page.narrow {
+  max-width: 420px;
+}
+.std-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.std-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  background: #16231c;
+  color: #f4f7f0;
+}
+.std-product {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 45%;
+}
+.std-top nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.std-body {
+  padding: 26px 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.std-hero h1 {
+  margin: 0;
+  font-size: 27px;
+  line-height: 1.15;
+  letter-spacing: -0.4px;
+}
+.std-hero p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4d5a51;
+  max-width: 62ch;
+}
+.std-hero .std-primary {
+  margin-top: 16px;
+}
+.std-blocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.std-page.narrow .std-blocks,
+.std-page.shape-form .std-blocks,
+.std-page.shape-dialog .std-blocks {
+  grid-template-columns: minmax(0, 1fr);
+}
+.std-card,
+.std-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1px solid #e2e6da;
+  border-radius: 9px;
+  background: #fbfcf8;
+  min-width: 0;
+}
+.std-row {
+  border-left: 3px solid #2f5d43;
+}
+.std-card h2,
+.std-row h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.std-card p,
+.std-row p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #566257;
+}
+.std-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3d4a41;
+}
+.std-field input {
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid #ccd3c5;
+  border-radius: 8px;
+  background: #fff;
+  font: 14px var(--sans);
+  color: #1f2a24;
+}
+.std-field input::placeholder {
+  color: #9aa496;
+  font-size: 13px;
+}
+.std-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font: 600 14px var(--sans);
+  cursor: pointer;
+  max-width: 100%;
+}
+.std-action .std-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.std-action svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.std-primary {
+  background: #2f5d43;
+  color: #fbfdf8;
+}
+.std-primary:hover {
+  background: #26503a;
+}
+.std-secondary,
+.std-foot-action {
+  background: #eef1e8;
+  color: #23372c;
+  border-color: #dde2d3;
+  font-size: 13px;
+}
+.std-secondary:hover,
+.std-foot-action:hover {
+  background: #e3e8d9;
+}
+.std-nav {
+  background: #ffffff1a;
+  color: #eef3e9;
+  font-size: 13px;
+  min-height: 40px;
+  padding: 8px 12px;
+}
+.std-nav:hover {
+  background: #ffffff33;
+}
+.std-nav svg {
+  opacity: 0.55;
+}
+.std-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ae4d41;
+  color: #fff8e9;
+  font-size: 12px;
+  font-weight: 700;
+}
+.std-primary .std-mark {
+  background: #fbfdf8;
+  color: #2f5d43;
+}
+.std-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #e6eade;
+}
+.std-note {
+  margin: 0;
+  font-size: 12px;
+  color: #7c8878;
+}
+/* A dialog sits on a dimmed page; an ending is centered and quiet. */
+.std-page.shape-dialog {
+  max-width: 560px;
+  align-self: center;
+  margin: auto 0;
+  border-color: #c9d0c1;
+}
+.std-page.shape-dialog .std-body,
+.std-page.shape-form .std-body {
+  padding: 26px 26px 28px;
+}
+.std-page.shape-form {
+  max-width: 460px;
+  align-self: center;
+  margin: auto 0;
+}
+.std-page.shape-ending {
+  max-width: 560px;
+  align-self: center;
+  margin: auto 0;
+  text-align: center;
+}
+.std-page.shape-ending .std-hero p {
+  margin-inline: auto;
+}
+.std-page.shape-ending .std-hero .std-action,
+.std-page.shape-ending .std-foot {
+  justify-content: center;
+}
+@media (max-height: 650px) {
+  .std-body {
+    padding: 18px 18px 22px;
+    gap: 16px;
+  }
+  .std-hero h1 {
+    font-size: 22px;
+  }
+}

@@ -23,8 +23,10 @@ import {
   codeOf,
 } from '../../shared/model';
 import { follow, startPreview, type PreviewState } from '../../shared/navigation';
+import { buildsItsOwnPage } from '../../shared/standard-page';
 import { Modal } from './Modal';
 import { ScrollHints } from './ScrollHints';
+import { StandardPage } from './StandardPage';
 import { TellAgent } from './TellAgent';
 export function Preview({ project, onClose }: { project: Project; onClose: () => void }) {
   const appScreens = project.screens.filter((s) => s.role !== 'detail');
@@ -99,6 +101,9 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
     setChoice(null);
     setNotice('');
   };
+  // A frame left to the AI has no drawing: Sketchcoded builds its page from the plan and Test
+  // flow walks it like a real site. A drawing always wins; that is the user's own vision.
+  const built = !asset && buildsItsOwnPage(screen);
   const last = project.transitions.find((t) => t.id === state.trail.at(-1));
   const unplaced = showingMobile ? pins.filter((p) => !p.mobile) : [];
   // Rule (2026-09-26): every view works at every zoom. The drawing is sized to the stage in both
@@ -174,59 +179,74 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             {showingMobile && <span className="badge">MOBILE</span>}
           </div>
           <div className="stage-fit" ref={stageRef}>
-            <div
-              className={`preview-image ${showingMobile ? 'mobile-frame' : ''}`}
-              style={{
-                aspectRatio: `${aspect}`,
-                width: fitWidth === undefined ? undefined : `${fitWidth}px`,
-                maxWidth: '100%',
-              }}
-            >
-              {asset ? (
-                <img
-                  src={assetUrl(asset)}
-                  alt={`Preview: ${screen?.title}${showingMobile ? ' (mobile)' : ''}`}
-                  draggable={false}
+            {built ? (
+              <div className={`preview-built ${layout === 'mobile' ? 'narrow' : ''}`}>
+                <StandardPage
+                  project={project}
+                  screen={screen!}
+                  showPins={showPins}
+                  narrow={layout === 'mobile'}
+                  onPin={(id) => {
+                    const target = project.pins.find((v) => v.id === id);
+                    if (target) tryPin(target);
+                  }}
                 />
-              ) : screen && isPlanned(screen) ? (
-                <div className="preview-planned">
-                  <strong>{screen.title} has no drawing yet.</strong>
-                  {ideas.length ? (
-                    <>
-                      <span>Planned for this screen:</span>
-                      <ul>
-                        {ideas.map((idea) => (
-                          <li key={idea.id}>{idea.title}</li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <span>Add a drawing and some pins to try it here.</span>
-                  )}
-                </div>
-              ) : (
-                <p>This screen’s image is missing.</p>
-              )}
-              {asset &&
-                pins
-                  .filter((p) => !showingMobile || p.mobile)
-                  .map((p) => {
-                    const pos = showingMobile ? p.mobile! : p,
-                      i = pins.indexOf(p);
-                    return (
-                      <button
-                        key={p.id}
-                        className={`preview-pin ${pinColor(p)} ${p.kind === 'link' ? 'link-pin' : ''} ${showPins ? '' : 'invisible-pin'}`}
-                        style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
-                        aria-label={`Try ${p.title || `interaction ${i + 1}`}`}
-                        title={p.title}
-                        onClick={() => tryPin(p)}
-                      >
-                        {i + 1}
-                      </button>
-                    );
-                  })}
-            </div>
+              </div>
+            ) : (
+              <div
+                className={`preview-image ${showingMobile ? 'mobile-frame' : ''}`}
+                style={{
+                  aspectRatio: `${aspect}`,
+                  width: fitWidth === undefined ? undefined : `${fitWidth}px`,
+                  maxWidth: '100%',
+                }}
+              >
+                {asset ? (
+                  <img
+                    src={assetUrl(asset)}
+                    alt={`Preview: ${screen?.title}${showingMobile ? ' (mobile)' : ''}`}
+                    draggable={false}
+                  />
+                ) : screen && isPlanned(screen) ? (
+                  <div className="preview-planned">
+                    <strong>{screen.title} has no drawing yet.</strong>
+                    {ideas.length ? (
+                      <>
+                        <span>Planned for this screen:</span>
+                        <ul>
+                          {ideas.map((idea) => (
+                            <li key={idea.id}>{idea.title}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <span>Add a drawing and some pins to try it here.</span>
+                    )}
+                  </div>
+                ) : (
+                  <p>This screen’s image is missing.</p>
+                )}
+                {asset &&
+                  pins
+                    .filter((p) => !showingMobile || p.mobile)
+                    .map((p) => {
+                      const pos = showingMobile ? p.mobile! : p,
+                        i = pins.indexOf(p);
+                      return (
+                        <button
+                          key={p.id}
+                          className={`preview-pin ${pinColor(p)} ${p.kind === 'link' ? 'link-pin' : ''} ${showPins ? '' : 'invisible-pin'}`}
+                          style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
+                          aria-label={`Try ${p.title || `interaction ${i + 1}`}`}
+                          title={p.title}
+                          onClick={() => tryPin(p)}
+                        >
+                          {i + 1}
+                        </button>
+                      );
+                    })}
+              </div>
+            )}
           </div>
           {layout === 'mobile' && !mobileAsset && screen && !isPlanned(screen) && (
             <p className="preview-hint">
@@ -250,7 +270,10 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             </div>
           )}
           <p className="preview-hint">
-            <MapPin size={14} /> Click a pin to try a path or open a closer look.
+            <MapPin size={14} />{' '}
+            {built
+              ? 'Left to the AI, so this page is built from the plan. Click anything that leads somewhere.'
+              : 'Click a pin to try a path or open a closer look.'}
           </p>
           {notice && (
             <div className="preview-notice" role="status">

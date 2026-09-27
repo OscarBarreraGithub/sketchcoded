@@ -507,6 +507,11 @@ export function analyze(p: Project): Issue[] {
     }
     if (!source || isHistory(t) || !t.target || !screenById.has(t.target)) continue;
     const target = screenById.get(t.target)!;
+    // A frame still waiting for its drawing is backlog, not specification: its ways back are not
+    // settled yet, the same reason dead ends and reachability wait for it. A frame left to the AI
+    // is the specification (Sketchcoded builds its page), so it is checked like a drawn one.
+    const waiting = (v: typeof target) => isPlanned(v) && !isLeftToAi(v);
+    if (waiting(source) || waiting(target)) continue;
     const returning = reach([target.id]).has(source.id);
     const historyReturn = outgoing(target.id).some(
       (edge) =>

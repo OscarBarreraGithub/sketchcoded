@@ -1556,3 +1556,104 @@ kbd,
 .agent-levels {
   gap: 6px;
 }
+
+/* Picking a frame out of the tangle. Rule: nothing overlaps, and a busy board must still be
+   readable. Clicking a frame fades everything it is not tied to, brings its own threads and
+   labels forward, and steps the frames it is tied to a little further away (a transform, so no
+   position is written and nothing is ever lost). Clicking the cork lets go. On a crowded board
+   the labels wait to be asked for: each sits as a small dot until its frame is picked. */
+.screen-card {
+  transform: translate(var(--nudge-x, 0px), var(--nudge-y, 0px));
+  transition:
+    transform 0.22s cubic-bezier(0.22, 0.7, 0.3, 1),
+    opacity 0.18s ease;
+}
+.board.has-focus .screen-card:not(.focused):not(.tied) {
+  opacity: 0.32;
+}
+.board.has-focus .screen-card:not(.focused):not(.tied) .card-paper {
+  box-shadow: none;
+}
+.board.has-focus .screen-card.focused {
+  z-index: 3;
+}
+.screen-card.focused .card-paper {
+  outline: 3px solid #2f5d43;
+  outline-offset: 5px;
+  box-shadow:
+    2px 8px 14px #52432a38,
+    4px 16px 30px #6954362e;
+}
+.screen-card.tied .card-paper {
+  outline: 2px dashed #9aab84;
+  outline-offset: 4px;
+}
+.yarn-thread.aside {
+  opacity: 0.14;
+}
+.yarn-thread.picked .yarn {
+  stroke-width: 4.2;
+}
+.board.has-focus .yarn-thread.picked {
+  opacity: 1;
+}
+.yarn-thread {
+  transition: opacity 0.18s ease;
+}
+.yarn-label-button {
+  transition:
+    opacity 0.18s ease,
+    padding 0.18s ease;
+}
+.yarn-label-button.aside {
+  opacity: 0.12;
+  pointer-events: none;
+}
+/* At rest, a crowded board shows its frames and the shape of its threads, not every word on
+   them: the yarn draws back and each label waits as a small mark until its frame is picked. */
+.board.crowded:not(.has-focus) .yarn-thread {
+  opacity: 0.3;
+}
+.board.crowded:not(.has-focus) .yarn-label-button.as-dot {
+  opacity: 0.4;
+}
+/* The quiet form: a dot that keeps its name for the keyboard and for hover. */
+.yarn-label-button.as-dot {
+  padding: 0;
+  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  width: calc(9px / var(--board-zoom));
+  height: calc(9px / var(--board-zoom));
+  border-radius: 50%;
+  background: #a8986c;
+  border: 0;
+  box-shadow: none;
+  max-width: none;
+}
+.yarn-label-button.as-dot:hover,
+.yarn-label-button.as-dot:focus-visible {
+  opacity: 1;
+}
+.yarn-label-button.as-dot > span {
+  display: none;
+}
+.yarn-label-button.as-dot:hover,
+.yarn-label-button.as-dot:focus-visible {
+  width: auto;
+  height: auto;
+  border-radius: 999px;
+  padding: 8px 14px;
+  z-index: 7;
+}
+.yarn-label-button.as-dot:hover > span,
+.yarn-label-button.as-dot:focus-visible > span {
+  display: inline;
+}
+@media (prefers-reduced-motion: reduce) {
+  .screen-card,
+  .yarn-thread,
+  .yarn-label-button {
+    transition: none;
+  }
+}

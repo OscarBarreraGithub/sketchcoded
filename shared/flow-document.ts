@@ -1,3 +1,4 @@
+import { standardPageOutline } from './standard-page';
 import {
   codeOf,
   isHistory,
@@ -26,6 +27,7 @@ export function screenSection(p: Project, screen: Screen): string[] {
     lines.push(
       '**Leave it up to the AI.** This frame wears the post-it: build a standard, conventional page for it from its title, purpose, the ideas in the planning section and the yarn in and out. No drawing is expected; everything else on the board is built as drawn.',
       '',
+      ...(screen.assetId === null ? [...standardPageOutline(p, screen), ''] : []),
     );
   else if (isPlanned(screen))
     lines.push(

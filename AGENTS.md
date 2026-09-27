@@ -31,6 +31,7 @@ The full list, in the user's words, is `docs/BUILD_CHECKLIST.md`; it ships insid
 - When content continues off screen, say so: every scrolling region keeps a visible scrollbar and shows a “More below” hint (`ScrollHints`) until the end is reached. Never rely on an invisible overlay scrollbar.
 - **The page never scrolls; panels do.** The app shell is always the height of the window (`100dvh`, at every width and height, including short zoomed windows). Only the left column, dialogs, side panels and list views scroll, each inside itself. The board is the size of its area, never of its content.
 - **The board never pans out of sight of its content.** Every view change goes through the clamp in `src/boardView.ts`: panning stops at the outermost frame plus padding (`PAD`), so the last frame in view is whole with cork beside it, never clipped at the edge; a frame always stays on the board.
+- **A crowded board rests quietly.** With more than eight threads the yarn draws back and each label waits as a small mark. Clicking a frame picks it out: its own threads and labels come forward, everything else fades, and the frames it is tied to step 26 screen pixels further away. The step is a transform, never a written position, so nothing is lost and nothing jumps. Clicking the cork lets go; the tape title, the arrow and a double-click open the frame.
 
 ## Links out
 
@@ -38,7 +39,9 @@ A pin that leaves the app for a web address is a **link pin** (`kind: "link"`). 
 
 ## Left to the AI
 
-A frame may wear the “Leave it up to the AI” post-it (`leftToAi: true`, toggled in the screen editor). It means: build a standard, conventional page for this screen from its title, purpose, ideas and the yarn in and out; no drawing is expected and the review does not ask for one. Everything else on the board is the user's vision and is built as drawn. The export says this on the screen's section of `flow.md` and the planning outline flags it.
+A frame may wear the “Leave it up to the AI” post-it (`leftToAi: true`, toggled in the screen editor). It means: build a standard, conventional page for this screen from its title, purpose, ideas and the yarn in and out; no drawing is expected and the review does not ask for one. Everything else on the board is the user's vision and is built as drawn.
+
+Sketchcoded builds that page itself. `shared/standard-page.ts` turns the frame into a page (a top bar, a heading, a main action, cards, fields, a footer) from its pins and ideas; `src/components/StandardPage.tsx` renders it, and **Test flow walks it like a real site**: scrolling pages, buttons that follow the frame's own yarn, forms for `auth`, dialogs for `modal`, quiet endings for `terminal`. Nothing is behind it: only the redirects work. A drawing always wins, since that is the user's own vision. `flow.md` carries the same page under “Standard page (what Test flow shows)”, so the builder builds what the user clicked through.
 
 ## Handing a task to the agent
 

@@ -11,7 +11,7 @@ Frames are `F1, F2, …`, sketches `S1, S2, …`, ideas `I1, I2, …` (the `code
 - `title`, `purpose` (what it is for), `role`: `screen`, `auth` (login or onboarding), `modal` (dialog or overlay), `terminal` (intentional ending), `detail` (an enlarged sketch, not an app page).
 - `entry: true` means the app can start here.
 - `assetId` is the web drawing; `mobileAssetId` an optional mobile drawing of the same screen. `assetId: null` means a **planned frame**: no drawing yet. Planned frames are backlog, not spec, unless `leftToAi: true`. A planned frame may already carry provisional pins and their yarn, so the flow is tied before it is drawn.
-- `leftToAi: true` is the “Leave it up to the AI” post-it: build a standard, conventional page from title, purpose, ideas and yarn. No drawing expected.
+- `leftToAi: true` is the “Leave it up to the AI” post-it: build a standard, conventional page from title, purpose, ideas and yarn. No drawing expected. Sketchcoded already builds that page itself, and the user can walk it in Test flow, so `flow.md` lists it under “Standard page”: its main action, top-bar links, cards and fields. Build what that outline says, with the frame's own words.
 
 ## Pins
 

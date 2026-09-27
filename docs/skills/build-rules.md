@@ -13,6 +13,7 @@ These apply to anything built from a Sketchcoded board and to Sketchcoded itself
 - **Click targets ≥ 44px, fields ≥ 48px tall.** Long notes readable without a nested scrollbar.
 - **Order of work:** logic and placement first, window resizing second, mobile third. Mobile is a stacked version of the same screen.
 - **Links out are pins** with the address in their description: a plain link, never a screen or a route.
-- **A frame left to the AI** gets a standard, conventional page from its title, purpose, ideas and yarn. Everything else is built as drawn.
+- **A frame left to the AI** gets a standard, conventional page from its title, purpose, ideas and yarn. `flow.md` gives that page's outline under “Standard page”, the same one the user clicked through in Test flow; build that. Everything else is built as drawn.
+- **Every screen has a way onward or is a deliberate ending.** Do not ship a page a person cannot leave.
 - **Planned frames and unplaced ideas are backlog**, not spec: carry them forward, do not build or drop them.
 - **Accepted findings are decisions with reasons.** Respect them; leave open findings to the user.
