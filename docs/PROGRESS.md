@@ -220,3 +220,15 @@ The handoff dialog now leads with an unmistakable “Copied to your clipboard”
 The user wanted the boards and the new-board action central, in the design of the site. The app now opens on a landing page at `/`: the site's hero (name, tagline, lede), Start a board (a name and New blank board, or New board with your agent), and Your boards (screen count, last edit, the last opened one marked). Opening a board goes to `/board/<id>`; the brand in the workstation header goes back. The boards prompt no longer needs an open board: its brief is `/api/brief?view=boards`. An empty canvas leads with “Plan it with your agent”, whose task is the first plan. Browser tests open boards by address; a landing test covers the list, the prompt, opening, the way back, and a blank board.
 
 **To do, later (the user's request):** an interactive tutorial of five or six panels that teaches the app, from the landing page.
+
+## Handoff — 2026-09-26, written before a context compaction
+
+**State:** everything is committed on `main` (latest `f37b432` and one small follow-up). Working tree clean. The user's dev server runs on port 5173 (`npm run dev`, tsx watch); leave it running. No scratch servers or test browsers are up. Both repositories (`drawcode` and `../sketchcoded-site`) are committed and not yet pushed to GitHub; that is the user's call.
+
+**What shipped today (2026-09-26), in order:** the page never scrolls at zoom and the chrome compacts; the board clamps to its content with padding; dashed planned threads removed; every view works at every zoom (editor and Test flow fit their drawing to the stage); “Leave it up to the AI” post-it; legibility floor (nothing under 12px); Tell the agent in every view with briefs, skills and a live refresh after an agent's write; short codes (F/S/I, “F3 pin 2”) everywhere; the handoff dialog redesigned (copied card, summary, terminal with scroll hints, no task box); a landing page at `/` with your boards and Start a board; `/board/<id>` routes; New board with your agent (`/api/brief?view=boards`); an empty canvas leads with the agent.
+
+**Rules the user gave today about process:** the checklist (`docs/BUILD_CHECKLIST.md`) holds general rules only; Sketchcoded-specific requests go here and in the board's backlog. The handoff prompt is fixed per view and ends with “Anything I add below this line is part of the task”; the dialog must not repeat the task or tell the user to “add” anything.
+
+**Open, for the user:** publish the two repositories; the web/mobile toggle question; “Sketchcoded” vs “Sketch Code” on the site. **To do, later:** the interactive five-or-six-panel tutorial from the landing page (in the backlog as I-code on the Boards frame). **Not covered by tests, on purpose:** the clipboard-denied path and Escape inside nested dialogs.
+
+**If the user is working with another agent on a sample project:** that agent talks to the app on port 5173 through the API (see `docs/skills/talk-to-sketchcoded.md`); it must not start a second server on the same data folder. Changing `server/` or `shared/` files here restarts the dev server for about a second.
