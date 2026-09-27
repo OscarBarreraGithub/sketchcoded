@@ -126,7 +126,7 @@ export function TellAgent({
             <div>
               <dt>In</dt>
               <dd>
-                {view.label} · board “{project.name}”
+                {context.view === 'boards' ? view.label : `${view.label} · board “${project.name}”`}
               </dd>
             </div>
             <div>
