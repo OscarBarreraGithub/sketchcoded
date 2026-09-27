@@ -1140,7 +1140,7 @@ kbd,
 }
 .modal.agent-modal {
   width: 760px;
-  height: min(78dvh, 700px);
+  height: min(82dvh, 700px);
   display: flex;
   flex-direction: column;
 }
@@ -1261,11 +1261,35 @@ kbd,
   top: 42px;
 }
 .agent-terminal .scroll-more {
-  background: #8fb08a;
+  background: #a9cfa3;
   color: #14201a;
+  font-size: 13px;
+  min-height: 38px;
+  padding: 8px 18px;
+  box-shadow: 0 3px 12px #00000080;
 }
 .agent-terminal .scroll-more:hover {
-  background: #a5c49f;
+  background: #bfe0b9;
+}
+.agent-terminal .scroll-fade.below {
+  height: 72px;
+}
+/* The bar states it: “scrolls” with an arrow while the prompt continues, then “end of prompt”. */
+.agent-terminal-scrolls {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a9b3ab;
+  white-space: nowrap;
+}
+.agent-terminal-scrolls.more {
+  color: #14201a;
+  background: #a9cfa3;
+  border-radius: 999px;
+  padding: 2px 10px 2px 12px;
 }
 .agent-terminal-bar {
   display: flex;
@@ -1303,18 +1327,18 @@ kbd,
     Menlo,
     monospace;
   scrollbar-width: auto;
-  scrollbar-color: #8a968d #2b3330;
+  scrollbar-color: #a9b3ab #2b3330;
 }
 .agent-terminal-text::-webkit-scrollbar {
-  width: 12px;
+  width: 14px;
 }
 .agent-terminal-text::-webkit-scrollbar-track {
   background: #2b3330;
 }
 .agent-terminal-text::-webkit-scrollbar-thumb {
-  background: #8a968d;
-  border-radius: 6px;
-  border: 2px solid #2b3330;
+  background: #a9b3ab;
+  border-radius: 7px;
+  border: 3px solid #2b3330;
 }
 .agent-terminal-text:focus {
   outline: 2px solid #8fb08a;

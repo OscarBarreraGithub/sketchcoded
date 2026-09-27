@@ -23,10 +23,21 @@ async function handoff(page: Page, button: ReturnType<Page['getByRole']>, expect
   for (const e of expectations) expect(text).toMatch(e);
   expect(text).toContain('/api/checklist.md');
   await expect(dialog.getByRole('status')).toContainText('Copied to your clipboard');
-  // Rule: when the prompt continues off screen, the terminal says so.
+  // Rule: when the prompt continues off screen, the terminal says so, twice: a pill over the
+  // text and a "scrolls" chip in its bar, which turns into "end of prompt" at the bottom.
   const box = dialog.getByRole('textbox', { name: 'Prompt for your agent' });
-  if (await box.evaluate((el) => el.scrollHeight > el.clientHeight + 4))
-    await expect(dialog.locator('.agent-terminal .scroll-more.below')).toBeVisible();
+  const chip = dialog.locator('.agent-terminal-scrolls');
+  if (await box.evaluate((el) => el.scrollHeight > el.clientHeight + 4)) {
+    await expect(
+      dialog.getByRole('button', { name: 'Scroll down for the rest of the prompt', exact: false }),
+    ).toBeVisible();
+    await expect(chip).toHaveText(/scrolls/);
+    await box.evaluate((el) => (el.scrollTop = el.scrollHeight));
+    await expect(chip).toHaveText('end of prompt');
+    await expect(
+      dialog.getByRole('button', { name: 'Scroll up for the start of the prompt', exact: false }),
+    ).toBeVisible();
+  } else await expect(chip).toHaveText('all of it fits');
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(text);
   const url = text.match(/https?:\/\/\S+\/brief\?\S+/)![0];
   const brief = await page.request.get(url);

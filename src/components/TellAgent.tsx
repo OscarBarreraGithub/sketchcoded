@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Bot, Check, ClipboardCopy, ExternalLink, TriangleAlert } from 'lucide-react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
+import { Bot, Check, ChevronDown, ClipboardCopy, ExternalLink, TriangleAlert } from 'lucide-react';
 import {
   agentPrompt,
   briefUrl,
@@ -11,7 +11,25 @@ import {
 } from '../../shared/agent';
 import type { Project } from '../../shared/model';
 import { Modal } from './Modal';
-import { ScrollHints } from './ScrollHints';
+import { ScrollHints, useScrollHints } from './ScrollHints';
+
+/** The terminal bar says out loud whether the prompt continues below; it mounts with the dialog. */
+function TerminalStatus({ target }: { target: RefObject<HTMLTextAreaElement | null> }) {
+  const more = useScrollHints(target);
+  return (
+    <b className={`agent-terminal-scrolls ${more.below ? 'more' : ''}`}>
+      {more.below ? (
+        <>
+          scrolls <ChevronDown size={13} />
+        </>
+      ) : more.above ? (
+        'end of prompt'
+      ) : (
+        'all of it fits'
+      )}
+    </b>
+  );
+}
 
 /**
  * Rule (2026-09-26): every view can hand its task to the agent. One button copies a generated
@@ -150,6 +168,7 @@ export function TellAgent({
               <span />
               <span />
               <em>prompt · {prompt.split('\n').length} lines · what your agent receives</em>
+              <TerminalStatus target={terminal} />
             </div>
             <textarea
               ref={terminal}
@@ -160,7 +179,13 @@ export function TellAgent({
               spellCheck={false}
               onFocus={(e) => e.currentTarget.select()}
             />
-            <ScrollHints target={terminal} label="More of the prompt" />
+            <ScrollHints
+              target={terminal}
+              text={{
+                above: 'Scroll up for the start of the prompt',
+                below: 'Scroll down for the rest of the prompt',
+              }}
+            />
           </div>
           <div className="modal-actions">
             <a

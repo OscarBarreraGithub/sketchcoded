@@ -29,11 +29,16 @@ export function useScrollHints(ref: RefObject<HTMLElement | null>) {
 export function ScrollHints({
   target,
   label = 'More',
+  text,
 }: {
   target: RefObject<HTMLElement | null>;
   label?: string;
+  /** Whole pill texts, when “<label> above / below” is not plain enough. */
+  text?: { above: string; below: string };
 }) {
   const more = useScrollHints(target);
+  const above = text?.above ?? `${label} above`,
+    below = text?.below ?? `${label} below`;
   const go = (direction: 1 | -1) =>
     target.current?.scrollBy({
       top: direction * target.current.clientHeight * 0.8,
@@ -50,9 +55,9 @@ export function ScrollHints({
             type="button"
             className="scroll-more above"
             onClick={() => go(-1)}
-            aria-label={`${label} above. Scroll up.`}
+            aria-label={`${above}. Scroll up.`}
           >
-            <ChevronUp size={14} /> {label} above
+            <ChevronUp size={14} /> {above}
           </button>
         </>
       )}
@@ -63,9 +68,9 @@ export function ScrollHints({
             type="button"
             className="scroll-more below"
             onClick={() => go(1)}
-            aria-label={`${label} below. Scroll down.`}
+            aria-label={`${below}. Scroll down.`}
           >
-            {label} below <ChevronDown size={14} />
+            {below} <ChevronDown size={14} />
           </button>
         </>
       )}
