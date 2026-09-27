@@ -119,7 +119,7 @@ Source folders are read only. Source changes create new library versions; screen
 - `flow.md`: the same specification organized by screen, pin, branch, planning backlog, and review finding for a human or future agent.
 - `review.json`: current findings, acceptance status, and recorded reasons.
 - `assets/`: all the project’s normalized image snapshots.
-- `BUILD-CHECKLIST.md`: the user’s rules for anything built from the board, dated and in their words.
+- `BUILD-CHECKLIST.md`: the user’s general rules for anything they build, in their words. What they decided for this board in particular is in `flow.md`: its backlog, its pins’ words and its accepted findings.
 - `READ-ME.md`: a guide to reading the bundle.
 
 The Sketchcoded name keeps the existing `.drawcode/` storage directory and client identifiers so saved boards continue working. Older `.drawcode.zip` bundles still import. Local source-folder paths are omitted. Importing a bundle creates a separate board, validates the graph and image hashes, and never replaces an existing board. Export uses the current in-memory project, so it can rescue unsaved edits after a two-tab conflict while the server is running.
@@ -161,7 +161,8 @@ The shared graph, navigation and planning code has no React or server dependency
 - [Current usability pass](docs/USABILITY_PASS.md)
 - [Planning pass: backlog, planned frames, layouts](docs/PLANNING_PASS.md)
 - [What Sketchcoded can do](docs/FUNCTIONALITY.md)
-- [Build checklist for agents](docs/BUILD_CHECKLIST.md)
+- [Build checklist for agents](docs/BUILD_CHECKLIST.md) (general rules, shared by every project)
+- [What the user asked for Sketchcoded](docs/SKETCHCODED_REQUESTS.md) (this project’s own record)
 - [Development decisions](docs/DECISIONS.md)
 - [Graph format and checker semantics](docs/GRAPH.md)
 

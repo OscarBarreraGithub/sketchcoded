@@ -469,7 +469,7 @@ export function agentBrief(
     ...view.skills.map(
       (id) => `- ${skills[id].title}: ${skills[id].summary} → ${skillUrl(base, id)}`,
     ),
-    `- The user’s rules, dated, in their words (read first, they win): ${checklistUrl(base)}`,
+    `- The user’s rules, in their words (read first, they win): ${checklistUrl(base)}`,
     '',
   ];
   if (idea) {

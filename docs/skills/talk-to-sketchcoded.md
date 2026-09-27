@@ -8,7 +8,7 @@ Sketchcoded is running on the user's computer. You can read the live board and w
 - `GET {base}/api/projects/{id}` returns the whole project as JSON (schemaVersion 1). This is the canonical state.
 - `GET {base}/api/projects/{id}/brief?view=…` returns the Markdown brief for one task: the view, the subject, the task and everything about it. The prompt you were given contains the exact URL.
 - `GET {base}/api/projects/{id}/flow.md` is the full specification in reading order; `…/outline.md` is the planning outline with `[x]` placed, `[ ]` waiting and `( )` unassigned ideas.
-- `GET {base}/api/checklist.md` is the user's dated list of rules. It wins over anything else.
+- `GET {base}/api/checklist.md` is the user's general rules, the ones that hold for everything they build. It wins over anything else. What the user decided for this board in particular is in the board itself: its backlog, its pins' words and its accepted findings. Do not carry one board's decisions into another.
 - `GET {base}/api/skills/{name}.md` is one skill; `GET {base}/api/skills` lists them.
 - Drawings are at `{base}/assets/{file}` where `file` comes from `assets[]` in the project.
 

@@ -158,7 +158,7 @@ Built the app as drawn: New/Used library, Ideas panel with an agent box (saves i
 
 ## 2026-09-26 — The page never scrolls, the board keeps its content, every view at every zoom
 
-**Standing instruction from the user:** every issue they raise is also a rule. Append it to `docs/BUILD_CHECKLIST.md` the same day, in their words, with the date, under both the rules and the dated log. Never delete; mark superseded. Five issues were raised and logged today.
+**Standing instruction from the user (as given that morning, revised the same evening; see the rules pass below):** every issue they raise is written down the same day, in their words. Since the evening of 2026-09-26 the split is: a general preference goes into `docs/BUILD_CHECKLIST.md` without a date; a request about Sketchcoded goes, dated, into `docs/SKETCHCODED_REQUESTS.md`. Never delete; mark superseded. Five issues were raised and logged today.
 
 What changed, in the order the user raised it:
 

@@ -1,6 +1,6 @@
 # Build rules
 
-These apply to anything built from a Sketchcoded board and to Sketchcoded itself. The authority is the user's dated checklist at `/api/checklist.md` (also `BUILD-CHECKLIST.md` in every export); this is the short form.
+These apply to anything built from a Sketchcoded board and to Sketchcoded itself. The authority is the user's checklist at `/api/checklist.md` (also `BUILD-CHECKLIST.md` in every export); this is the short form. The checklist is general: it holds what the user wants from every app. What they asked for one project lives with that project (a board's backlog and accepted findings), never in the checklist.
 
 - **Nothing grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; content scrolls inside them. Selecting a different item never moves the rest of the page.
 - **Nothing overlaps.** Labels, pins, frames, buttons and text keep clear of each other. Leave room to breathe.

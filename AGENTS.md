@@ -1,6 +1,6 @@
 # Working on Sketchcoded
 
-Read `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md` and `docs/BUILD_CHECKLIST.md` before changing the product. The checklist is the explicit, dated list of the user's general rules for anything built from a board and for Sketchcoded itself; append to it the day a rule is given, never delete. Requests specific to Sketchcoded (remove this label, change that default) are not rules: record them in `docs/PROGRESS.md` and the board's backlog, not in the checklist. Read `docs/USABILITY_PASS.md` for the latest user feedback and acceptance checks. The original brief is preserved verbatim. Keep the progress file and significant decisions current when the implementation changes.
+Read `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md`, `docs/SKETCHCODED_REQUESTS.md` and `docs/BUILD_CHECKLIST.md` before changing the product. The checklist is the user's general rules for anything they build, in their terms and without dates; it is shared with every project, so add a preference there the day it is given, never delete, mark superseded. Requests specific to Sketchcoded (remove this label, change that default) are not rules: record them, dated, in `docs/SKETCHCODED_REQUESTS.md`, note the work in `docs/PROGRESS.md` and keep the board's backlog current. Project records do not read each other; only the checklist is shared. Read `docs/USABILITY_PASS.md` for the latest user feedback and acceptance checks. The original brief is preserved verbatim. Keep the progress file and significant decisions current when the implementation changes.
 
 This is a local screenshot flow designer. The later LLM generation/review workflow is not implemented yet. Keep screen/pin intent and natural-language branch rules intact; do not pretend to execute or prove prose conditions. Keep test rewind distinct from authored navigation.
 
@@ -23,7 +23,7 @@ A screen may be a planned frame (`assetId: null`) and may carry a mobile drawing
 
 ## Design rules
 
-The full list, with dates and the user's words, is `docs/BUILD_CHECKLIST.md`; it ships inside every export. The essentials:
+The full list, in the user's words, is `docs/BUILD_CHECKLIST.md`; it ships inside every export and is served at `/api/checklist.md`. The essentials:
 
 - **Nothing on screen grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; their content scrolls inside. Selecting a different pin, tab or option must never change the size of the surrounding frame or move the rest of the page. This applies to Sketchcoded and to anything built from a Sketchcoded board.
 - Nothing overlaps: labels, pins and frames keep clear of each other, and the board leaves room to breathe.
