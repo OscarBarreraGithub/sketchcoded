@@ -4,7 +4,6 @@ import {
   agentPrompt,
   briefUrl,
   checklistUrl,
-  defaultTask,
   describeSubject,
   skillsIndexUrl,
   views,
@@ -111,7 +110,7 @@ export function TellAgent({
               <span>
                 {copied === 'no'
                   ? 'Select the prompt below and copy it yourself.'
-                  : 'Paste it into your agent and add anything more you want after it. It reads this board, the task and your rules from the app running here, then gets to work.'}
+                  : 'Paste it into your agent, then add anything more you want. It reads this board and your rules from the app running here and gets to work.'}
               </span>
             </div>
           </div>
@@ -141,16 +140,6 @@ export function TellAgent({
                   your rules <ExternalLink size={12} />
                 </a>
               </dd>
-            </div>
-            <div>
-              <dt>Task</dt>
-              <dd className="agent-task-text">
-                {defaultTask(project, context).replace('<base>', base)}
-              </dd>
-            </div>
-            <div>
-              <dt>Then</dt>
-              <dd>Type anything more you want right after the prompt, in your agent’s chat.</dd>
             </div>
           </dl>
           <div className="agent-terminal">
