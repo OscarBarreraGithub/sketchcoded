@@ -81,6 +81,16 @@ test('every view hands its task to the agent, and the agent can read everything 
     [/· the sketch library \(\d+ sketches, \d+ unused\) · Sketch library/, /brief\?view=library/],
   );
   expect(library.body).toContain('## The library');
+  // Boards menu: a board for another project.
+  await page.locator('.project-trigger').click();
+  const newBoard = await handoff(
+    page,
+    page.locator('.project-menu').getByRole('button', { name: 'New board with your agent' }),
+    [/· a new board for another project on this computer · Boards/, /brief\?view=boards/],
+  );
+  expect(newBoard.text).toContain('POST http://127.0.0.1:5174/api/projects');
+  expect(newBoard.body).toContain('## Boards on this computer');
+  await expect(page.locator('.project-menu')).toHaveCount(0);
   // Ideas panel (left column).
   const ideas = page.locator('.ideas-panel');
   if (!(await ideas.getByRole('button', { name: 'Tell the agent' }).isVisible()))

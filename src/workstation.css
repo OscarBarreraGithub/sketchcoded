@@ -1133,13 +1133,14 @@ kbd,
   font-size: max(27px, calc(13px / var(--board-zoom)));
 }
 
-/* Rule (2026-09-26): every view can hand its task to the agent. */
+/* Rule (2026-09-26): every view can hand its task to the agent. The dialog says what was handed
+   over in plain words and shows the raw prompt small, in a terminal, for checking. */
 .tell-agent {
   white-space: nowrap;
 }
 .modal.agent-modal {
-  width: 720px;
-  height: min(72dvh, 640px);
+  width: 760px;
+  height: min(78dvh, 700px);
   display: flex;
   flex-direction: column;
 }
@@ -1148,30 +1149,167 @@ kbd,
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   overflow: hidden;
+  padding: 20px 24px 16px;
 }
-.agent-status {
-  margin: 0;
-  font-size: 13px;
+.agent-copied {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #e6f0e2;
+  border: 1px solid #c4d8bd;
+  color: #26402c;
+  flex-shrink: 0;
+}
+.agent-copied.pending {
+  background: #f1f2ea;
+  border-color: #dcdfd0;
   color: #5f6b56;
 }
-.agent-modal textarea {
-  flex: 1;
-  min-height: 0;
+.agent-copied.stale,
+.agent-copied.no {
+  background: #fbf1dc;
+  border-color: #e7d3a4;
+  color: #5a4a12;
+}
+.agent-copied-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fffef8;
+  flex-shrink: 0;
+}
+.agent-copied.pending .agent-copied-mark {
+  background: #b3b9a8;
+}
+.agent-copied.stale .agent-copied-mark,
+.agent-copied.no .agent-copied-mark {
+  background: #b39a2b;
+}
+.agent-copied strong {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 2px;
+}
+.agent-copied span:last-child {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.agent-summary {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px 16px;
+  align-items: baseline;
+  flex-shrink: 0;
+}
+.agent-summary > div {
+  display: contents;
+}
+.agent-summary dt {
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #7a8470;
+  padding-top: 3px;
+}
+.agent-summary dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  min-width: 0;
+}
+.agent-summary dd .item-code {
+  margin-right: 6px;
+  font-size: 13px;
+}
+.agent-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+.agent-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 32px;
+}
+.agent-task dt {
+  padding-top: 10px;
+}
+.agent-task textarea {
   width: 100%;
+  min-height: 72px;
   resize: none;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border: 1px solid #d9dccc;
   border-radius: 8px;
   background: #fffef8;
   color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.agent-terminal {
+  flex: 1 1 0;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #2b3330;
+  background: #1f2523;
+}
+.agent-terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #2b3330;
+  flex-shrink: 0;
+}
+.agent-terminal-bar > span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5b665f;
+}
+.agent-terminal-bar > em {
+  margin-left: 8px;
+  font-style: normal;
+  font-size: 12px;
+  color: #a9b3ab;
+}
+.agent-terminal-text {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  resize: none;
+  border: 0;
+  padding: 12px 14px;
+  background: #1f2523;
+  color: #d9e2d6;
   font:
-    13px/1.55 ui-monospace,
+    12px/1.55 ui-monospace,
     SFMono-Regular,
     Menlo,
     monospace;
   scrollbar-width: thin;
+  scrollbar-color: #5b665f #1f2523;
+}
+.agent-terminal-text:focus {
+  outline: 2px solid #8fb08a;
+  outline-offset: -2px;
 }
 .agent-modal .modal-actions {
   flex-shrink: 0;
@@ -1180,6 +1318,9 @@ kbd,
 }
 .agent-modal .modal-actions .button {
   text-decoration: none;
+}
+.agent-flash {
+  background: #2f6b3e;
 }
 .outline-actions {
   display: flex;
@@ -1247,4 +1388,29 @@ kbd,
 }
 .preview-screen-title .item-code {
   margin-right: 4px;
+}
+@media (max-height: 650px) {
+  .modal.agent-modal .modal-content {
+    overflow: auto;
+    gap: 10px;
+  }
+  .agent-copied {
+    padding: 10px 14px;
+  }
+  .agent-copied strong {
+    font-size: 15px;
+  }
+  .agent-terminal {
+    flex: 0 0 150px;
+  }
+}
+.agent-summary {
+  align-items: start;
+}
+.agent-summary dt {
+  padding-top: 5px;
+}
+.project-menu .tell-agent {
+  width: 100%;
+  justify-content: flex-start;
 }

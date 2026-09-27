@@ -156,6 +156,9 @@ describe('agent handoff: names, prompts and briefs', () => {
     expect(describeSubject(p, { view: 'library' }).text).toBe(
       'the sketch library (4 sketches, 1 unused)',
     );
+    expect(describeSubject(p, { view: 'boards' }).text).toBe(
+      'a new board for another project on this computer',
+    );
     expect(describeSubject(p, { view: 'screen-editor', screen: 'ghost' }).text).toContain(
       'not on this board',
     );
@@ -181,6 +184,9 @@ describe('agent handoff: names, prompts and briefs', () => {
     ).toContain('I am placing the idea “Search”');
     expect(defaultTask(p, { view: 'plan', idea: 'idea-search' })).toContain('Look at this idea');
     expect(defaultTask(p, { view: 'library' })).toContain('unused sketch');
+    expect(defaultTask(p, { view: 'boards' })).toContain('POST <base>/api/projects');
+    expect(agentPrompt(p, { view: 'boards' }, base)).toContain(`POST ${base}/api/projects`);
+    expect(agentPrompt(p, { view: 'boards' }, base)).not.toContain('<base>');
   });
   it('writes a prompt with the view, the subject, the brief address, the skills and the task', () => {
     const p = board(),
@@ -279,6 +285,17 @@ describe('agent handoff: names, prompts and briefs', () => {
     expect(library).toContain('- S4 d.png (d) · 100 × 80');
     expect(library).toContain('unused');
     expect(library).toContain('- F3 “Help” (help) · 1 ideas planned');
+    const boards = agentBrief(p, { view: 'boards' }, base, {
+      boards: [
+        { id: 'little', name: 'Little app', screenCount: 4 },
+        { id: 'other', name: 'Other', screenCount: 0 },
+      ],
+    });
+    expect(boards).toContain('## Boards on this computer');
+    expect(boards).toContain('- “Little app” (little) · 4 screens · open now');
+    expect(boards).toContain('- “Other” (other) · 0 screens');
+    expect(boards).toContain(`1. POST ${base}/api/projects`);
+    expect(boards).not.toContain('<base>');
     const whole = agentBrief(p, { view: 'board' }, base);
     expect(whole).toContain('## The board at a glance');
     expect(whole).toContain('- F3 Help (help) · modal · planned, no drawing · 0 pins');

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Bot,
   ArrowDownToLine,
   ArrowRight,
   BookOpen,
@@ -157,7 +158,8 @@ function Studio({
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(''),
     [report, setReport] = useState<string[] | null>(null),
-    [fitSignal, setFitSignal] = useState(0);
+    [fitSignal, setFitSignal] = useState(0),
+    [boardsPrompt, setBoardsPrompt] = useState(0);
   const [name, setName] = useState(''),
     [folder, setFolder] = useState(''),
     [formError, setFormError] = useState('');
@@ -519,6 +521,14 @@ function Studio({
                 <button
                   onClick={() => {
                     setMenu(false);
+                    setBoardsPrompt((n) => n + 1);
+                  }}
+                >
+                  <Bot size={16} /> New board with your agent
+                </button>
+                <button
+                  onClick={() => {
+                    setMenu(false);
                     importRef.current?.click();
                   }}
                 >
@@ -531,6 +541,12 @@ function Studio({
             </>
           )}
         </div>
+        <TellAgent
+          project={project}
+          context={{ view: 'boards' }}
+          openSignal={boardsPrompt}
+          hideButton
+        />
         <div
           className={`save-status ${status}`}
           title={error || 'Projects save automatically to your computer'}

@@ -8,16 +8,17 @@ Nothing is hand-written. Three registries in `shared/agent.ts` generate everythi
 
 A **view id** names where the user is. Each view has a label and the skills its task needs.
 
-| View id             | Label             | Where the button is                                                                               | Subject the prompt names                                       |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `board`             | Board             | View toolbar, beside Sketch library (Board tab only); an icon in every frame's footer on the cork | the whole board; one frame (as `screen-editor`)                |
-| `screen-editor`     | Screen editor     | Editor toolbar, beside Add a pin; the Detail view's actions                                       | the frame; the selected pin; the layout; the idea being placed |
-| `connection-editor` | Connection editor | Dialog actions, beside Cancel                                                                     | the yarn (or a new yarn from its pin)                          |
-| `plan`              | Plan              | Plan header beside Copy as text; each frame's folder; each idea card; the Ideas panel             | the whole plan; one frame's ideas; one idea                    |
-| `outline`           | App outline       | Outline header beside Expand screens; each screen's actions                                       | the whole outline; one screen                                  |
-| `review`            | Review flow       | Review heading; inside each finding                                                               | all open findings; one finding                                 |
-| `test-flow`         | Test flow         | Footer, beside Rewind test                                                                        | the current screen and the trail of yarn taken                 |
-| `library`           | Sketch library    | Library heading, beside the import button (icon)                                                  | the sketches, used and unused, and the frames still waiting    |
+| View id             | Label             | Where the button is                                                                               | Subject the prompt names                                            |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `board`             | Board             | View toolbar, beside Sketch library (Board tab only); an icon in every frame's footer on the cork | the whole board; one frame (as `screen-editor`)                     |
+| `screen-editor`     | Screen editor     | Editor toolbar, beside Add a pin; the Detail view's actions                                       | the frame; the selected pin; the layout; the idea being placed      |
+| `connection-editor` | Connection editor | Dialog actions, beside Cancel                                                                     | the yarn (or a new yarn from its pin)                               |
+| `plan`              | Plan              | Plan header beside Copy as text; each frame's folder; each idea card; the Ideas panel             | the whole plan; one frame's ideas; one idea                         |
+| `outline`           | App outline       | Outline header beside Expand screens; each screen's actions                                       | the whole outline; one screen                                       |
+| `review`            | Review flow       | Review heading; inside each finding                                                               | all open findings; one finding                                      |
+| `test-flow`         | Test flow         | Footer, beside Rewind test                                                                        | the current screen and the trail of yarn taken                      |
+| `library`           | Sketch library    | Library heading, beside the import button (icon)                                                  | the sketches, used and unused, and the frames still waiting         |
+| `boards`            | Boards            | Boards menu, “New board with your agent”                                                          | a new board for another project: create it and write its first plan |
 
 ## Codes
 
@@ -31,16 +32,16 @@ A **context** is `{ view, screen?, pin?, layout?, transition?, idea?, finding?, 
 
 A **skill** is one instruction document in `docs/skills/<id>.md`, served at `/api/skills/<id>.md`, listed at `/api/skills`, and shipped in every export under `skills/`.
 
-| Skill id              | What it covers                                                        | Used by              |
-| --------------------- | --------------------------------------------------------------------- | -------------------- |
-| `talk-to-sketchcoded` | Read the live board and write back through the local API              | every view           |
-| `read-a-board`        | What screens, pins, yarn, ideas and findings mean                     | every view           |
-| `build-rules`         | The user's layout and interaction rules (short form of the checklist) | board, screen editor |
-| `describe-pins`       | Write what each pin does, from the plan, and tie its yarn             | screen editor        |
-| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                | connection editor    |
-| `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                   | plan, outline        |
-| `resolve-findings`    | What each review rule means; fix the board or accept with a reason    | review               |
-| `walk-the-flow`       | Follow a Test flow trail and find the first missing step              | test flow            |
+| Skill id              | What it covers                                                        | Used by                        |
+| --------------------- | --------------------------------------------------------------------- | ------------------------------ |
+| `talk-to-sketchcoded` | Read the live board and write back through the local API              | every view                     |
+| `read-a-board`        | What screens, pins, yarn, ideas and findings mean                     | every view                     |
+| `build-rules`         | The user's layout and interaction rules (short form of the checklist) | board, screen editor           |
+| `describe-pins`       | Write what each pin does, from the plan, and tie its yarn             | screen editor                  |
+| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                | connection editor              |
+| `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                   | plan, outline, library, boards |
+| `resolve-findings`    | What each review rule means; fix the board or accept with a reason    | review                         |
+| `walk-the-flow`       | Follow a Test flow trail and find the first missing step              | test flow                      |
 
 ## What the agent reads from the running app
 

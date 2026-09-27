@@ -62,10 +62,11 @@ export function createApp(store: Store) {
     const context = contextSchema.safeParse(req.query);
     if (!context.success)
       throw new AppError(
-        `Unknown brief context: ${context.error.issues[0]?.message ?? 'bad query'}. Use view=board|screen-editor|connection-editor|plan|outline|review|test-flow|library with optional screen, pin, layout, transition, idea, finding, trail.`,
+        `Unknown brief context: ${context.error.issues[0]?.message ?? 'bad query'}. Use view=board|screen-editor|connection-editor|plan|outline|review|test-flow|library|boards with optional screen, pin, layout, transition, idea, finding, trail.`,
         400,
       );
-    markdown(res, agentBrief(project, context.data, base(req)));
+    const extras = context.data.view === 'boards' ? { boards: await store.list() } : {};
+    markdown(res, agentBrief(project, context.data, base(req), extras));
   });
   app.get('/api/projects/:id/flow.md', async (req, res) =>
     markdown(res, flowDocument(await store.read(req.params.id))),

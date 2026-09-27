@@ -31,6 +31,7 @@ export const viewIds = [
   'review',
   'test-flow',
   'library',
+  'boards',
 ] as const;
 export type ViewId = (typeof viewIds)[number];
 
@@ -109,7 +110,13 @@ export const views: Record<ViewId, { label: string; skills: SkillId[] }> = {
     label: 'Sketch library',
     skills: ['talk-to-sketchcoded', 'read-a-board', 'plan-the-backlog'],
   },
+  boards: {
+    label: 'Boards',
+    skills: ['talk-to-sketchcoded', 'read-a-board', 'plan-the-backlog'],
+  },
 };
+/** What the brief route can add that the project itself does not know. */
+export type BriefExtras = { boards?: { id: string; name: string; screenCount: number }[] };
 
 /** What the user is looking at. Ids refer to the project; unknown ids are reported, not thrown. */
 export const contextSchema = z.object({
@@ -176,6 +183,8 @@ export function describeSubject(p: Project, ctx: AgentContext): { noun: string; 
     idea = ideaOf(p, ctx.idea),
     finding = ctx.finding ? analyze(p).find((i) => i.id === ctx.finding) : undefined,
     mobile = ctx.layout === 'mobile' ? ', mobile layout' : '';
+  if (ctx.view === 'boards')
+    return { noun: 'board', text: 'a new board for another project on this computer' };
   if (ctx.view === 'library') {
     const unused = unusedAssets(p).length;
     return {
@@ -247,6 +256,8 @@ export function defaultTask(p: Project, ctx: AgentContext): string {
   switch (ctx.view) {
     case 'board':
       return 'Read the board and tell me, in a short list, what is drawn, what is planned, what is left to the AI, and what the open findings are. Then wait for my instruction.';
+    case 'boards':
+      return `Create a new Sketchcoded board for the project I am working in, named after it: POST <base>/api/projects with {"name": "…"} and the header X-Drawcode-Client: local (the skill talk-to-sketchcoded has the details). Then read this project's code, or ask me for two lines about it, and write the first plan into that board: the screens the app needs as planned frames (assetId null, each with a layout position on the cork), the functionality as ideas on those frames, and where each idea leads. Do not draw anything. Finish by telling me the board's name so I can open it from the Boards menu and start drawing.`;
     case 'library':
       return 'For each unused sketch, tell me which frame it belongs to, from the plan and its file name; propose a planned frame when it fits none. Do not attach sketches yourself; I drop them on the board.';
     case 'screen-editor': {
@@ -309,7 +320,12 @@ export const skillsIndexUrl = (base: string) => `${base}/api/skills`;
 export const checklistUrl = (base: string) => `${base}/api/checklist.md`;
 
 /** The text that goes to the clipboard: where the user is, where the instructions are, the task. */
-export function agentPrompt(p: Project, ctx: AgentContext, base: string): string {
+export function agentPrompt(
+  p: Project,
+  ctx: AgentContext,
+  base: string,
+  task: string = defaultTask(p, ctx),
+): string {
   const view = views[ctx.view],
     subject = describeSubject(p, ctx);
   return [
@@ -318,7 +334,7 @@ export function agentPrompt(p: Project, ctx: AgentContext, base: string): string
     `1. The brief for exactly this task (read first): ${briefUrl(p, ctx, base)}`,
     `2. Skills to follow: ${view.skills.join(', ')} (each linked from ${skillsIndexUrl(base)})`,
     `3. The user’s rules, in their words: ${checklistUrl(base)}`,
-    `Task: ${defaultTask(p, ctx)}`,
+    `Task: ${(task.trim() || defaultTask(p, ctx)).replace('<base>', base)}`,
     `Stay on this ${subject.noun}; ask before touching anything else.`,
   ].join('\n');
 }
@@ -417,7 +433,12 @@ const frameLines = (
 };
 
 /** The full Markdown brief served at `/api/projects/:id/brief`. Everything the agent needs for the task. */
-export function agentBrief(p: Project, ctx: AgentContext, base: string): string {
+export function agentBrief(
+  p: Project,
+  ctx: AgentContext,
+  base: string,
+  extras: BriefExtras = {},
+): string {
   const view = views[ctx.view],
     subject = describeSubject(p, ctx),
     screen = screenOf(p, ctx.screen),
@@ -434,7 +455,7 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
     '',
     '## The task',
     '',
-    defaultTask(p, ctx),
+    defaultTask(p, ctx).replace('<base>', base),
     '',
     `Stay on this ${subject.noun}; ask before touching anything else.`,
     '',
@@ -591,6 +612,23 @@ export function agentBrief(p: Project, ctx: AgentContext, base: string): string 
         `- ${codeOf(s)} ${q(s.title)} (${s.id}) · ${p.ideas.filter((i) => i.screenId === s.id).length} ideas planned`,
       );
     lines.push('');
+  }
+  if (ctx.view === 'boards') {
+    lines.push(
+      '## Boards on this computer',
+      '',
+      ...(extras.boards ?? [{ id: p.id, name: p.name, screenCount: p.screens.length }]).map(
+        (b) =>
+          `- ${q(b.name)} (${b.id}) · ${b.screenCount} screens${b.id === p.id ? ' · open now' : ''}`,
+      ),
+      '',
+      '## How to create and fill a board',
+      '',
+      `1. POST ${base}/api/projects with header X-Drawcode-Client: local and body {"name": "<project name>"}; the answer is the new board (note its id).`,
+      `2. GET ${base}/api/projects/<id>, add planned frames (screens with assetId null and a layout entry {x, y, width}) and ideas (screenId, leadsTo), then PUT the whole project back once. Codes are assigned by the server.`,
+      '3. Do not add pins or yarn: the user draws first, then places pins. Tell the user the board’s name.',
+      '',
+    );
   }
   if (ctx.view === 'board') {
     lines.push(

@@ -14,6 +14,10 @@ Sketchcoded is running on the user's computer. You can read the live board and w
 
 Use `curl -s` (or your fetch tool) from the machine the app runs on. `{base}` is usually `http://127.0.0.1:5173`.
 
+## Create a board
+
+`POST {base}/api/projects` with header `X-Drawcode-Client: local` and body `{"name": "<project name>"}` returns the new board (note its `id`). A board is one project: name it after the codebase or product it describes. All boards live in the running app's data folder, side by side; the user switches between them in the Boards menu. To keep a copy inside a codebase, the user exports a ZIP from the app (or you read `GET {base}/api/projects/{id}` and `flow.md`).
+
 ## Write back
 
 `PUT {base}/api/projects/{id}` with header `X-Drawcode-Client: local` and `Content-Type: application/json`. The body is the **whole project JSON** you fetched, with your changes. The server validates it against the schema, bumps `revision`, and returns the saved project.

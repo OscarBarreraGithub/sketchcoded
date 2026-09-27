@@ -25,6 +25,7 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 - The chat example: a ready-made board with branches, an intentional one-way login and Back actions.
 - Import a project from a `.sketchcoded.zip`; it becomes a separate board and never overwrites one.
 - Rename a board.
+- New board with your agent: a prompt that has the agent create a board for the project it is working in (through the local API), write the first plan as planned frames and ideas, and report the board's name; you then open it from this menu and draw.
 
 ## The board (the studio)
 
