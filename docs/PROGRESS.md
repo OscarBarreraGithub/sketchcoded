@@ -304,3 +304,22 @@ The board is read only. You can pan, zoom, pinch and drag any frame, and a reloa
 It is plain HTML, CSS and JavaScript, so the site keeps its no-build promise, and it reproduces the app's geometry (30px of tape, the drawing, a 46px foot, and the same curve from a pin to the top of its destination) so the board looks like the board. `tools/make-example.mjs` in the site repository draws the five pages and writes `example/board.json`, placing every pin from the same numbers that draw its element, so a pin cannot drift off the thing it points at.
 
 **Verification:** the live pages, the example data and the drawings all return 200 on the custom domain. The board was walked end to end on the deployed site: Home, the branch chooser, and on to the ending. Checked at 1440×900, on an iPhone 13 and at a 150% laptop zoom: the page never scrolls, nothing is under 12px, and the board never shrinks below 42%, panning to the entry frame when it cannot fit. `npm test` 97 unit tests and `npm run format:check` pass in the app repository.
+
+## 2026-09-27 — The example is the real board; frames are P
+
+**The example board on sketchcoded.com is the user's own Sketchcoded board**: their three hand drawings (the landing page, the board, the screen editor) with all thirty-two pins, the eight threads between frames, their own colour names, and the nine frames still waiting for a drawing, which show how many ideas each is waiting on. It replaces two wrong attempts from earlier the same day (the app's chat example, then pages drawn in code). `tools/make-example.mjs` in the site repository pulls it from the running app. Walking a frame that has no drawing says so and lists what is planned there. The walked drawing is sized to the stage in both directions, as the app does it, so a large sketch fits any window; the board zooms out to 34% so the whole board fits on a laptop, and on a phone it opens on Home.
+
+**Frames are P1, P2, …** instead of F1, F2, …, which read like function keys. `withCodes` renames an old `F` code to `P` with the same number on read and save; the prompt, the brief, the outline, `flow.md`, the skills and the tests all use P. Sketches stay S1, S2, …; ideas I1, I2, ….
+
+**Verification:** `npm test` 97 unit tests pass (a new case renames an old board's frames and checks the result is stable); `npm run test:ui` **27** browser tests pass; `npm run format:check` passes. The live site serves the board with P codes. Both repositories are committed and pushed; both working trees are clean.
+
+## Start here, if you are a new agent
+
+Read `AGENTS.md` first, then this file from the end backwards until you have the picture, then `docs/SKETCHCODED_REQUESTS.md` (what the user asked, dated, in their words) and `docs/BUILD_CHECKLIST.md` (their general rules, shared with every project).
+
+- **Two repositories**, both public on GitHub under `OscarBarreraGithub`: `sketchcoded` (this app, `~/Documents/drawcode`) and `sketchcoded-site` (the public site, `~/Documents/sketchcoded-site`). Both are on `main`, committed and pushed.
+- **The site is live** at https://sketchcoded.com, served by Cloudflare Pages (project `sketchcoded`). Deploy with `wrangler pages deploy . --project-name sketchcoded --branch main` from the site repository. Its example board comes from the user's real Sketchcoded board: run `node tools/make-example.mjs` there with the app running, and commit.
+- **The app** runs with `npm run dev` on port 5173 against `.drawcode/`, the user's data. The user keeps it running; never start a second server on the same data. Use a scratch port and a scratch `DRAWCODE_DATA_DIR` for anything experimental, and stop it afterwards.
+- **The user's boards** in the app: `Sketchcoded` (the plan of this product, with their drawings), `sciencewithagents` and its three level variants (list, frames, built) written by their other agent, and `Little chat` (a test board). Do not write to them unless asked; when asked, go through the API and warn the user first.
+- **Open, for the user to decide:** the interactive five- or six-panel tutorial from the landing page (in the backlog, not built); whether the example board should grow as more of the Sketchcoded board is drawn (it regenerates from the app, so drawing more frames and rerunning the tool is all it takes).
+- **How the user works:** they give feedback in bursts and expect every item recorded the same day, in their words; they check the result themselves; they want the final message to restate addresses and what they need to do.

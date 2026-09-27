@@ -45,6 +45,6 @@ A color is a category of yarn, and the user reads the board one category at a ti
 
 Two more colors exist, `violet` and `teal`, for a category this board really needs and the four do not cover. Name it in `colorLabels` when you use it; leave both out otherwise, so the legend shows only what the board uses.
 
-- Ids are yours to choose (letters, digits, `-`, `_`); codes (`F1`, `I1`) are assigned by the server, so leave `code` out of new things.
+- Ids are yours to choose (letters, digits, `-`, `_`); codes (`P1`, `I1`) are assigned by the server, so leave `code` out of new things.
 
 Create the board with `POST {base}/api/projects` (header `X-Drawcode-Client: local`, body `{"name": "<project name>"}`), fill it with one `PUT` at the end (skill: talk-to-sketchcoded), and tell the user the board's name.

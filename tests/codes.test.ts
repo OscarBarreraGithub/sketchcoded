@@ -25,7 +25,15 @@ describe('short codes: everything the user and the agent talk about', () => {
     p.assets = [asset('x'), asset('y'), asset('z')];
     p.ideas = [newIdea({ title: 'One' }, 'You', 'i1')];
     const coded = withCodes(p);
-    expect(coded.screens.map((s) => s.code)).toEqual(['F1', 'F2']);
+    expect(coded.screens.map((s) => s.code)).toEqual(['P1', 'P2']);
+    // Frames were F1, F2, … once, which read like the function keys. A board written then keeps
+    // each frame's number and takes the new letter, and says the same thing twice running.
+    const legacy = withCodes({
+      ...coded,
+      screens: coded.screens.map((s, i) => ({ ...s, code: `F${i + 1}` })),
+    });
+    expect(legacy.screens.map((s) => s.code)).toEqual(['P1', 'P2']);
+    expect(withCodes(legacy)).toBe(legacy);
     expect(coded.assets.map((a) => a.code)).toEqual(['S1', 'S2', 'S3']);
     expect(coded.ideas.map((i) => i.code)).toEqual(['I1']);
     // Nothing to do: the same object comes back, so React state is untouched.
@@ -38,8 +46,8 @@ describe('short codes: everything the user and the agent talk about', () => {
     });
     p = { ...p, screens: p.screens.filter((s) => s.id !== 'b') };
     p = withCodes({ ...p, screens: [...p.screens, screen('d', 'D')] });
-    expect(p.screens.map((s) => `${s.id}:${s.code}`)).toEqual(['a:F1', 'c:F3', 'd:F4']);
-    expect(codeOf(p.screens[1])).toBe('F3');
+    expect(p.screens.map((s) => `${s.id}:${s.code}`)).toEqual(['a:P1', 'c:P3', 'd:P4']);
+    expect(codeOf(p.screens[1])).toBe('P3');
     expect(codeOf(undefined)).toBe('?');
   });
   it('names a pin by its frame and its number on that frame', () => {
@@ -52,7 +60,7 @@ describe('short codes: everything the user and the agent talk about', () => {
         { id: 'p3', screenId: 'b', x: 0.2, y: 0.2, title: 'Three', description: '' },
       ],
     });
-    expect(pinLabel(p, p.pins[2])).toBe('F2 pin 2');
-    expect(pinLabel(p, p.pins[1])).toBe('F1 pin 1');
+    expect(pinLabel(p, p.pins[2])).toBe('P2 pin 2');
+    expect(pinLabel(p, p.pins[1])).toBe('P1 pin 1');
   });
 });

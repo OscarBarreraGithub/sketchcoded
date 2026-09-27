@@ -107,7 +107,7 @@ export function TellAgent({
     if (openSignal) start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openSignal]);
-  const code = subject.text.match(/^(F\d+(?: pin \d+)?|I\d+|S\d+)\b/)?.[1];
+  const code = subject.text.match(/^(P\d+(?: pin \d+)?|I\d+|S\d+)\b/)?.[1];
   const rest = code ? subject.text.slice(code.length).trim() : subject.text;
   return (
     <>

@@ -50,7 +50,10 @@ Every work view has a **Tell the agent** button (`src/components/TellAgent.tsx`)
 
 ## Companion site
 
-The public landing page lives in a separate repository, `../sketchcoded-site` (static HTML, no build). Keep its copy consistent with `docs/FUNCTIONALITY.md` and the README: same name, tagline, setup prompt and feature list. Its `links.js` holds every external address in one place.
+The public landing page lives in a separate repository, `../sketchcoded-site` (static HTML, no build), published at [sketchcoded.com](https://sketchcoded.com) and on GitHub as `OscarBarreraGithub/sketchcoded-site`. This repository is `OscarBarreraGithub/sketchcoded`. Keep the site's copy consistent with `docs/FUNCTIONALITY.md` and the README: same name, tagline, setup prompt and feature list. Its `links.js` holds every external address in one place.
+
+- **The example board on the site is the user's real Sketchcoded board**, with their own hand drawings, pins and yarn. It is never drawn or invented by an agent. With the app running, `node tools/make-example.mjs` in the site repository pulls the board named Sketchcoded from `http://127.0.0.1:5173` and writes `example/board.json` and `example/art/`; commit what it writes. Regenerate whenever that board changes.
+- **Deploy** with `wrangler pages deploy . --project-name sketchcoded --branch main` from the site repository. The Cloudflare CLI on this computer is signed in to the user's account. DNS for sketchcoded.com is on Cloudflare; the domain is registered at Namecheap. Do not touch the MX and SPF records: they carry the user's email forwarding.
 
 Keep click targets at least 44px, fields at least 48px, and long notes readable without nested text scrolling. Preserve the board/outline alternatives and test zoomed browser layouts after layout changes. Detail references are illustrations, separate from app transitions; never count them as reachability or return paths. The Sketchcoded rename deliberately retains the `.drawcode/` storage path and legacy protocol keys.
 

@@ -4,7 +4,7 @@ A board is a `project.json`. `flow.md` says the same thing in reading order. Rea
 
 ## Codes
 
-Frames are `F1, F2, …`, sketches `S1, S2, …`, ideas `I1, I2, …` (the `code` field). A pin is named by its frame and number: “F3 pin 2” is the second pin listed on frame F3. Use these codes when you talk to the user; they see the same codes in the app. Never change or reuse a code.
+Frames are `P1, P2, …`, sketches `S1, S2, …`, ideas `I1, I2, …` (the `code` field). A pin is named by its frame and number: “P3 pin 2” is the second pin listed on frame P3. Use these codes when you talk to the user; they see the same codes in the app. Never change or reuse a code.
 
 ## Screens (frames)
 

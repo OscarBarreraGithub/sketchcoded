@@ -25,7 +25,7 @@ export const screenSchema = z.object({
   role: z.enum(['screen', 'auth', 'modal', 'terminal', 'detail']),
   /** The “Leave it up to the AI” post-it: build a standard page for this screen; no drawing expected. */
   leftToAi: z.boolean().optional(),
-  /** Short code people and agents say out loud: F1, F2, … Assigned once, never reused. */
+  /** Short code people and agents say out loud: P1, P2, … Assigned once, never reused. */
   code: z.string().max(12).optional(),
 });
 /** `x`/`y` anchor the pin on the web drawing; `mobile` is its position on the mobile drawing. */
@@ -219,9 +219,12 @@ export function placePin(p: Project, pinId: string, pos: { x: number; y: number 
 }
 /**
  * Rule (2026-09-26): everything the user and the agent talk about has a short code. Frames are
- * F1, F2, …; sketches S1, S2, …; ideas I1, I2, …. A code is given once, when the item first
- * appears, and is never reused, so “F3” means the same frame for the life of the board. Pins are
- * named by their frame and number (“F3 pin 2”), which is what the board and the editor show.
+ * P1, P2, … (P for page); sketches S1, S2, …; ideas I1, I2, …. A code is given once, when the item
+ * first appears, and is never reused, so “P3” means the same frame for the life of the board. Pins
+ * are named by their frame and number (“P3 pin 2”), which is what the board and the editor show.
+ *
+ * Frames used to be F1, F2, …, which read like the function keys on a keyboard (2026-09-27), so a
+ * board written before that is renumbered to P on the way in, keeping each frame's number.
  */
 const nextCode = (prefix: string, items: { code?: string }[]) => {
   let max = 0;
@@ -236,15 +239,23 @@ const codeAll = <T extends { code?: string }>(prefix: string, items: T[]): T[] =
   const next = nextCode(prefix, items);
   return items.map((item) => (item.code ? item : { ...item, code: next() }));
 };
+const FRAME = 'P';
+/** A frame carrying the old F code keeps its number and takes the new letter. */
+const renamed = <T extends { code?: string }>(items: T[]): T[] => {
+  if (!items.some((item) => /^F\d+$/.test(item.code ?? ''))) return items;
+  return items.map((item) =>
+    /^F\d+$/.test(item.code ?? '') ? { ...item, code: `${FRAME}${item.code!.slice(1)}` } : item,
+  );
+};
 export function withCodes(p: Project): Project {
-  const screens = codeAll('F', p.screens),
+  const screens = codeAll(FRAME, renamed(p.screens)),
     assets = codeAll('S', p.assets),
     ideas = codeAll('I', p.ideas);
   if (screens === p.screens && assets === p.assets && ideas === p.ideas) return p;
   return { ...p, screens, assets, ideas };
 }
 export const codeOf = (item: { code?: string } | undefined) => item?.code ?? '?';
-/** “F3 pin 2”: the frame's code and the pin's number on that frame. */
+/** “P3 pin 2”: the frame's code and the pin's number on that frame. */
 export const pinLabel = (p: Project, pin: Pin) => {
   const screen = p.screens.find((s) => s.id === pin.screenId);
   const index = p.pins.filter((v) => v.screenId === pin.screenId).indexOf(pin) + 1;

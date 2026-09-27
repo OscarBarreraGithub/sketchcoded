@@ -90,7 +90,7 @@ test('every view hands its task to the agent, and the agent can read everything 
   const onCork = await handoff(
     page,
     card.getByRole('button', { name: `Tell the agent about ${cardTitle}` }),
-    [/· F\d+ “[^”]+” \([^)]+\) · Screen editor/, /brief\?view=screen-editor&screen=/],
+    [/· P\d+ “[^”]+” \([^)]+\) · Screen editor/, /brief\?view=screen-editor&screen=/],
   );
   expect(onCork.text).toContain(`“${cardTitle}”`);
   const library = await handoff(
@@ -142,7 +142,7 @@ test('every view hands its task to the agent, and the agent can read everything 
   expect(ideaText.body).toContain('## The idea');
   const folder = page.locator('.folder-actions').first();
   const folderText = await handoff(page, folder.getByRole('button', { name: 'Tell the agent' }), [
-    /· F\d+ “[^”]+” \([^)]+\) · Plan/,
+    /· P\d+ “[^”]+” \([^)]+\) · Plan/,
     /brief\?view=plan&screen=/,
   ]);
   expect(folderText.body).toContain('what should go on this frame');
@@ -156,7 +156,7 @@ test('every view hands its task to the agent, and the agent can read everything 
   await page.getByRole('button', { name: 'Expand screens', exact: true }).click();
   const first = page.locator('.outline-screen').first();
   await handoff(page, first.getByRole('button', { name: 'Tell the agent' }), [
-    /· F\d+ “[^”]+” \([^)]+\) · App outline/,
+    /· P\d+ “[^”]+” \([^)]+\) · App outline/,
     /brief\?view=outline&screen=/,
   ]);
   // Screen editor: the frame, then a selected pin.
@@ -169,26 +169,26 @@ test('every view hands its task to the agent, and the agent can read everything 
     page,
     editor.locator('.editor-toolbar').getByRole('button', { name: 'Tell the agent' }),
     [
-      /· F\d+ “[^”]+” \([^)]+\) · Screen editor/,
+      /· P\d+ “[^”]+” \([^)]+\) · Screen editor/,
       /brief\?view=screen-editor&screen=[^&]+&layout=web/,
     ],
   );
   expect(frame.text).toContain(`“${title}”`);
-  expect(frame.body).toMatch(new RegExp(`## The frame: F\\d+ ${title}`));
+  expect(frame.body).toMatch(new RegExp(`## The frame: P\\d+ ${title}`));
   expect(frame.body).toContain('- Web drawing: http://127.0.0.1:5174/assets/');
   await editor.locator('.pin-row').first().click();
   const pin = await handoff(
     page,
     editor.locator('.editor-toolbar').getByRole('button', { name: 'Tell the agent' }),
-    [/· F\d+ pin 1 “/, /brief\?view=screen-editor&screen=[^&]+&pin=/],
+    [/· P\d+ pin 1 “/, /brief\?view=screen-editor&screen=[^&]+&pin=/],
   );
-  expect(pin.body).toMatch(/Selected pin: F\d+ pin 1/);
+  expect(pin.body).toMatch(/Selected pin: P\d+ pin 1/);
   // Connection editor, opened from the pin's yarn list.
   await editor.locator('.connection-row').first().click();
   const edge = page.getByRole('dialog', { name: 'Follow this thread' });
   await expect(edge).toBeVisible();
   const yarn = await handoff(page, edge.getByRole('button', { name: 'Tell the agent' }), [
-    /· yarn “[^”]*” from F\d+ pin \d+ “[^”]*” to F\d+ “[^”]+” \([^)]+\) · Connection editor/,
+    /· yarn “[^”]*” from P\d+ pin \d+ “[^”]*” to P\d+ “[^”]+” \([^)]+\) · Connection editor/,
     /brief\?view=connection-editor&screen=[^&]+&pin=[^&]+&transition=/,
   ]);
   expect(yarn.body).toContain('## The yarn');
@@ -224,12 +224,12 @@ test('every view hands its task to the agent, and the agent can read everything 
     page,
     preview.locator('.preview-footer').getByRole('button', { name: 'Tell the agent' }),
     [
-      /· Test flow at F\d+ “[^”]+” after 1 step/,
+      /· Test flow at P\d+ “[^”]+” after 1 step/,
       /brief\?view=test-flow&screen=[^&]+&layout=web&trail=/,
     ],
   );
   expect(walk.body).toContain('## The trail');
-  expect(walk.body).toMatch(/1\. F\d+ “[^”]+” → pin \d+ “/);
+  expect(walk.body).toMatch(/1\. P\d+ “[^”]+” → pin \d+ “/);
 });
 
 test('the open board picks up a change the agent wrote, when nothing is unsaved', async ({
