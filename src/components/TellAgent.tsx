@@ -110,7 +110,7 @@ export function TellAgent({
               <span>
                 {copied === 'no'
                   ? 'Select the prompt below and copy it yourself.'
-                  : 'Paste it into your agent, then add anything more you want. It reads this board and your rules from the app running here and gets to work.'}
+                  : 'Paste it into your agent. It reads this board and your rules from the app running here and gets to work.'}
               </span>
             </div>
           </div>
