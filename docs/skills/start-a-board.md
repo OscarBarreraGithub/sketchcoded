@@ -48,3 +48,7 @@ Two more colors exist, `violet` and `teal`, for a category this board really nee
 - Ids are yours to choose (letters, digits, `-`, `_`); codes (`P1`, `I1`) are assigned by the server, so leave `code` out of new things.
 
 Create the board with `POST {base}/api/projects` (header `X-Drawcode-Client: local`, body `{"name": "<project name>"}`), fill it with one `PUT` at the end (skill: talk-to-sketchcoded), and tell the user the board's name.
+
+## Check the rendered result
+
+Follow `verify-the-result.md` before calling this task done. Apply the full user checklist to the affected board views and every affected page left to the AI, including overlap and actual browser zoom checks. When building the site, repeat these checks on the implementation. Report evidence and remaining failures; Review flow alone cannot verify appearance.

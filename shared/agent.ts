@@ -45,11 +45,17 @@ export const skillIds = [
   'resolve-findings',
   'walk-the-flow',
   'start-a-board',
+  'verify-the-result',
 ] as const;
 export type SkillId = (typeof skillIds)[number];
 
 /** Skills are Markdown files in `docs/skills/<id>.md`, served at `/api/skills/<id>.md`. */
 export const skills: Record<SkillId, { title: string; summary: string }> = {
+  'verify-the-result': {
+    title: 'Verify the result',
+    summary:
+      'Check the rendered board, delegated pages and built site against the full checklist; report evidence.',
+  },
   'talk-to-sketchcoded': {
     title: 'Talk to Sketchcoded',
     summary: 'Read the live board and write back through the local API.',
@@ -318,6 +324,8 @@ export function defaultTask(p: Project, ctx: AgentContext): string {
       if (pin) {
         const yarn = p.transitions.filter((t) => t.pinId === pin.id);
         const described = pin.description.trim().length > 0;
+        if (pin.kind === 'annotation')
+          return 'Describe this content or local action in the user’s words. It stays on this screen and needs no yarn. Preserve its placement and do not invent navigation.';
         if (pin.kind === 'link')
           return `This is a link pin. Confirm the address in its description and the condition for leaving the app; fix the wording if it is unclear. ${write}`;
         if (pin.kind === 'detail')
@@ -536,9 +544,11 @@ export function agentBrief(
     '',
     `Stay on this ${subject.noun}; ask before touching anything else. Anything the user typed under the prompt they pasted is part of the task too.`,
     '',
+    'Before calling the task done, inspect the rendered result and verify the full checklist. This applies both to working on this board (including pages left to the AI) and to building a site from it. Follow verify-the-result and report the checks and any failures.',
+    '',
     '## Skills to follow (read each)',
     '',
-    ...view.skills.map(
+    ...[...view.skills, 'verify-the-result' as const].map(
       (id) => `- ${skills[id].title}: ${skills[id].summary} → ${skillUrl(base, id)}`,
     ),
     `- The user’s rules, in their words (read first, they win): ${checklistUrl(base)}`,

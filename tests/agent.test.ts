@@ -123,6 +123,9 @@ describe('agent handoff: names, prompts and briefs', () => {
       expect(views[view].skills).toContain('talk-to-sketchcoded');
       expect(views[view].skills).toContain('read-a-board');
       expect(defaultTask(board(), { view }).length).toBeGreaterThan(20);
+      expect(agentBrief(board(), { view }, base)).toContain(
+        `${base}/api/skills/verify-the-result.md`,
+      );
     }
   });
   it('names exactly what the user is looking at', () => {

@@ -50,6 +50,27 @@ describe('short codes: everything the user and the agent talk about', () => {
     expect(codeOf(p.screens[1])).toBe('P3');
     expect(codeOf(undefined)).toBe('?');
   });
+  it('retains high-water marks after the highest items and all items are removed', () => {
+    let p = withCodes({
+      ...emptyProject('Codes'),
+      screens: [screen('a', 'A'), screen('b', 'B')],
+      assets: [asset('a')],
+      ideas: [newIdea({ title: 'Idea' })],
+    });
+    const removed = withCodes({ ...p, screens: [], assets: [], ideas: [] }, p);
+    p = withCodes({
+      ...removed,
+      screens: [screen('c', 'C')],
+      assets: [asset('b')],
+      ideas: [newIdea({ title: 'Next' })],
+    });
+    expect(p.screens[0].code).toBe('P3');
+    expect(p.assets[0].code).toBe('S2');
+    expect(p.ideas[0].code).toBe('I2');
+    // Restoring an old undo snapshot may restore its item, but cannot roll the counters back.
+    const undone = withCodes(removed, p);
+    expect(withCodes({ ...undone, screens: [screen('d', 'D')] }).screens[0].code).toBe('P4');
+  });
   it('names a pin by its frame and its number on that frame', () => {
     const p = withCodes({
       ...emptyProject('Codes', 'codes'),

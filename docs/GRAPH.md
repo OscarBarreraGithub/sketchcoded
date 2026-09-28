@@ -86,3 +86,7 @@ Future agents can read the same graph and findings and propose decisions with th
 The server assigns monotonically increasing project revisions. It serializes saves per project, rejects stale revisions, writes to a temporary file, copies the previous file to `.bak`, then renames the temporary file. The client debounces edits and serializes saves so a late response cannot replace newer in-memory work.
 
 A bundle is imported as a new project ID. The schema, graph references, asset hashes, and asset dimensions are validated. Files are read from fixed expected archive paths; arbitrary archive paths are never extracted to the filesystem. Imported projects start with disconnected source folders and retain their portable snapshots.
+
+## Content pins and code allocation
+
+`kind: "annotation"` describes content or local behavior. It has no yarn, is exempt from unconnected-pin findings and is not a way onward. Yarn attached to it is a repair error. Delegated undrawn pages still receive reachability and dead-end checks. `codeCounters` preserves the highest issued P/S/I codes through deletion, undo and saves by older clients. Old F codes migrate to P with the number intact.

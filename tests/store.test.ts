@@ -51,6 +51,22 @@ describe('durable local projects', () => {
     expect(outcomes.filter((r) => r.status === 'rejected')).toHaveLength(1);
     expect((await store.read(p.id)).name).toBe('First');
   });
+  it('keeps code allocation history when an older API client omits counters', async () => {
+    let p = await store.create('Codes', true);
+    const max = p.codeCounters!.P;
+    p = await store.save({ ...p, codeCounters: undefined, screens: [], pins: [], transitions: [] });
+    const next = {
+      id: 'next',
+      assetId: null,
+      title: 'Next',
+      purpose: '',
+      role: 'screen' as const,
+      entry: true,
+    };
+    p = await store.save({ ...p, codeCounters: undefined, screens: [next] });
+    expect(p.screens[0].code).toBe(`P${max + 1}`);
+    expect((await store.read(p.id)).codeCounters!.P).toBe(max + 1);
+  });
   it('copies source images and adds changed versions without replacing snapshots', async () => {
     const folder = path.join(root, 'sketches');
     await fs.mkdir(folder);

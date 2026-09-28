@@ -495,7 +495,13 @@ export function ScreenEditor({
                     }
                   >
                     <option value="interaction" disabled={s.role === 'detail'}>
-                      App interaction — go somewhere or do something
+                      Navigation — go to another screen
+                    </option>
+                    <option
+                      value="annotation"
+                      disabled={project.transitions.some((t) => t.pinId === pin.id)}
+                    >
+                      Content / local action — stays on this screen
                     </option>
                     <option
                       value="detail"
@@ -512,11 +518,13 @@ export function ScreenEditor({
                   </select>
                 </label>
                 <p className="field-help">
-                  {pin.kind === 'detail'
-                    ? 'Attach an enlarged or supporting sketch. This explains the design without changing the app screen.'
-                    : pin.kind === 'link'
-                      ? 'Write the address in the description below, with any conditions. The pin is the exit: no yarn, no destination frame.'
-                      : 'Describe an action, then connect the possible outcomes. To change an existing interaction to a reference or a link, remove its yarns first.'}
+                  {pin.kind === 'annotation'
+                    ? 'Describe content or behavior that stays on this screen. It needs no yarn and does not count as an exit. Test flow shows the intent without executing it.'
+                    : pin.kind === 'detail'
+                      ? 'Attach an enlarged or supporting sketch. This explains the design without changing the app screen.'
+                      : pin.kind === 'link'
+                        ? 'Write the address in the description below, with any conditions. The pin is the exit: no yarn, no destination frame.'
+                        : 'Describe an action, then connect the possible outcomes. To change an existing interaction to a reference or a link, remove its yarns first.'}
                 </p>
                 <label>
                   Pin name
@@ -649,7 +657,12 @@ export function ScreenEditor({
                     </button>
                   )}
                 </div>
-                {pin.kind === 'link' ? (
+                {pin.kind === 'annotation' ? (
+                  <p className="field-help">
+                    Stays on this screen. No yarn is needed. To navigate elsewhere, change its
+                    purpose to Navigation.
+                  </p>
+                ) : pin.kind === 'link' ? (
                   <div className="inspector-section">
                     <div className="section-heading">
                       <span>LINK OUT</span>

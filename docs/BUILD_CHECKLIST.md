@@ -1,32 +1,10 @@
 # Build checklist
 
-The user’s general rules for anything an agent builds for them: from a Sketchcoded board, in
-Sketchcoded itself, or in any other project of theirs. Each rule applies every time, to every app,
-so the rules carry no dates and name no product. Read this before building; check each item
-against the result. When the user states a preference that holds for everything they build, add it
-here in their terms; never delete one, mark it superseded.
-
-What this file is not: the record of what the user asked for one project. A request about one
-product (remove this label, change that default, call it this) belongs with that project and stays
-there. For a board, that record is the board itself: its backlog, its pins’ words and its accepted
-findings, which travel in `flow.md` and `project.json`. For Sketchcoded itself, it is
-`docs/SKETCHCODED_REQUESTS.md`, `docs/PROGRESS.md` and the Sketchcoded board. Projects do not read
-each other’s records; only this file is shared between them.
-
-This file ships inside every export as `BUILD-CHECKLIST.md`, next to `flow.md`, and the running app
-serves it at `/api/checklist.md`, so the agent that builds from a board has it first.
-
-## How to read a board
-
-- [ ] `project.json` is the specification. `flow.md` is the same content in reading order. Pins are the interactions; their descriptions are the intent, written by the user or their agent. Use the words as written.
-- [ ] A screen’s drawing is the layout to build. Where a screen has a web drawing and a mobile drawing, both are the same screen; each pin has a position on each.
-- [ ] Yarn is the navigation. Honor the authored kind: open (push), replace, start fresh (reset), open as dialog (modal), go back, dismiss. Never invent a route that is not drawn. Back and Dismiss use real history; if a screen can be reached without the history they need, the review says so and the user’s accepted reason explains what to do.
-- [ ] Conditions on yarn are plain language. Implement them as described. Where they overlap or leave a case out, do not guess silently: build the fallback the user marked, and list the ambiguity.
-- [ ] A **link pin** leaves the app for a web address written in its description. Build it as a plain link. Never a screen, never a frame, never a route.
-- [ ] A **detail reference** shows a closer look without changing the screen. It is never navigation and never a way back.
-- [ ] Planned frames (no drawing yet) and unplaced ideas are the backlog, not the spec. Do not build them; do not drop them either. Carry them forward as open items.
-- [ ] Accepted review findings are decisions with reasons. Respect them. Open findings are the user’s to resolve, not yours to paper over.
-- [ ] **A frame can be left to the AI.** A frame wearing the “Leave it up to the AI” post-it needs no drawing: build a standard, conventional page for it from its title, purpose, ideas and the yarn in and out. Everything else on the board is the user’s vision and is built as drawn.
+The user’s general rules for anything an agent builds for them. Each rule applies every time,
+to every app, so the rules carry no dates and name no product. Read this before building and
+check each item against the result. Add general preferences here in the user’s terms; never
+delete one, mark it superseded. Product requests and instructions for a particular tool belong
+in that project’s own records and guides. Projects share this checklist, not their histories.
 
 ## Layout and interaction (every screen, every view, every zoom)
 
@@ -50,9 +28,12 @@ serves it at `/api/checklist.md`, so the agent that builds from a board has it f
 
 ## Process, for any agent working with the user
 
+- [ ] **The agent checks what it makes.** When an agent constructs a site from a design, or works on the design itself, including pages whose design is left to the AI, the full checklist must pass before that work is called done. Inspect the rendered result, including overlapping text and zoom control. This belongs in the agent’s instructions; a structural check alone does not verify appearance or usability.
+- [ ] **Show what was checked.** Record the views, window sizes and real browser zoom levels tested, the results and any remaining failures. Fix failures within the task’s scope. Say what is blocked or unverified; do not claim it passed.
+
 - [ ] Start servers and browsers only while using them; stop them before handing back, and check that their children and listeners are gone. Never point tests at the user’s data.
 - [ ] Verify before saying done: run the project’s build, its tests (including real browser zoom where there is a screen) and its format check, record the results, and do not mark done what was not verified.
-- [ ] **Measure before fixing a zoom report.** Reproduce it at laptop sizes (1440×900 and 1280×720 at 125%, 150%, 200%) with screenshots and numbers (page scroll, panel scroll, hint present), then fix, then measure again. Emulated viewports find layout bugs; the real tab-zoom test confirms them.
+- [ ] **Measure before fixing a zoom report.** Reproduce it at laptop sizes (1440×900 and 1280×720 at 125%, 150%, 200% and 250%) with screenshots and numbers (page scroll, panel scroll, hint present), then fix, then measure again. Emulated viewports find layout bugs; the real tab-zoom test confirms them.
 - [ ] Write things down the day they are said, so nothing is lost across a compaction: a general preference here, a project request in that project’s record, a decision with its reason where the project keeps decisions.
 - [ ] The final message to the user restates the address of anything running and anything they need to do next.
 - [ ] Keep this checklist general and undated. It is for every app, not for one; a rule that only makes sense for one product is a project request, not a rule.

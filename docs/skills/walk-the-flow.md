@@ -8,3 +8,7 @@ Test flow plays the sketches: the user starts at an entry screen, clicks pins, c
 4. Rewind in Test flow is a testing control. A way back in the app must be drawn as `back` or `dismiss` yarn.
 
 Report the first missing step first, then anything else you noticed, one line each.
+
+## Check the rendered result
+
+Follow `verify-the-result.md` before calling this task done. Apply the full user checklist to the affected board views and every affected page left to the AI, including overlap and actual browser zoom checks. When building the site, repeat these checks on the implementation. Report evidence and remaining failures; Review flow alone cannot verify appearance.

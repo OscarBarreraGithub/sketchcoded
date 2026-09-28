@@ -106,7 +106,7 @@ export class Store {
     }
   }
   async save(input: Project, isNew = false): Promise<Project> {
-    const project = withCodes(projectSchema.parse(input));
+    let project = projectSchema.parse(input);
     const previous = this.saves.get(project.id) ?? Promise.resolve();
     const next = previous
       .catch(() => {})
@@ -119,7 +119,8 @@ export class Store {
               'This board was changed in another tab or by your agent. Take the newer copy, or export your current work first.',
               409,
             );
-        }
+          project = withCodes(project, current);
+        } else project = withCodes(project);
         const saved = {
           ...project,
           revision: project.revision + 1,
@@ -221,7 +222,7 @@ export class Store {
         ),
       ),
       'READ-ME.md': strToU8(
-        "# Sketchcoded project\n\nRead BUILD-CHECKLIST.md first: the user's general rules for anything they build, in their words; every build from this board must meet them. What the user decided for this project in particular is in flow.md (its backlog, its pins' words, its accepted findings). skills/ holds the agent's instructions (read-a-board, build-rules, describe-pins, connect-screens, plan-the-backlog, resolve-findings, walk-the-flow, talk-to-sketchcoded). Then start with flow.md for the organized specification, project.json for the canonical graph (schemaVersion 1), and schema.json for its JSON Schema. Screens reference assets; pins use normalized image coordinates; transitions connect a pin to a target screen or use dynamic back/dismiss history. A pin with kind=detail and detailTarget points to a supporting illustration; a missing kind means interaction. Dedicated detail screens have role=detail. These references never change app history or count as app paths or ways back. A screen with assetId=null is a planned frame that has not been drawn yet; an optional mobileAssetId is a second, mobile drawing of the same screen, and pins may carry a mobile position for it. ideas[] is the planning backlog: each idea may be assigned to a screen (screenId), placed as a pin (pinId) and lead to a screen (leadsTo). layout and viewport are presentation only.\n\nRead each pin description with all of its outgoing transitions: summary, condition, logic, context, fallback and navigation. Screens describe reusable views, not necessarily unique records. Entry screens model supported launch contexts. Screen roles describe intent, not automatic exceptions.\n\nreview.json contains structural findings and saved acceptances. Natural-language conditions are not executed or verified. Acknowledgments can be stale and must be reviewed again. Do not assume every branch is exhaustive or every structural return path is available at runtime.\n\nImages are relative to assets/. Source folder paths are excluded. Import this ZIP in Sketchcoded to continue editing.\n",
+        "# Sketchcoded project\n\nRead BUILD-CHECKLIST.md first: the user's general rules for anything they build, in their words; every build from this board must meet them. What the user decided for this project in particular is in flow.md (its backlog, its pins' words, its accepted findings). skills/ holds the agent's instructions (read-a-board, build-rules, describe-pins, connect-screens, plan-the-backlog, resolve-findings, walk-the-flow, talk-to-sketchcoded, start-a-board, verify-the-result). Read skills/verify-the-result.md: the agent must inspect the rendered board and delegated pages while authoring, and the finished site while building; the full checklist must pass, with evidence reported. Review flow does not test appearance. Then start with flow.md for the organized specification, project.json for the canonical graph (schemaVersion 1), and schema.json for its JSON Schema. Screens reference assets; pins use normalized image coordinates; transitions connect a pin to a target screen or use dynamic back/dismiss history. A pin with kind=detail and detailTarget points to a supporting illustration; a missing kind means interaction. Dedicated detail screens have role=detail. These references never change app history or count as app paths or ways back. A pin with kind=annotation describes content or local behavior, has no yarn and does not count as a way onward. A screen with assetId=null is a planned frame that has not been drawn yet; leftToAi=true delegates its page design, and flow.md contains the standard-page outline to build; an optional mobileAssetId is a second, mobile drawing of the same screen, and pins may carry a mobile position for it. ideas[] is the planning backlog: each idea may be assigned to a screen (screenId), placed as a pin (pinId) and lead to a screen (leadsTo). layout and viewport are presentation only.\n\nRead each pin description with all of its outgoing transitions: summary, condition, logic, context, fallback and navigation. Screens describe reusable views, not necessarily unique records. Entry screens model supported launch contexts. Screen roles describe intent, not automatic exceptions.\n\nreview.json contains structural findings and saved acceptances. Natural-language conditions are not executed or verified. Acknowledgments can be stale and must be reviewed again. Do not assume every branch is exhaustive or every structural return path is available at runtime.\n\nImages are relative to assets/. Source folder paths are excluded. Import this ZIP in Sketchcoded to continue editing.\n",
       ),
     };
     try {

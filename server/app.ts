@@ -6,6 +6,7 @@ import path from 'node:path';
 import { emptyProject, projectSchema } from '../shared/model';
 import { agentBrief, contextSchema, skillIds, skills } from '../shared/agent';
 import { flowDocument } from '../shared/flow-document';
+import { publicExample } from '../shared/public-example';
 import { planningOutline } from '../shared/planning';
 import { AppError, Store } from './store';
 export function createApp(store: Store) {
@@ -50,6 +51,9 @@ export function createApp(store: Store) {
       .parse(req.body);
     res.status(201).json(await store.create(name, demo));
   });
+  app.get('/api/projects/:id/example', async (req, res) =>
+    res.json(publicExample(await store.read(req.params.id))),
+  );
   app.get('/api/projects/:id', async (req, res) => res.json(await store.read(req.params.id)));
   // Rule (2026-09-26): every view can hand its task to the agent. The agent reads these from the
   // running app instead of asking the user: the brief for one task, the whole documents, the

@@ -233,11 +233,13 @@ export function Outline({
                             </span>
                             <strong>{pin.title || 'Untitled pin'}</strong>
                             <span className="outline-count">
-                              {pin.kind === 'detail'
-                                ? 'Detail reference'
-                                : pin.kind === 'link'
-                                  ? 'Link out'
-                                  : `${branches.length} ${branches.length === 1 ? 'path' : 'paths'}`}
+                              {pin.kind === 'annotation'
+                                ? 'Content / local action'
+                                : pin.kind === 'detail'
+                                  ? 'Detail reference'
+                                  : pin.kind === 'link'
+                                    ? 'Link out'
+                                    : `${branches.length} ${branches.length === 1 ? 'path' : 'paths'}`}
                             </span>
                           </summary>
                           <div className="outline-pin-content">
@@ -247,7 +249,9 @@ export function Outline({
                                 <MapPin size={15} /> Edit pin
                               </button>
                             </div>
-                            {pin.kind === 'link' ? (
+                            {pin.kind === 'annotation' ? (
+                              <p>Stays on this screen; no navigation is required.</p>
+                            ) : pin.kind === 'link' ? (
                               <div className="outline-route reference">
                                 <span>
                                   <ExternalLink size={17} /> Opens{' '}

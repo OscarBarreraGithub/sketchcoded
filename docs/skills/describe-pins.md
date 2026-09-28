@@ -11,3 +11,5 @@ The user draws and places pins; you write down what each pin is. Work on the fra
 7. Write back the whole project through the API once, at the end (skill: talk-to-sketchcoded, which also says when to warn the user); the open board refreshes itself when the user has nothing unsaved. Then list what you wrote and what is still open, one line per pin.
 
 Never place a pin on a drawing: only the user does that. A planned frame (no drawing) may carry **provisional pins** (`provisional: true`, placeholder positions down its right side) so its yarn exists before the drawing; the user places them when the drawing arrives (skill: start-a-board). Describe those like any other pin.
+
+Use `kind: "annotation"` for content or an action that stays on the same screen. Its description explains the content or local behavior; it has no yarn and is not a way onward. Do not invent a route merely to remove an unconnected-pin warning.

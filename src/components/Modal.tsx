@@ -56,10 +56,12 @@ export function Modal({
           <X size={20} />
         </button>
       </div>
-      <div className="modal-content" ref={contentRef}>
-        {children}
+      <div className="modal-body">
+        <div className="modal-content" ref={contentRef}>
+          {children}
+        </div>
+        <ScrollHints target={contentRef} />
       </div>
-      <ScrollHints target={contentRef} />
     </dialog>
   );
 }

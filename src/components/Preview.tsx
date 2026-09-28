@@ -73,6 +73,11 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
     setNotice('');
   };
   const tryPin = (p: Pin) => {
+    if (p.kind === 'annotation') {
+      setChoice(null);
+      setNotice(p.description || 'This content or local action stays on the current screen.');
+      return;
+    }
     if (p.kind === 'link') {
       setChoice(null);
       const url = pinUrl(p);
@@ -111,6 +116,9 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
   const stageRef = useRef<HTMLDivElement>(null),
     sideRef = useRef<HTMLDivElement>(null),
     [fit, setFit] = useState<{ width: number; height: number } | null>(null);
+  useEffect(() => {
+    sideRef.current?.scrollTo(0, 0);
+  }, [choice, notice, current.screenId]);
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -182,6 +190,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             {built ? (
               <div className={`preview-built ${layout === 'mobile' ? 'narrow' : ''}`}>
                 <StandardPage
+                  key={screen!.id}
                   project={project}
                   screen={screen!}
                   showPins={showPins}
@@ -248,41 +257,42 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
               </div>
             )}
           </div>
-          {layout === 'mobile' && !mobileAsset && screen && !isPlanned(screen) && (
-            <p className="preview-hint">
-              <Smartphone size={14} /> No mobile drawing for this screen yet, so the web layout is
-              shown.
-            </p>
-          )}
-          {unplaced.length > 0 && (
-            <div className="preview-unplaced">
-              <span>Not placed on the mobile drawing yet:</span>
-              {unplaced.map((p) => (
-                <button
-                  key={p.id}
-                  className="button small"
-                  aria-label={`Try ${p.title || `interaction ${pins.indexOf(p) + 1}`}`}
-                  onClick={() => tryPin(p)}
-                >
-                  {pins.indexOf(p) + 1} · {p.title || 'Untitled'}
-                </button>
-              ))}
-            </div>
-          )}
-          <p className="preview-hint">
-            <MapPin size={14} />{' '}
-            {built
-              ? 'Left to the AI, so this page is built from the plan. Click anything that leads somewhere.'
-              : 'Click a pin to try a path or open a closer look.'}
-          </p>
-          {notice && (
-            <div className="preview-notice" role="status">
-              {notice}
-            </div>
-          )}
         </div>
         <aside className="preview-sidebar">
           <div className="preview-sidebar-scroll" ref={sideRef}>
+            {layout === 'mobile' && !mobileAsset && screen && !isPlanned(screen) && (
+              <p className="preview-hint">
+                <Smartphone size={14} /> No mobile drawing for this screen yet, so the web layout is
+                shown.
+              </p>
+            )}
+            {unplaced.length > 0 && (
+              <div className="preview-unplaced">
+                <span>Not placed on the mobile drawing yet:</span>
+                {unplaced.map((p) => (
+                  <button
+                    key={p.id}
+                    className="button small"
+                    aria-label={`Try ${p.title || `interaction ${pins.indexOf(p) + 1}`}`}
+                    onClick={() => tryPin(p)}
+                  >
+                    {pins.indexOf(p) + 1} · {p.title || 'Untitled'}
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="preview-hint">
+              <MapPin size={14} />{' '}
+              {built
+                ? 'Left to the AI, so this page is built from the plan. Click anything that leads somewhere.'
+                : 'Click a pin to try a path or open a closer look.'}
+            </p>
+            {notice && (
+              <div className="preview-notice" role="status">
+                {notice}
+              </div>
+            )}
+
             {choice ? (
               <>
                 <span className="eyebrow">CHOOSE THE SCENARIO</span>

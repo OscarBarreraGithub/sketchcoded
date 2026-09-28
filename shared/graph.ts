@@ -78,6 +78,7 @@ export function analyze(p: Project): Issue[] {
       pinById.has(t.pinId) &&
       pinById.get(t.pinId)?.kind !== 'detail' &&
       pinById.get(t.pinId)?.kind !== 'link' &&
+      pinById.get(t.pinId)?.kind !== 'annotation' &&
       screenById.get(pinById.get(t.pinId)!.screenId)?.role !== 'detail' &&
       (isHistory(t) ||
         (t.target && screenById.has(t.target) && screenById.get(t.target)?.role !== 'detail')),
@@ -251,7 +252,7 @@ export function analyze(p: Project): Issue[] {
         );
       continue;
     }
-    if (entries.length && !reachable.has(s.id) && !isPlanned(s))
+    if (entries.length && !reachable.has(s.id) && (!isPlanned(s) || isLeftToAi(s)))
       add(
         'unreachable',
         'warning',
@@ -271,7 +272,7 @@ export function analyze(p: Project): Issue[] {
       );
     const linksOut = p.pins.some((pin) => pin.screenId === s.id && pin.kind === 'link');
     if (
-      !isPlanned(s) &&
+      (!isPlanned(s) || isLeftToAi(s)) &&
       !outgoing(s.id).length &&
       !linksOut &&
       !(s.role === 'terminal' && s.purpose.trim())
@@ -323,7 +324,11 @@ export function analyze(p: Project): Issue[] {
         'This screen has a mobile drawing. Place the pin on it in the screen editor, or accept that this interaction is web only.',
         { title: pin.title, screenId: pin.screenId },
       );
-    if (screenById.get(pin.screenId)?.role === 'detail' && pin.kind !== 'detail')
+    if (
+      screenById.get(pin.screenId)?.role === 'detail' &&
+      pin.kind !== 'detail' &&
+      pin.kind !== 'annotation'
+    )
       add(
         'detail-interaction',
         'error',
@@ -365,6 +370,7 @@ export function analyze(p: Project): Issue[] {
         );
       continue;
     }
+    if (pin.kind === 'annotation') continue;
     if (!branches.length)
       add(
         'unconnected-pin',
@@ -411,6 +417,17 @@ export function analyze(p: Project): Issue[] {
   for (const t of p.transitions) {
     const pin = pinById.get(t.pinId),
       source = pin && screenById.get(pin.screenId);
+    if (pin?.kind === 'annotation') {
+      add(
+        'annotation-navigation',
+        'error',
+        [t.id],
+        'A content or local-action pin has yarn',
+        'This pin stays on its screen. Remove the yarn, or make it a navigation interaction.',
+        semantics(t),
+      );
+      continue;
+    }
     if (pin?.kind === 'link') {
       add(
         'link-navigation',

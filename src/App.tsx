@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bot,
   ArrowDownToLine,
@@ -84,17 +84,41 @@ export default function App() {
     getProjects()
       .then(setProjects)
       .catch((e: Error) => setError(e.message));
-  const go = (next: Route) => {
+  const beforeLeave = useRef<(() => Promise<boolean>) | null>(null);
+  const activePath = useRef(window.location.pathname);
+  const navigation = useRef(0);
+  const registerSave = useCallback((save: () => Promise<boolean>) => {
+    beforeLeave.current = save;
+    return () => {
+      if (beforeLeave.current === save) beforeLeave.current = null;
+    };
+  }, []);
+  const navigate = useCallback(async (next: Route, fromHistory = false) => {
+    const ticket = ++navigation.current;
     const path = next.kind === 'board' ? `/board/${next.id}` : '/';
-    if (window.location.pathname !== path) window.history.pushState(null, '', path);
+    if (path === activePath.current) return;
+    const saved = !beforeLeave.current || (await beforeLeave.current());
+    if (ticket !== navigation.current) return;
+    if (!saved) {
+      // popstate changes the address before we can save. Keep the board and its recovery UI.
+      if (fromHistory) window.history.pushState(null, '', activePath.current);
+      return;
+    }
+    if (!fromHistory && window.location.pathname !== path) window.history.pushState(null, '', path);
+    activePath.current = path;
     setRoute(next);
+  }, []);
+  const go = (next: Route) => {
+    void navigate(next);
   };
   useEffect(() => {
     void refresh();
-    const back = () => setRoute(readRoute());
+    const back = () => {
+      void navigate(readRoute(), true);
+    };
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
-  }, []);
+  }, [navigate]);
   useEffect(() => {
     if (route.kind === 'landing') {
       setProject(null);
@@ -159,6 +183,7 @@ export default function App() {
       projects={projects}
       onOpen={open}
       onHome={() => go({ kind: 'landing' })}
+      registerSave={registerSave}
     />
   );
 }
@@ -167,11 +192,13 @@ function Studio({
   projects,
   onOpen,
   onHome,
+  registerSave,
 }: {
   initial: Project;
   projects: ProjectSummary[];
   onOpen: (p: Project) => void;
   onHome: () => void;
+  registerSave: (save: () => Promise<boolean>) => () => void;
 }) {
   const {
     project,
@@ -187,6 +214,7 @@ function Studio({
     refreshed,
     takeServerCopy,
   } = useProject(initial);
+  useEffect(() => registerSave(flush), [registerSave, flush]);
   const [menu, setMenu] = useState(false),
     [modal, setModal] = useState<'folder' | 'new' | 'help' | 'rename' | 'categories' | null>(null),
     // Looking at one category of yarn at a time, so the board shows one kind of journey.
@@ -739,10 +767,15 @@ function Studio({
           </div>
           <div className="view-toolbar">
             <div className="view-switch" role="group" aria-label="Workspace view">
-              <button aria-pressed={viewMode === 'board'} onClick={() => setViewMode('board')}>
+              <button
+                aria-label="Board"
+                aria-pressed={viewMode === 'board'}
+                onClick={() => setViewMode('board')}
+              >
                 <LayoutDashboard size={17} /> Board
               </button>
               <button
+                aria-label="App outline"
                 aria-pressed={viewMode === 'outline'}
                 onClick={() => {
                   setViewMode('outline');
@@ -752,6 +785,7 @@ function Studio({
                 <ListTree size={18} /> App outline
               </button>
               <button
+                aria-label="Plan"
                 aria-pressed={viewMode === 'planning'}
                 onClick={() => {
                   setViewMode('planning');
@@ -764,6 +798,7 @@ function Studio({
             </div>
             <div className="category-control">
               <button
+                aria-label={category ? `Threads: ${categoryLabel(project, category)}` : 'Threads'}
                 className={`button category-button ${category ? 'filtering' : ''}`}
                 aria-expanded={categoryMenu}
                 aria-haspopup="menu"
@@ -827,10 +862,29 @@ function Studio({
                 </>
               )}
             </div>
-            <button className="button library-toggle" onClick={() => setLibraryOpen(true)}>
+            <button
+              aria-label="Sketch library"
+              className="button library-toggle"
+              onClick={() => setLibraryOpen(true)}
+            >
               <Images size={17} /> Sketch library
             </button>
             {viewMode === 'board' && <TellAgent project={project} context={{ view: 'board' }} />}
+            <button
+              className="icon-button compact-workspace-action"
+              aria-label="Review flow"
+              aria-expanded={review}
+              onClick={() => setReview(!review)}
+            >
+              <ShieldCheck size={18} />
+            </button>
+            <button
+              className="icon-button compact-workspace-action"
+              aria-label="Rename board"
+              onClick={() => newModal('rename')}
+            >
+              <Pencil size={18} />
+            </button>
             <p id="review-explanation">Review flow finds missing paths and ways back.</p>
           </div>
           <div className="board-and-review">
@@ -1212,7 +1266,9 @@ function Studio({
             <BookOpen size={17} />
             <span>
               Projects auto-save locally. Export includes your images, a versioned graph, and review
-              decisions for your future workflow. No LLM is connected yet.
+              decisions for your future workflow. Your agent checks the full build checklist on
+              rendered board views and AI pages, and on the finished site when it builds one. Review
+              flow checks structure. No LLM is connected yet.
             </span>
           </div>
         </Modal>

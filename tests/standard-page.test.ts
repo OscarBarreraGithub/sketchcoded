@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { publicExample } from '../shared/public-example';
 import { flowDocument } from '../shared/flow-document';
 import { analyze } from '../shared/graph';
 import { buildsItsOwnPage, standardPage, standardPageOutline } from '../shared/standard-page';
@@ -218,6 +219,32 @@ describe('a frame left to the AI builds its own page', () => {
       'Standard page (what Test flow shows): a standard page.\n\n### Open your conversations',
     );
   });
+  it('checks reachability and exits on undrawn AI pages, while ordinary planned frames wait', () => {
+    const p = site();
+    p.transitions = [];
+    const findings = analyze(p);
+    expect(findings.some((i) => i.rule === 'unreachable' && i.subjects.includes('chats'))).toBe(
+      true,
+    );
+    expect(findings.some((i) => i.rule === 'dead-end' && i.subjects.includes('signin'))).toBe(true);
+    p.screens = p.screens.map((s) => ({ ...s, leftToAi: false }));
+    expect(analyze(p).some((i) => i.rule === 'unreachable' || i.rule === 'dead-end')).toBe(false);
+  });
+  it('keeps content annotations as content, without making them exits or unfinished routes', () => {
+    const p = site();
+    p.pins.push(pin('note', 'chats', 'Conversation heading', { kind: 'annotation' }));
+    const findings = analyze(p);
+    expect(findings.some((i) => i.rule === 'unconnected-pin' && i.subjects.includes('note'))).toBe(
+      false,
+    );
+    expect(findings.some((i) => i.rule === 'dead-end' && i.subjects.includes('chats'))).toBe(true);
+    const page = standardPage(p, p.screens[1]);
+    expect(page.primary).toBeNull();
+    expect(page.blocks[0]).toMatchObject({ id: 'note', action: null });
+    expect(flowDocument(p)).toContain('Content / local action: stays on this screen');
+    p.transitions.push({ ...p.transitions[0], id: 'bad-note', pinId: 'note' });
+    expect(analyze(p).some((i) => i.rule === 'annotation-navigation')).toBe(true);
+  });
   it('holds the one-way review back until a frame is drawn or left to the AI', () => {
     const p = site();
     const rules = (q: Project) => analyze(q).map((i) => i.id);
@@ -229,4 +256,16 @@ describe('a frame left to the AI builds its own page', () => {
     expect(rules(plain).some((id) => id.startsWith('one-way'))).toBe(false);
     expect(rules(plain).some((id) => id.startsWith('needs-drawing'))).toBe(true);
   });
+});
+
+it('publishes the same standard pages without local source paths or review records', () => {
+  const p = site();
+  p.assets[0].source = '/private/drawings/home.png';
+  p.folders = ['/private/drawings'];
+  const snapshot = publicExample(p);
+  expect(snapshot.standardPages.home).toEqual(standardPage(p, p.screens[0]));
+  expect(JSON.stringify(snapshot)).not.toContain('/private');
+  expect(snapshot).not.toHaveProperty('reviews');
+  expect(snapshot).not.toHaveProperty('folders');
+  expect(publicExample(setDrawing(p, 'home', 'web', 'a')).standardPages.home).toBeUndefined();
 });

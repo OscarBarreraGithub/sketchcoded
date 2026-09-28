@@ -31,3 +31,7 @@ Use `curl -s` (or your fetch tool) from the machine the app runs on. `{base}` is
 ## Where the truth is
 
 The board is the specification. Prose in pins and yarn is intent; conditions are natural language and are not executed. When the brief and the project disagree, the project is newer: re-read it.
+
+## Check the rendered result
+
+Follow `verify-the-result.md` before calling this task done. Apply the full user checklist to the affected board views and every affected page left to the AI, including overlap and actual browser zoom checks. When building the site, repeat these checks on the implementation. Report evidence and remaining failures; Review flow alone cannot verify appearance.

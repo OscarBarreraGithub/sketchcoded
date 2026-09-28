@@ -536,14 +536,19 @@ export function Board({
                       className={`board-pin ${pinColor(pin)} ${pin.kind === 'detail' ? 'reference-pin' : ''} ${pin.kind === 'link' ? 'link-pin' : ''} ${pin.provisional ? 'provisional' : ''} ${connecting === pin.id ? 'selected' : ''}`}
                       key={pin.id}
                       style={{ left: `${pin.x * 100}%`, top: `${pin.y * 100}%` }}
-                      title={`${pin.title}${pin.provisional ? ' (not placed yet; open the frame to place it)' : ''} — ${pin.kind === 'detail' ? 'choose a detail sketch' : pin.kind === 'link' ? 'links out; click to edit' : 'click to connect'}`}
+                      title={`${pin.title}${pin.provisional ? ' (not placed yet; open the frame to place it)' : ''} — ${pin.kind === 'detail' ? 'choose a detail sketch' : pin.kind === 'annotation' ? 'stays on this screen; click to edit' : pin.kind === 'link' ? 'links out; click to edit' : 'click to connect'}`}
                       aria-label={
-                        pin.kind === 'link' ? `Edit link ${pin.title}` : `Connect ${pin.title}`
+                        pin.kind === 'annotation'
+                          ? `Edit content ${pin.title}`
+                          : pin.kind === 'link'
+                            ? `Edit link ${pin.title}`
+                            : `Connect ${pin.title}`
                       }
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (pin.kind === 'link') onScreen(s.id, pin.id);
+                        if (pin.kind === 'link' || pin.kind === 'annotation')
+                          onScreen(s.id, pin.id);
                         else onConnect(pin.id, '');
                       }}
                     >

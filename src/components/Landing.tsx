@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { ArrowRight, LayoutDashboard, Plus } from 'lucide-react';
 import { emptyProject } from '../../shared/model';
 import { Brand } from './Brand';
+import { Tutorial } from './Tutorial';
 import { TellAgent } from './TellAgent';
 
 export type BoardSummary = { id: string; name: string; updatedAt: string; screenCount: number };
@@ -29,6 +30,7 @@ export function Landing({
   onOpen: (id: string) => void;
   onCreate: (name: string) => Promise<void>;
 }) {
+  const [tutorial, setTutorial] = useState(false);
   const [name, setName] = useState(''),
     [busy, setBusy] = useState(false);
   // The "new board" prompt is about no board in particular; a stub carries the app's name.
@@ -69,6 +71,9 @@ export function Landing({
               with yarn, and write what each part should do in plain words. Play it, check it, and
               hand your agent a plan it can build from.
             </p>
+            <button className="button" onClick={() => setTutorial(true)}>
+              Try the six-step tutorial
+            </button>
             <section className="landing-start" aria-label="Start a board">
               <h2>Start a board</h2>
               <form onSubmit={(e) => void create(e)}>
@@ -130,6 +135,7 @@ export function Landing({
           </section>
         </section>
       </main>
+      {tutorial && <Tutorial onClose={() => setTutorial(false)} />}
     </div>
   );
 }

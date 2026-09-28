@@ -66,3 +66,9 @@ The user wants no idle development servers or Chrome/test-browser processes left
 - Before finishing, verify the project server/watchers, their child processes, temporary test browsers and test-port listeners are gone. Stop the watcher/parent as well as the serving child so it cannot restart the server.
 - Identify processes by executable, working directory, parentage and port. Do not use broad commands such as `pkill node` or `pkill chrome`; unrelated IDE, OS and agent services may be active.
 - Do not launch a browser or server just to verify a documentation or process-cleanup change.
+
+## Agent acceptance at both stages
+
+Every task brief requires `verify-the-result` (`docs/skills/verify-the-result.md`). An agent working on a board checks the affected rendered views and every affected page left to the AI against the whole general checklist. An outside agent constructing the site checks the finished implementation against the same checklist, including overlaps and actual browser zoom. Report evidence and unresolved failures before claiming completion. Review flow remains structural; there is no separate automatic visual checker.
+
+Content and local behavior use `kind: "annotation"` (Content / local action), with intent in the description and no yarn. They are not exits. Preserve `codeCounters` so deleted P/S/I codes are never reused. The app landing page includes the six-panel practice tutorial.

@@ -105,7 +105,7 @@ test('threads filter the board by category, and the categories can be named', as
     const r = el.getBoundingClientRect();
     return { x: Math.round(r.x + r.width / 2), y: Math.round(r.y + r.height / 2) };
   });
-  await page.getByRole('button', { name: /^Main path/ }).click();
+  await page.getByRole('button', { name: 'Threads: Main path' }).click();
   await page
     .locator('.category-menu')
     .getByRole('button', { name: /All threads/ })

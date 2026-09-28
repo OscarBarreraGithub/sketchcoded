@@ -30,7 +30,7 @@ export const screenSchema = z.object({
 });
 /** `x`/`y` anchor the pin on the web drawing; `mobile` is its position on the mobile drawing. */
 export const pinSchema = z.object({
-  kind: z.enum(['interaction', 'detail', 'link']).optional(),
+  kind: z.enum(['interaction', 'detail', 'link', 'annotation']).optional(),
   detailTarget: id.nullable().optional(),
   id,
   screenId: id,
@@ -103,6 +103,14 @@ export const projectSchema = z.object({
   }),
   folders: z.array(z.string().max(4000)).max(20),
   reviews: z.array(reviewSchema).max(10000),
+  /** Highest code ever allocated, retained across deletion, undo and older API clients. */
+  codeCounters: z
+    .object({
+      P: z.number().int().nonnegative(),
+      S: z.number().int().nonnegative(),
+      I: z.number().int().nonnegative(),
+    })
+    .optional(),
   /** What each pin color means on this board, e.g. gold = "needs a decision". */
   colorLabels: z
     .partialRecord(z.enum(['red', 'olive', 'blue', 'gold', 'violet', 'teal']), z.string().max(60))
@@ -226,33 +234,51 @@ export function placePin(p: Project, pinId: string, pos: { x: number; y: number 
  * Frames used to be F1, F2, …, which read like the function keys on a keyboard (2026-09-27), so a
  * board written before that is renumbered to P on the way in, keeping each frame's number.
  */
-const nextCode = (prefix: string, items: { code?: string }[]) => {
-  let max = 0;
-  for (const item of items) {
-    const m = item.code?.match(new RegExp(`^${prefix}(\\d+)$`));
-    if (m) max = Math.max(max, Number(m[1]));
-  }
-  return () => `${prefix}${++max}`;
-};
-const codeAll = <T extends { code?: string }>(prefix: string, items: T[]): T[] => {
-  if (items.every((item) => item.code)) return items;
-  const next = nextCode(prefix, items);
-  return items.map((item) => (item.code ? item : { ...item, code: next() }));
-};
-const FRAME = 'P';
-/** A frame carrying the old F code keeps its number and takes the new letter. */
-const renamed = <T extends { code?: string }>(items: T[]): T[] => {
-  if (!items.some((item) => /^F\d+$/.test(item.code ?? ''))) return items;
-  return items.map((item) =>
-    /^F\d+$/.test(item.code ?? '') ? { ...item, code: `${FRAME}${item.code!.slice(1)}` } : item,
-  );
-};
-export function withCodes(p: Project): Project {
-  const screens = codeAll(FRAME, renamed(p.screens)),
-    assets = codeAll('S', p.assets),
-    ideas = codeAll('I', p.ideas);
-  if (screens === p.screens && assets === p.assets && ideas === p.ideas) return p;
-  return { ...p, screens, assets, ideas };
+const highestCode = (prefix: string, items: { code?: string }[]) =>
+  items.reduce((max, item) => {
+    const code = prefix === 'P' ? item.code?.replace(/^F/, 'P') : item.code;
+    const match = code?.match(new RegExp(`^${prefix}(\\d+)$`));
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0);
+export function withCodes(p: Project, previous?: Project): Project {
+  const counters = { P: 0, S: 0, I: 0 };
+  const assign = <T extends { code?: string }>(
+    prefix: keyof typeof counters,
+    items: T[],
+    old: T[],
+  ) => {
+    let max = Math.max(
+      p.codeCounters?.[prefix] ?? 0,
+      previous?.codeCounters?.[prefix] ?? 0,
+      highestCode(prefix, items),
+      highestCode(prefix, old),
+    );
+    let changed = false;
+    const result = items.map((item) => {
+      const code =
+        prefix === 'P' && /^F\d+$/.test(item.code ?? '')
+          ? `P${item.code!.slice(1)}`
+          : item.code || `${prefix}${++max}`;
+      if (code === item.code) return item;
+      changed = true;
+      return { ...item, code };
+    });
+    counters[prefix] = max;
+    return changed ? result : items;
+  };
+  const screens = assign('P', p.screens, previous?.screens ?? []);
+  const assets = assign('S', p.assets, previous?.assets ?? []);
+  const ideas = assign('I', p.ideas, previous?.ideas ?? []);
+  if (
+    screens === p.screens &&
+    assets === p.assets &&
+    ideas === p.ideas &&
+    p.codeCounters?.P === counters.P &&
+    p.codeCounters?.S === counters.S &&
+    p.codeCounters?.I === counters.I
+  )
+    return p;
+  return { ...p, screens, assets, ideas, codeCounters: counters };
 }
 export const codeOf = (item: { code?: string } | undefined) => item?.code ?? '?';
 /** “P3 pin 2”: the frame's code and the pin's number on that frame. */

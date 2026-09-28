@@ -20,6 +20,8 @@ A **view id** names where the user is. Each view has a label and the skills its 
 | `library`           | Sketch library    | Library heading, beside the import button (icon)                                                                                     | the sketches, used and unused, and the frames still waiting         |
 | `boards`            | Boards            | The landing page's Start a board, and the Boards menu, “New board with your agent”; its brief is `/api/brief?view=boards` (no board) | a new board for another project: create it and write its first plan |
 
+Every brief additionally requires `verify-the-result`: the agent checks the rendered board and delegated pages while authoring, and the finished site while implementing. The full checklist must pass; the report names tested views, window sizes, real browser zooms and any remaining failures. Structural Review flow is a separate check.
+
 ## Codes
 
 Everything the user and the agent talk about has a short code, given once and never reused: frames **P1, P2, …**, sketches **S1, S2, …**, ideas **I1, I2, …**. A pin is named by its frame and its number on that frame, **P3 pin 2**, which is what the board and the editor show. Codes are stored in the project (`code` on screens, assets and ideas; `withCodes()` in `shared/model.ts` assigns missing ones on the server and in the app) and appear on the frame footers, the library, the outline, the plan folders and idea cards, the editor title, Test flow, the yarn editor, `flow.md`, the planning outline, and at the front of every prompt and brief.
@@ -32,17 +34,18 @@ A **context** is `{ view, screen?, pin?, layout?, transition?, idea?, finding?, 
 
 A **skill** is one instruction document in `docs/skills/<id>.md`, served at `/api/skills/<id>.md`, listed at `/api/skills`, and shipped in every export under `skills/`.
 
-| Skill id              | What it covers                                                          | Used by                        |
-| --------------------- | ----------------------------------------------------------------------- | ------------------------------ |
-| `talk-to-sketchcoded` | Read the live board and write back through the local API                | every view                     |
-| `read-a-board`        | What screens, pins, yarn, ideas and findings mean                       | every view                     |
-| `build-rules`         | The user's layout and interaction rules (short form of the checklist)   | board, screen editor           |
-| `start-a-board`       | The three build levels for a new board and how to write for the builder | boards                         |
-| `describe-pins`       | Write what each pin does, from the plan, and tie its yarn               | screen editor                  |
-| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                  | connection editor              |
-| `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                     | plan, outline, library, boards |
-| `resolve-findings`    | What each review rule means; fix the board or accept with a reason      | review                         |
-| `walk-the-flow`       | Follow a Test flow trail and find the first missing step                | test flow                      |
+| Skill id              | What it covers                                                          | Used by                         |
+| --------------------- | ----------------------------------------------------------------------- | ------------------------------- |
+| `talk-to-sketchcoded` | Read the live board and write back through the local API                | every view                      |
+| `read-a-board`        | What screens, pins, yarn, ideas and findings mean                       | every view                      |
+| `verify-the-result`   | Rendered acceptance and evidence at both stages                         | every brief and exported builds |
+| `build-rules`         | The user's layout and interaction rules (short form of the checklist)   | board, screen editor            |
+| `start-a-board`       | The three build levels for a new board and how to write for the builder | boards                          |
+| `describe-pins`       | Write what each pin does, from the plan, and tie its yarn               | screen editor                   |
+| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                  | connection editor               |
+| `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                     | plan, outline, library, boards  |
+| `resolve-findings`    | What each review rule means; fix the board or accept with a reason      | review                          |
+| `walk-the-flow`       | Follow a Test flow trail and find the first missing step                | test flow                       |
 
 ## What the agent reads from the running app
 

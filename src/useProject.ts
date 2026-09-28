@@ -57,6 +57,7 @@ export function useProject(initial: Project) {
               onlyViewportChanged(snapshot, lastSaved.current)
             ) {
               const fresh = await api<Project>(`/api/projects/${snapshot.id}`);
+              if (!onlyViewportChanged(current.current, lastSaved.current)) throw e;
               current.current = { ...fresh, viewport: current.current.viewport };
               lastSaved.current = fresh;
               past.current = [];
@@ -94,7 +95,7 @@ export function useProject(initial: Project) {
   const update: Update = useCallback(
     (recipe, options = {}) => {
       const before = current.current,
-        next = withCodes(recipe(before));
+        next = withCodes(recipe(before), before);
       if (next === before) return;
       if (options.history !== false) {
         const grouped =
@@ -164,8 +165,12 @@ export function useProject(initial: Project) {
         if (running.current) return;
         const dirty = version.current !== savedVersion.current;
         if (dirty && !onlyViewportChanged(current.current, lastSaved.current)) return;
+        const checkedVersion = version.current;
         const fresh = await api<Project>(`/api/projects/${current.current.id}`);
         if (stopped || running.current || fresh.revision <= current.current.revision) return;
+        // The user can start typing while the request is in flight. Never apply a response
+        // using the pre-request dirty state; let the next poll/save resolve the newer edits.
+        if (version.current !== checkedVersion) return;
         // A viewport-only local change rides along; anything else was ruled out above.
         current.current = dirty ? { ...fresh, viewport: current.current.viewport } : fresh;
         lastSaved.current = fresh;

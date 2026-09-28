@@ -1813,3 +1813,255 @@ kbd,
 .view-switch button {
   padding: 9px 14px;
 }
+
+/* A zoomed laptop still needs a workspace: keep the actions in two 52px rows. */
+.compact-workspace-action {
+  display: none;
+}
+@media (max-height: 500px) {
+  .app-header {
+    height: 52px;
+    min-height: 52px;
+    padding: 4px 10px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .app-header .brand > span:last-child {
+    display: none;
+  }
+  .app-header .brand-mark {
+    display: inline-flex;
+  }
+  .brand-link {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .header-separator {
+    display: none;
+  }
+  .project-switcher {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+  .project-trigger {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+  }
+  .project-trigger > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .header-actions {
+    width: auto;
+    flex: 0 0 auto;
+    gap: 4px;
+    margin: 0;
+  }
+  .header-actions .button {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  .header-actions .button > span {
+    display: none;
+  }
+  .workspace-header {
+    display: none;
+  }
+  .view-toolbar {
+    flex: 0 0 52px;
+    min-height: 52px;
+    padding: 4px 8px;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  .view-switch {
+    flex: 0 0 auto;
+    padding: 0;
+  }
+  .view-toolbar .view-switch button,
+  .view-toolbar > .button,
+  .view-toolbar .category-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 0;
+    gap: 0;
+  }
+  .view-toolbar .view-badge,
+  .view-toolbar p,
+  .category-button > svg:last-child {
+    display: none;
+  }
+  .view-toolbar .compact-workspace-action {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .view-toolbar .library-toggle {
+    display: inline-flex;
+  }
+  .view-toolbar > .tell-agent {
+    margin-left: auto;
+  }
+  .save-status {
+    display: flex;
+  }
+  .save-status > span:last-child {
+    display: none;
+  }
+  .board-controls {
+    bottom: 6px;
+  }
+}
+
+/* Scroll hints belong to the content region, never over a dialog heading. */
+.modal-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.modal-body > .modal-content {
+  flex: 1;
+  min-height: 0;
+}
+@media (max-height: 500px) {
+  .preview-modal > .modal-heading {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+  }
+  .preview-modal > .modal-heading > div {
+    display: none;
+  }
+  .preview-modal .preview-toolbar {
+    min-height: 56px;
+    padding: 4px 54px 4px 8px;
+    gap: 4px;
+  }
+  .preview-modal .preview-start {
+    flex-basis: auto;
+  }
+  .preview-modal .preview-start > svg {
+    display: none;
+  }
+  .preview-modal .preview-toolbar > div {
+    gap: 4px;
+  }
+  .preview-modal .preview-toolbar .text-button {
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .preview-modal .preview-footer {
+    min-height: 52px;
+    padding: 4px 8px;
+    gap: 8px;
+  }
+  .preview-modal .preview-footer > span {
+    display: none;
+  }
+  .preview-modal .preview-stage {
+    padding: 4px 8px;
+  }
+  .preview-modal .preview-screen-title {
+    flex: none;
+    margin-bottom: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .preview-modal .preview-sidebar {
+    width: clamp(150px, 32%, 210px);
+  }
+  .preview-modal .preview-sidebar-scroll {
+    padding: 8px;
+  }
+}
+
+/* Keep the scroll signal in its own stable strip, clear of text and fields. */
+.scroll-more {
+  min-height: 44px;
+}
+.modal-body,
+.std-page,
+.preview-sidebar {
+  padding-bottom: 44px;
+}
+.modal.screen-modal .modal-body,
+.modal.preview-modal .modal-body,
+.modal.detail-modal .modal-body,
+.modal.agent-modal .modal-body {
+  padding-bottom: 0;
+}
+.modal-body > .scroll-fade,
+.std-page > .scroll-fade,
+.preview-sidebar > .scroll-fade {
+  display: none;
+}
+.modal-body > .scroll-more,
+.std-page > .scroll-more,
+.preview-sidebar > .scroll-more {
+  top: auto;
+  bottom: 0;
+}
+.modal-body:has(> .scroll-more.below) > .scroll-more.above,
+.std-page:has(> .scroll-more.below) > .scroll-more.above,
+.preview-sidebar:has(> .scroll-more.below) > .scroll-more.above {
+  visibility: hidden;
+}
+.preview-sidebar-scroll > .preview-hint {
+  margin: 0 0 12px;
+}
+.preview-sidebar-scroll > .preview-notice {
+  margin: 0 0 12px;
+}
+
+/* Explicit gutters and painted tracks stay visible even with OS overlay scrollbars. */
+.modal-content,
+.std-scroll,
+.preview-sidebar-scroll {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+}
+.modal-content::-webkit-scrollbar,
+.std-scroll::-webkit-scrollbar,
+.preview-sidebar-scroll::-webkit-scrollbar {
+  width: 12px;
+}
+.modal-content::-webkit-scrollbar-track,
+.std-scroll::-webkit-scrollbar-track,
+.preview-sidebar-scroll::-webkit-scrollbar-track {
+  background: #eceee4;
+}
+.modal-content::-webkit-scrollbar-thumb,
+.std-scroll::-webkit-scrollbar-thumb,
+.preview-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #9da68e;
+  border: 2px solid #eceee4;
+  border-radius: 8px;
+}
+.modal.preview-modal .modal-content,
+.modal.screen-modal .modal-content,
+.modal.detail-modal .modal-content,
+.modal.agent-modal .modal-content {
+  overflow-y: hidden;
+  scrollbar-gutter: auto;
+}

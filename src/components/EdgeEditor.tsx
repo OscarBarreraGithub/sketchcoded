@@ -64,6 +64,8 @@ export function EdgeEditor({
                 .filter(
                   (p) =>
                     p.kind !== 'detail' &&
+                    p.kind !== 'link' &&
+                    p.kind !== 'annotation' &&
                     project.screens.find((s) => s.id === p.screenId)?.role !== 'detail',
                 )
                 .map((p) => (

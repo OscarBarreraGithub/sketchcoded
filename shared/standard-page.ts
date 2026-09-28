@@ -102,7 +102,8 @@ export const buildsItsOwnPage = (s: Screen | undefined) =>
 export function standardPage(p: Project, screen: Screen): PageSpec {
   const pins = p.pins.filter((v) => v.screenId === screen.id);
   const loose = p.ideas.filter((i) => i.screenId === screen.id && !i.pinId);
-  const actions = pins.map((pin, i) => actionOf(p, pin, i, pins.length));
+  const navigating = pins.filter((pin) => pin.kind !== 'annotation');
+  const actions = navigating.map((pin, i) => actionOf(p, pin, i, navigating.length));
   const shape: PageSpec['shape'] =
     screen.role === 'auth'
       ? 'form'
@@ -118,7 +119,15 @@ export function standardPage(p: Project, screen: Screen): PageSpec {
   const nav = working.slice(1, 1 + navCount).map((a) => ({ ...a, kind: 'nav' as const }));
   const primary = working[0] ?? null;
   const rest = working.slice(1 + navCount);
-  const blocks: PageBlock[] = [];
+  const blocks: PageBlock[] = pins
+    .filter((pin) => pin.kind === 'annotation')
+    .map((pin) => ({
+      block: 'card',
+      id: pin.id,
+      title: pin.title,
+      body: pin.description,
+      action: null,
+    }));
   const bodyOf = (a: PageAction) => a.note || 'This part of the screen is described in the plan.';
   if (shape === 'form') {
     // Sign in, unlock, set up: the ideas become the fields, the pins the buttons under them.

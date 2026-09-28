@@ -323,3 +323,29 @@ Read `AGENTS.md` first, then this file from the end backwards until you have the
 - **The user's boards** in the app: `Sketchcoded` (the plan of this product, with their drawings), `sciencewithagents` and its three level variants (list, frames, built) written by their other agent, and `Little chat` (a test board). Do not write to them unless asked; when asked, go through the API and warn the user first.
 - **Open, for the user to decide:** the interactive five- or six-panel tutorial from the landing page (in the backlog, not built); whether the example board should grow as more of the Sketchcoded board is drawn (it regenerates from the app, so drawing more frames and rerunning the tool is all it takes).
 - **How the user works:** they give feedback in bursts and expect every item recorded the same day, in their words; they check the result themselves; they want the final message to restate addresses and what they need to do.
+
+## 2026-09-28 — Review of the vision, implementation, guide and checklist
+
+The user requested a review and findings, not fixes. The full report is [REVIEW_2026-09-28.md](REVIEW_2026-09-28.md). No product code or user board was changed. Read this report alongside the earlier completion claims: it identifies gaps those checks did not cover.
+
+Confirmed on scratch data: returning to the boards landing page before the 650ms autosave loses the last edit; a delayed agent-refresh response can overwrite typing begun while it was in flight. Real tab zoom at the checklist's laptop sizes leaves only 22.8 CSS pixels for the board at 1280×720 and 250%, despite no document overflow. In-memory checks confirm that undrawn AI pages miss unreachable/dead-end findings and deleting the highest short code permits reuse.
+
+The public demo mishandles link pins, presents the AI Guide as requiring a drawing, permits panning all frames out of view, and has 34px pin targets. The board, README, graph contract and public guide retain superseded instructions. Static annotations generate navigation warnings. The report inventories missing guide topics, recommends moving board-reading semantics out of the general checklist into the existing skills, and distinguishes the unbuilt tutorial from deferred LLM work and undrawn example frames.
+
+Verification: all 27 existing browser workflows pass; additional save-race, native-zoom and public-demo checks produced the findings above. The same source passed build, 97 unit tests and formatting in the preceding onboarding pass. The report includes a screenshot of the smaller laptop at 250%. Temporary servers/data and browsers were cleaned up; the pre-existing server on 5173 was left running. The report's recommendations remain unimplemented.
+
+## 2026-09-28 — Review follow-up implemented
+
+This entry supersedes the preceding review’s “unimplemented” status and the older tutorial to-do. The user authorized the fixes and clarified that the full checklist belongs in the acting agent’s instructions at both stages. Every generated brief now requires verify-the-result; exports carry those instructions. Board mechanics moved out of the general checklist into the board-reading skill, preserving the older wording.
+
+Implemented pending-save protection on route changes, in-flight refresh protection, compact high-zoom chrome, correct AI-page structural checks, durable code counters, content/local-action pins and the six-panel tutorial. Updated the public guide and demo (standard pages from the real board, external links, detail/mobile handling, authored history, independent rewind, pan clamp and target sizes). See [REVIEW_2026-09-28.md](REVIEW_2026-09-28.md) for the evidence and limits.
+
+The Sketchcoded board is revision 218 with the same three drawings, 12 frames, 32 pins and eight yarns, and 101 ideas. Twenty-two existing content/local pins changed purpose; drawings, positions, layout and yarn did not change. I86 records the built tutorial; I98–I101 fill missing feature records. Superseded descriptions are in BOARD_SYNC_2026-09-28.md. The site example has been regenerated, with the project link set to sciencewithagents.com.
+
+The interactive tutorial is complete. Undrawn example frames and deferred embedded model/code-generation work remain open by design. During this task no app server was running at the point work required one, so a temporary app server was started for the authorized board update and example refresh; it is task-owned and must be stopped at handoff. Always inspect processes rather than relying on the earlier “user keeps it running” statement.
+
+The final visual pass also bounded generated forms/dialogs/endings to their preview stage, moved Test flow notices into the sidebar, and reserved a stable scroll-hint strip in affected dialogs and generated pages. This fixes clipped AI-page content and keeps hints clear of headings and fields.
+
+**Final verification:** build, 102 unit/API tests, all 32 browser tests, formatting and diff checks pass. Actual Chromium tab zoom was checked at 125/150/200/250% at 1440×900 and 1280×720; the new acceptance test covers the six tutorial panels, board room and bounded, scrolling generated pages. Screenshot: `docs/screenshots/review-2026-09-28-zoom-fixed.png`. Public-site zoom and navigation checks pass; live homepage, guide, Science with Agents link and Guide rendering were verified after deployment.
+
+**Site published:** https://sketchcoded.com, https://sketchcoded.com/guide and https://sketchcoded.com/demo. Cloudflare deployment: https://009abd17.sketchcoded.pages.dev (site commit `3ef968a`, pushed). No DNS records were changed. Local task servers and temporary browsers are stopped before handoff; start the app with `npm run dev` and open http://127.0.0.1:5173 to use the tutorial and updated board.

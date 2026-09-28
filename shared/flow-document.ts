@@ -65,6 +65,13 @@ export function screenSection(p: Project, screen: Screen): string[] {
     );
     const idea = p.ideas.find((idea) => idea.pinId === pin.id);
     if (idea) lines.push(`Planned as idea: ${idea.title} (${idea.id})`, '');
+    if (pin.kind === 'annotation') {
+      lines.push(
+        'Content / local action: stays on this screen. No navigation is required; implement its description without inventing a route.',
+        '',
+      );
+      continue;
+    }
     if (pin.kind === 'link') {
       lines.push(
         `External link: ${pinUrl(pin) ?? 'address not written yet'}`,
