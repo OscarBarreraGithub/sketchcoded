@@ -1,10 +1,10 @@
 # Planning pass — 2026-09-25
 
-The user’s instructions from the 2026-09-25 conversation, written out one point at a time so nothing from the original ramble is lost. This file is the goal for the pass. Work continues until every point is met; evidence goes at the bottom.
+Historical acceptance record for planning and dual-layout support. Subsequent refinements are described below and in `DECISIONS.md`; current status is in `PROGRESS.md`.
 
 ## Scope decisions
 
-- [x] **Desktop only for now.** No phone app and no phone-photo intake. Users bring image files that already live on their computer: connect a folder, choose files, or drag and drop. The HEIC concern from 2026-09-17 is dropped; the README’s limits describe desktop sources only.
+- [x] **Desktop only for now.** No phone app and no phone-photo intake. Users bring image files that already live on their computer: connect a folder, choose files, or drag and drop. the README’s limits describe desktop sources only.
 - [x] **Priority order for every screen the user designs:** first the logic and pin placement, second the window-resizing behavior, third the mobile appearance. Sketchcoded’s own UI keeps that order too.
 
 ## Web and mobile layouts for one screen
@@ -26,27 +26,18 @@ The user’s instructions from the 2026-09-25 conversation, written out one poin
 - [x] Ideas already placed are **greyed out but legible**, and marked with the pin they became, so an idea is never pinned on two pages by accident.
 - [x] Screens can be **planned before they are drawn**: a frame with a title, purpose and assigned ideas but no image yet. It appears on the board as an empty frame waiting for a drawing; dropping a sketch onto it, or choosing one in its editor, fills it in and keeps its pins-to-be.
 - [x] The plan is readable **two ways**: as frames, pins and yarn on the board, and as a **chat-friendly text outline** (copyable, and included in exports) so the user and agent can discuss it in conversation and the agent can reorganize it on request.
-- [x] The agent’s working routine for this project: keep the backlog current from the user’s ideas, propose which ideas belong on which screen when asked (“what should go on the home page?”), and move ideas when the user disagrees (“I want W as well”). The yarn and pins update with the plan.
+- [x] The agent’s working routine for this project: keep the backlog current from the user’s ideas, propose screen assignments and move ideas when requested. The yarn and pins update with the plan.
 - [x] The Planning feature is discoverable: it is explained in the help dialog and the README so future users know they have it.
 
 ## Dogfooding: the first real board is Sketchcoded itself
 
-- [x] Create a board named **Sketchcoded** whose frames are the screens of the actual product and site. The user draws them; the agent pre-fills each frame’s ideas from everything already specified in the brief, the README and this conversation.
+- [x] Create a board named **Sketchcoded** whose frames are the screens of the actual product and site. The user draws them; the agent pre-fills each frame’s ideas from the brief and documented product requirements.
 - [x] The agent tells the user **what belongs on the home page** so drawing can start immediately.
 - [x] All product functionality discussed so far is written down in **one durable place** that later feeds the public website (“what you can do”, with a small demo). It is kept both as the Sketchcoded board’s planning backlog and as a document in the repository.
 
-## Immediate asks
+## Later refinements
 
-- [x] Start the local app so the user can look at the current state.
-- [x] List the functionality the home page needs.
-- [x] Turn this ramble into a written goal and work through it continuously.
-
-## Interpretations
-
-- “We need one more option that is useful” is read as the Planning view itself, since the sentences that follow describe it.
-- “The board shows the mobile and web versions side by side when we click” is implemented in the screen editor that opens on click; the board card shows a compact mobile thumbnail so the second layout is visible at a glance.
-- Pins are anchored on the web drawing first. A screen needs a web drawing before pins can be placed; the mobile drawing adds a second position for each pin.
-- The desktop-only decision covers input sources. Sketchcoded’s own compact layout for narrow browser windows remains.
+The Web / Mobile toggle replaced the initial side-by-side editor. Pins can now be provisional before a drawing exists. Planned connections appear in Plan and the outline; the board draws real yarn only. External sites use link pins, not separate terminal frames. These refinements supersede the corresponding initial implementation details below.
 
 ## Verification plan
 
@@ -66,7 +57,7 @@ Recorded 2026-09-25 after the pass.
 - Visual check on an isolated server with scratch data (screenshots in the session scratchpad): the Planning view with cards and as text, the editor with web and mobile drawings side by side, a planned frame with its ideas and a dashed planned thread on the board, the preview in mobile layout, and the seeded Sketchcoded board with ten planned frames and 71 ideas. No browser runtime errors.
 - The **Sketchcoded** board was created on the user’s server at http://127.0.0.1:5173 with ten planned frames and 71 ideas. The Home frame lists what to draw first. The user’s Little chat board was not modified.
 - The functionality catalogue for the website is `docs/FUNCTIONALITY.md`; the README, `docs/GRAPH.md`, `docs/DECISIONS.md`, `docs/PROGRESS.md` and `AGENTS.md` describe the new model, views and the agent’s planning routine.
-- Process hygiene: the temporary verification server on port 5175 and its test browsers were stopped. The user asked to see the app, so the development server on port 5173 was left running.
+- Process hygiene: the temporary verification server on port 5175 and its test browsers were stopped. No current server state is implied by this historical record.
 
 ## Follow-up, 2026-09-25 — first drawings and readability
 
@@ -95,7 +86,7 @@ The user's second and third drawings describe the app itself, and three notes ar
 - [x] Link pins: address in the description, no yarn, counted as a way onward; `link-address` and `link-navigation` findings; shown in Test flow, the outline and the export.
 - [x] Layout stability rule in `AGENTS.md`; large dialogs keep a fixed size and scroll inside.
 - [x] Sketchcoded board: GitHub and the projects link are link pins; the two external frames are gone; pins are colored (red navigation, olive notes, blue links, gold decisions).
-- [x] Landing site in `../sketchcoded-site`: index, guide with checks, build rules, setup and FAQ, one file of links, bundled fonts, phone layout with the setup block below the example frame.
+- [x] Landing site in the separate `sketchcoded-site` repository: index, guide with checks, build rules, setup and FAQ, one file of links, bundled fonts, phone layout with the setup block below the example frame.
 
 Evidence, recorded 2026-09-25 after the pass:
 
@@ -103,4 +94,4 @@ Evidence, recorded 2026-09-25 after the pass:
 - Measured on an isolated copy: the screen editor dialog stays 1190 × 920 px when switching between pins, and no element overflows the dialog at any tested zoom level.
 - The Sketchcoded board on the user's server has 12 frames, 33 pins (2 link pins), 8 yarns and a color legend. The GitHub and projects frames are gone.
 - The landing site renders on desktop and phone with the setup block below the example frame on phones; the setup prompt is generated from the single GitHub address in `links.js`.
-- Publishing either repository to GitHub was not done: creating public repositories needs the user's choice of name and visibility.
+- Both repositories were published in a later pass; see `PROGRESS.md` for current status.

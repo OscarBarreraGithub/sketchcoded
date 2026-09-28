@@ -31,24 +31,8 @@ A transition belongs to a pin (`pinId`) and goes to `target` (a screen id) or, f
 
 ## Verification
 
-Read `verify-the-result.md`. Structural findings do not check appearance. Agents inspect rendered boards and delegated pages when authoring, and the finished site when building. Use the user’s full general checklist in both cases. Board-reading instructions formerly in that checklist are preserved below; this file is their current home.
+Read `verify-the-result.md`. Structural findings do not check appearance. Agents inspect rendered boards and delegated pages when authoring, and the finished site when building. Use the user’s full general checklist in both cases. Board-specific semantics belong in this skill, separate from the general checklist.
 
 ## Presentation only
 
 `layout` (positions and widths on the cork) and `viewport` are how the board looks, not what the app is.
-
-## Superseded checklist wording
-
-The following wording formerly lived in the general checklist. It is preserved as history; the sections above are current. The planned-frame rule has the explicit exception for frames left to the AI.
-
-### Former board-reading rules
-
-- [ ] `project.json` is the specification. `flow.md` is the same content in reading order. Pins are the interactions; their descriptions are the intent, written by the user or their agent. Use the words as written.
-- [ ] A screen’s drawing is the layout to build. Where a screen has a web drawing and a mobile drawing, both are the same screen; each pin has a position on each.
-- [ ] Yarn is the navigation. Honor the authored kind: open (push), replace, start fresh (reset), open as dialog (modal), go back, dismiss. Never invent a route that is not drawn. Back and Dismiss use real history; if a screen can be reached without the history they need, the review says so and the user’s accepted reason explains what to do.
-- [ ] Conditions on yarn are plain language. Implement them as described. Where they overlap or leave a case out, do not guess silently: build the fallback the user marked, and list the ambiguity.
-- [ ] A **link pin** leaves the app for a web address written in its description. Build it as a plain link. Never a screen, never a frame, never a route.
-- [ ] A **detail reference** shows a closer look without changing the screen. It is never navigation and never a way back.
-- [ ] Planned frames (no drawing yet) and unplaced ideas are the backlog, not the spec. Do not build them; do not drop them either. Carry them forward as open items.
-- [ ] Accepted review findings are decisions with reasons. Respect them. Open findings are the user’s to resolve, not yours to paper over.
-- [ ] **A frame can be left to the AI.** A frame wearing the “Leave it up to the AI” post-it needs no drawing: build a standard, conventional page for it from its title, purpose, ideas and the yarn in and out. Everything else on the board is the user’s vision and is built as drawn.

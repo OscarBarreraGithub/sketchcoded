@@ -128,6 +128,13 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 
 Anything that leaves the app for a web address is a pin with **Link out** as its purpose and the address written in its description, with any conditions in words. No yarn and no destination frame. The checks treat it as a way onward and ask for an address if none is written.
 
+## Installation and portability
+
+- Runs locally without an account, API key or maintainer-specific data.
+- Cross-platform setup and start commands; configurable port and storage directory.
+- Agent briefs use the running app’s address. Required instructions and export resources resolve from the checkout.
+- Portable ZIPs include snapshots, graph, checklist and skills, without source-folder paths. Reconnect folders after moving machines when refresh is needed.
+
 ## Deliberately not included yet
 
 - Phone capture or upload from a phone. Images are files already on this computer.

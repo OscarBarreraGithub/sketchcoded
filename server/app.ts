@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { z } from 'zod';
 import { promises as fs } from 'node:fs';
-import path from 'node:path';
+import { repoPath } from './paths';
 import { emptyProject, projectSchema } from '../shared/model';
 import { agentBrief, contextSchema, skillIds, skills } from '../shared/agent';
 import { flowDocument } from '../shared/flow-document';
@@ -93,7 +93,7 @@ export function createApp(store: Store) {
     markdown(res, planningOutline(await store.read(req.params.id))),
   );
   app.get('/api/checklist.md', async (_req, res) =>
-    markdown(res, await fs.readFile(path.resolve('docs/BUILD_CHECKLIST.md'), 'utf8')),
+    markdown(res, await fs.readFile(repoPath('docs/BUILD_CHECKLIST.md'), 'utf8')),
   );
   app.get('/api/skills', (req, res) =>
     res.json(
@@ -104,7 +104,7 @@ export function createApp(store: Store) {
     const name = req.params.name.replace(/\.md$/, '');
     if (!(skillIds as readonly string[]).includes(name))
       throw new AppError(`No skill named ${name}. See /api/skills.`, 404);
-    markdown(res, await fs.readFile(path.resolve('docs/skills', `${name}.md`), 'utf8'));
+    markdown(res, await fs.readFile(repoPath('docs/skills', `${name}.md`), 'utf8'));
   });
   app.put('/api/projects/:id', async (req, res) => {
     const p = projectSchema.parse(req.body);

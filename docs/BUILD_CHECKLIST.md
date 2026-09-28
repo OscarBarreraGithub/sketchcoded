@@ -1,8 +1,8 @@
 # Build checklist
 
-The user’s general rules for anything an agent builds for them. Each rule applies every time,
+General requirements for every project built with these instructions. Each rule applies every time,
 to every app, so the rules carry no dates and name no product. Read this before building and
-check each item against the result. Add general preferences here in the user’s terms; never
+check each item against the result. Add general preferences here as clear requirements; never
 delete one, mark it superseded. Product requests and instructions for a particular tool belong
 in that project’s own records and guides. Projects share this checklist, not their histories.
 
@@ -10,7 +10,7 @@ in that project’s own records and guides. Projects share this checklist, not t
 
 - [ ] **Nothing grows or shrinks because of what was clicked.** Dialogs, panels and callouts keep a fixed size; their content scrolls inside. Selecting a different pin, tab or option never changes the size of the surrounding frame or moves the rest of the page.
 - [ ] **Good control when zoomed in.** Test real browser zoom at 125%, 150%, 200% and 250% in a laptop-sized window (1440×900 and 1280×720). Text stays readable, controls stay reachable, nothing overflows its container, and the main work area stays usable. Zoom must work, every time.
-- [ ] **Every view works at every zoom.** Not only the main screen: every editor, list, side panel, secondary view and dialog must be usable at those zooms. Check each one, seriously, after any layout change.
+- [ ] **Every view works at every zoom.** Not only the main screen: every editor, list, side panel, secondary view and dialog must be usable at those zooms. Check each one after any layout change.
 - [ ] **When something is off screen, the user must know.** Every scrolling region keeps a visible scrollbar and shows a clear “more below” or “more above” signal until the end is reached, in a real zoomed browser and not only in an emulated viewport. Never rely on an invisible overlay scrollbar.
 - [ ] **The page never scrolls; panels do.** The app shell always fits the window, at every width and height, including short zoomed windows. Only columns, dialogs, side panels and list views scroll, each inside itself. A canvas or work area is the size of its region, never of its content.
 - [ ] **A canvas never pans out of sight of its content.** Panning stops at the outermost item plus padding, so the last item in view is whole with room beside it, never cut off at the edge. When everything fits in view, it floats inside that padding. Something is always on the canvas.
@@ -24,7 +24,13 @@ in that project’s own records and guides. Projects share this checklist, not t
 
 ## Copy and content
 
-- [ ] Use the user’s words. Pin names and descriptions are the copy unless they say “rephrase”, in which case rephrase and show them.
+- [ ] Preserve authored product copy unless rewriting is requested; when it is, show the revised copy.
+
+- [ ] Keep public repository documentation concise and edited. Record requirements and decisions instead of raw conversation transcripts; correct grammar and spelling and omit personal environment details.
+
+## Portability
+
+- [ ] Support new machines, users and accounts without source edits for local paths or credentials. Provide documented configuration for environment-specific values and portable setup commands. Keep private data and credentials out of version control.
 
 ## Process, for any agent working with the user
 

@@ -53,7 +53,7 @@ All `GET`, all local only, all Markdown unless noted:
 
 - `/api/projects/:id/brief?view=…&screen=…&pin=…&layout=…&transition=…&idea=…&finding=…&trail=a,b` — the brief for one task: the task, the skills to read, the frame (drawings, pins, yarn, ideas, findings) or the yarn, the plan, the outline, the findings, or the trail.
 - `/api/projects/:id/flow.md` and `/api/projects/:id/outline.md` — the whole documents.
-- `/api/checklist.md` — the user's general rules, in their words. They win. A project's own requests are in its board, not here.
+- `/api/checklist.md` — the configured general build requirements. They take precedence. A project's own requests are in its board, not here.
 - `/api/skills` (JSON) and `/api/skills/:id.md`.
 - `/api/projects/:id` (JSON) — the canonical project; `PUT` it back with `X-Drawcode-Client: local` to change the board (see `talk-to-sketchcoded`). The open board checks for changes every few seconds and on focus; when it has nothing unsaved (or only moved its viewport) it takes the newer copy and says “Updated from your agent”. Real unsaved edits still get the conflict banner, now with “Take the newer copy”. The agent writes once at the end and warns the user to pause editing until then.
 - `/assets/<file>` — the drawings.
@@ -93,3 +93,7 @@ The skill `start-a-board` holds the levels and the writing rules for the builder
 - Every brief URL in a prompt returns Markdown with `## The task`.
 - Every skill in the registry has a file, and the export contains `skills/`.
 - The help dialog, `README.md`, `docs/FUNCTIONALITY.md` and the site guide describe the feature the same way.
+
+## Other machines and ports
+
+Use the address in the copied prompt; do not assume port 5173. The brief generates its own links from the running app. Board IDs are local project data, not repository constants. Discover boards through the boards brief or `/api/projects`; never depend on a maintainer board name or ID. See the README for `--port`, `--data-dir` and transfer between machines. The local API needs no hosting account or model key.

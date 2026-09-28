@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -7,6 +7,7 @@ import { strFromU8, unzipSync } from 'fflate';
 import { Store } from '../server/store';
 import { createApp } from '../server/app';
 import { analyze } from '../shared/graph';
+import { repoPath } from '../server/paths';
 const sketch = (color = 'tan') =>
   Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="80"><rect width="100" height="80" fill="${color}"/></svg>`,
@@ -87,7 +88,11 @@ describe('durable local projects', () => {
     const folder = path.join(root, 'sketches');
     await fs.mkdir(folder);
     await fs.writeFile(path.join(folder, 'bad.png'), 'not a png');
-    await fs.symlink(store.assetsDir, path.join(folder, 'linked'));
+    await fs.symlink(
+      store.assetsDir,
+      path.join(folder, 'linked'),
+      process.platform === 'win32' ? 'junction' : 'dir',
+    );
     const result = await store.scanFolder(folder);
     expect(result.assets).toEqual([]);
     expect(result.warnings[0]).toContain('could not be read');
@@ -123,6 +128,22 @@ describe('durable local projects', () => {
     const p = await store.read(summary.id);
     await fs.unlink(path.join(store.assetsDir, p.assets[0].file));
     await expect(store.export(p)).rejects.toThrow('missing from disk');
+  });
+  it('rejects exports when required instructions are missing', async () => {
+    const p = await store.create('Export instructions');
+    const original = fs.readFile;
+    const read = vi
+      .spyOn(fs, 'readFile')
+      .mockImplementation((...args: Parameters<typeof fs.readFile>) => {
+        if (args[0] === repoPath('docs/skills/verify-the-result.md'))
+          return Promise.reject(new Error('Simulated missing instruction file'));
+        return original(...args);
+      });
+    try {
+      await expect(store.export(p)).rejects.toThrow('Required export instructions are missing');
+    } finally {
+      read.mockRestore();
+    }
   });
 });
 describe('local API boundaries', () => {

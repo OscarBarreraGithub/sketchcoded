@@ -551,7 +551,7 @@ export function agentBrief(
     ...[...view.skills, 'verify-the-result' as const].map(
       (id) => `- ${skills[id].title}: ${skills[id].summary} → ${skillUrl(base, id)}`,
     ),
-    `- The user’s rules, in their words (read first, they win): ${checklistUrl(base)}`,
+    `- The general build requirements (read first, they take precedence): ${checklistUrl(base)}`,
     '',
   ];
   if (idea) {

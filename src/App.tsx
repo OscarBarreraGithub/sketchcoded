@@ -1034,7 +1034,7 @@ function Studio({
                 required
                 value={folder}
                 onChange={(e) => setFolder(e.target.value)}
-                placeholder="/Users/you/Pictures/sketches"
+                placeholder="Full path to your sketches folder"
               />
             </label>
             <p className="field-help">

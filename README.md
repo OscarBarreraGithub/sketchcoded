@@ -11,7 +11,7 @@ Bring image files of your sketches from your computer into a library. Plan what 
 Requires Node.js **22.12 or later** and npm.
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
@@ -26,11 +26,36 @@ npm run build
 npm start
 ```
 
-`PORT=5176 npm run dev` uses a different port. `DRAWCODE_DATA_DIR=/absolute/path npm run dev` chooses a different project storage directory. The server binds to `127.0.0.1`.
+These commands work in macOS and Linux terminals, Windows PowerShell and Command Prompt. Clone or download the repository into any directory and run the commands from that checkout. No particular username, folder layout, GitHub login or hosting account is required.
+
+### Configuration
+
+```sh
+npm run dev -- --port 5180
+npm run dev -- --port 0
+npm start -- --data-dir "./my boards"
+npm start -- --help
+```
+
+`--port 0` chooses an available port. Open the address printed by the server; copied agent briefs automatically use that address. `--data-dir` chooses where projects and image snapshots are saved. Quote paths containing spaces. Flags override `PORT` and `DRAWCODE_DATA_DIR` environment variables when those are set by your shell or process manager. `NODE_ENV=production` remains supported, but `npm start` does not require shell-specific environment syntax. `.env` files are not loaded automatically.
+
+Without an explicit data directory, storage is `.drawcode/` inside this checkout, even when launched from elsewhere. An explicitly supplied relative path resolves from the process's working directory. The server binds to `127.0.0.1` and is intended for local use; changing the port does not enable remote access. Run only one server per data directory.
+
+### Move to another machine or user
+
+Export each board as a `.sketchcoded.zip`, install the app on the new machine, then use **Import project**. ZIPs contain the drawings, graph, checklist and agent skills; they omit local source-folder paths. Imported boards are independent copies. Reconnect source folders using their new full paths if you want to keep refreshing them.
+
+To move the entire workspace, stop the app and copy the complete data directory, including both `projects/` and `assets/`, then start with `--data-dir` pointing to that copy. Full-directory copies retain old source-folder connections; disconnect or update those on the new machine. Copying the Git repository alone does not copy private boards. Never commit the data directory.
+
+### Use your own conventions
+
+Edit `docs/BUILD_CHECKLIST.md` for your team's general requirements; it is served to agents and included in future exports. Keep board-specific requests in each board's ideas, pins and review decisions. A fresh installation needs no maintainer board, private asset directory or personal account.
+
+The separate public site is optional. Its `links.js` configures repository and projects links; its README explains how to choose a source board and deploy with your own hosting account. The app itself has no dependency on the official domain or repository owner.
 
 ## Working with your agent
 
-A yarn's color is its category: Main path, Branch, Detour, Way back, plus two you can name. The **Threads** button beside Board / App outline / Plan filters the board to one category, so its yarn stays lit and the frames it never touches shrink and dull in place; you read one journey at a time without losing the shape of the board. Every frame, sketch and idea has a short code (P1, S2, I3; a pin is “P3 pin 2”), shown wherever it appears, so you and your agent can point at the same thing. Every view has a **Tell the agent** button. It copies a three-line prompt that leads with that code and names what you are looking at (the board, a frame, a pin, a yarn, an idea, a finding, a Test flow trail, the sketch library) and links the task brief the running app serves for exactly that (`/api/projects/<id>/brief?…`); the brief carries the task, the skills to read (`/api/skills/<name>.md`) and the rules in your words (`/api/checklist.md`). Whatever you type under the prompt in your agent's chat is part of the task. Your agent reads the live board from `http://127.0.0.1:5173` and writes back through the same API, so there is no export or back-and-forth for a change to one frame; the open board picks up the agent's change by itself when you have nothing unsaved. The app opens on a landing page at `/` with your boards and a way to start one; the brand at the top left brings you back. To start a board for another project, choose **New board with your agent** there (or in the Boards menu) and pick how much the agent builds: **Just the list** (a to-do list of what to draw and connect), **Frames and strings** (planned frames waiting for your drawings, with the yarn already tied between them through provisional pins; the default) or **Built out** (frames and strings with every frame left to the AI: Sketchcoded builds each page and **Test flow walks the whole site**, so you only draw the one or two pages you care about and fine-tune the rest). The agent creates the board through the local API and writes it; you open it from the landing page. When you drop a drawing on a frame that already has strings, the editor asks you to place each waiting pin; the yarn follows. All boards live side by side in `.drawcode/`; Export keeps a copy inside a codebase. Details: `docs/AGENT_HANDOFF.md`.
+A yarn's color is its category: Main path, Branch, Detour, Way back, plus two you can name. The **Threads** button beside Board / App outline / Plan filters the board to one category, so its yarn stays lit and the frames it never touches shrink and dull in place; you read one journey at a time without losing the shape of the board. Every frame, sketch and idea has a short code (P1, S2, I3; a pin is “P3 pin 2”), shown wherever it appears, so you and your agent can point at the same thing. Every view has a **Tell the agent** button. It copies a three-line prompt that leads with that code and names what you are looking at (the board, a frame, a pin, a yarn, an idea, a finding, a Test flow trail, the sketch library) and links the task brief the running app serves for exactly that (`/api/projects/<id>/brief?…`); the brief carries the task, the skills to read (`/api/skills/<name>.md`) and your general requirements (`/api/checklist.md`). Whatever you type under the prompt in your agent's chat is part of the task. Your agent reads the live board from the running app’s address (by default `http://127.0.0.1:5173`) and writes back through the same API, so there is no export or back-and-forth for a change to one frame; the open board picks up the agent's change by itself when you have nothing unsaved. The app opens on a landing page at `/` with your boards and a way to start one; the brand at the top left brings you back. To start a board for another project, choose **New board with your agent** there (or in the Boards menu) and pick how much the agent builds: **Just the list** (a to-do list of what to draw and connect), **Frames and strings** (planned frames waiting for your drawings, with the yarn already tied between them through provisional pins; the default) or **Built out** (frames and strings with every frame left to the AI: Sketchcoded builds each page and **Test flow walks the whole site**, so you only draw the one or two pages you care about and fine-tune the rest). The agent creates the board through the local API and writes it; you open it from the landing page. When you drop a drawing on a frame that already has strings, the editor asks you to place each waiting pin; the yarn follows. All boards live side by side in the configured data directory (by default `.drawcode/`); Export keeps a copy inside a codebase. Details: `docs/AGENT_HANDOFF.md`.
 
 The agent must inspect affected board views and pages left to the AI, then repeat the full checklist checks on the finished app when building it. This includes overlaps and real browser zoom at 125%, 150%, 200% and 250% at both laptop sizes, with results reported. Review flow checks the graph; it does not perform this visual verification.
 
@@ -127,7 +152,7 @@ Source folders are read only. Source changes create new library versions; screen
 - `flow.md`: the same specification organized by screen, pin, branch, planning backlog, and review finding for a human or future agent.
 - `review.json`: current findings, acceptance status, and recorded reasons.
 - `assets/`: all the project’s normalized image snapshots.
-- `BUILD-CHECKLIST.md`: the user’s general rules for anything they build, in their words. What they decided for this board in particular is in `flow.md`: its backlog, its pins’ words and its accepted findings.
+- `BUILD-CHECKLIST.md`: the configured general build requirements. What they decided for this board in particular is in `flow.md`: its backlog, its pins’ words and its accepted findings.
 - `skills/`: instructions for reading and authoring the board, building from it, and verifying the rendered result.
 - `READ-ME.md`: a guide to reading the bundle.
 
@@ -163,6 +188,8 @@ Browser tests include actual Chromium tab zoom at 125%, 150%, 200%, and 250%, us
 
 Browser tests start an isolated built server on port 5174 and store their boards under `.drawcode/ui-tests/`. Run `npm run build` before them. The application on port 5173 and its projects are kept separate.
 
+GitHub Actions checks clean installation, build, unit/API tests and formatting on macOS, Linux and Windows with Node 22 and 24. Browser workflows are run separately using the commands above.
+
 The shared graph, navigation and planning code has no React or server dependency. `server/` handles local images and persistence; `src/components/` contains the board, library, planning view, editors, review panel, and preview. Original demo sketches are code-authored in `server/demo-art.ts`.
 
 - [Original product brief](docs/ORIGINAL_BRIEF.md)
@@ -171,7 +198,7 @@ The shared graph, navigation and planning code has no React or server dependency
 - [Planning pass: backlog, planned frames, layouts](docs/PLANNING_PASS.md)
 - [What Sketchcoded can do](docs/FUNCTIONALITY.md)
 - [Build checklist for agents](docs/BUILD_CHECKLIST.md) (general rules, shared by every project)
-- [What the user asked for Sketchcoded](docs/SKETCHCODED_REQUESTS.md) (this project’s own record)
+- [Sketchcoded product requirements](docs/SKETCHCODED_REQUESTS.md) (this project’s own record)
 - [Development decisions](docs/DECISIONS.md)
 - [Graph format and checker semantics](docs/GRAPH.md)
 

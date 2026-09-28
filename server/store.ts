@@ -10,6 +10,7 @@ import { skillIds } from '../shared/agent';
 import { analyze, decisionFor } from '../shared/graph';
 import { demoProject } from '../shared/demo';
 import { demoArt } from './demo-art';
+import { repoPath } from './paths';
 
 export class AppError extends Error {
   constructor(
@@ -143,7 +144,7 @@ export class Store {
     folder: string,
   ): Promise<{ assets: Asset[]; warnings: string[]; folder: string }> {
     if (!path.isAbsolute(folder))
-      throw new AppError('Enter an absolute folder path, such as /Users/you/Pictures/sketches.');
+      throw new AppError('Enter the full, absolute path to a sketches folder on this computer.');
     let root: string;
     try {
       root = await fs.realpath(folder);
@@ -222,15 +223,18 @@ export class Store {
         ),
       ),
       'READ-ME.md': strToU8(
-        "# Sketchcoded project\n\nRead BUILD-CHECKLIST.md first: the user's general rules for anything they build, in their words; every build from this board must meet them. What the user decided for this project in particular is in flow.md (its backlog, its pins' words, its accepted findings). skills/ holds the agent's instructions (read-a-board, build-rules, describe-pins, connect-screens, plan-the-backlog, resolve-findings, walk-the-flow, talk-to-sketchcoded, start-a-board, verify-the-result). Read skills/verify-the-result.md: the agent must inspect the rendered board and delegated pages while authoring, and the finished site while building; the full checklist must pass, with evidence reported. Review flow does not test appearance. Then start with flow.md for the organized specification, project.json for the canonical graph (schemaVersion 1), and schema.json for its JSON Schema. Screens reference assets; pins use normalized image coordinates; transitions connect a pin to a target screen or use dynamic back/dismiss history. A pin with kind=detail and detailTarget points to a supporting illustration; a missing kind means interaction. Dedicated detail screens have role=detail. These references never change app history or count as app paths or ways back. A pin with kind=annotation describes content or local behavior, has no yarn and does not count as a way onward. A screen with assetId=null is a planned frame that has not been drawn yet; leftToAi=true delegates its page design, and flow.md contains the standard-page outline to build; an optional mobileAssetId is a second, mobile drawing of the same screen, and pins may carry a mobile position for it. ideas[] is the planning backlog: each idea may be assigned to a screen (screenId), placed as a pin (pinId) and lead to a screen (leadsTo). layout and viewport are presentation only.\n\nRead each pin description with all of its outgoing transitions: summary, condition, logic, context, fallback and navigation. Screens describe reusable views, not necessarily unique records. Entry screens model supported launch contexts. Screen roles describe intent, not automatic exceptions.\n\nreview.json contains structural findings and saved acceptances. Natural-language conditions are not executed or verified. Acknowledgments can be stale and must be reviewed again. Do not assume every branch is exhaustive or every structural return path is available at runtime.\n\nImages are relative to assets/. Source folder paths are excluded. Import this ZIP in Sketchcoded to continue editing.\n",
+        "# Sketchcoded project\n\nRead BUILD-CHECKLIST.md first: the configured general build requirements; every build from this board must meet them. What the user decided for this project in particular is in flow.md (its backlog, its pins' words, its accepted findings). skills/ holds the agent's instructions (read-a-board, build-rules, describe-pins, connect-screens, plan-the-backlog, resolve-findings, walk-the-flow, talk-to-sketchcoded, start-a-board, verify-the-result). Read skills/verify-the-result.md: the agent must inspect the rendered board and delegated pages while authoring, and the finished site while building; the full checklist must pass, with evidence reported. Review flow does not test appearance. Then start with flow.md for the organized specification, project.json for the canonical graph (schemaVersion 1), and schema.json for its JSON Schema. Screens reference assets; pins use normalized image coordinates; transitions connect a pin to a target screen or use dynamic back/dismiss history. A pin with kind=detail and detailTarget points to a supporting illustration; a missing kind means interaction. Dedicated detail screens have role=detail. These references never change app history or count as app paths or ways back. A pin with kind=annotation describes content or local behavior, has no yarn and does not count as a way onward. A screen with assetId=null is a planned frame that has not been drawn yet; leftToAi=true delegates its page design, and flow.md contains the standard-page outline to build; an optional mobileAssetId is a second, mobile drawing of the same screen, and pins may carry a mobile position for it. ideas[] is the planning backlog: each idea may be assigned to a screen (screenId), placed as a pin (pinId) and lead to a screen (leadsTo). layout and viewport are presentation only.\n\nRead each pin description with all of its outgoing transitions: summary, condition, logic, context, fallback and navigation. Screens describe reusable views, not necessarily unique records. Entry screens model supported launch contexts. Screen roles describe intent, not automatic exceptions.\n\nreview.json contains structural findings and saved acceptances. Natural-language conditions are not executed or verified. Acknowledgments can be stale and must be reviewed again. Do not assume every branch is exhaustive or every structural return path is available at runtime.\n\nImages are relative to assets/. Source folder paths are excluded. Import this ZIP in Sketchcoded to continue editing.\n",
       ),
     };
     try {
-      files['BUILD-CHECKLIST.md'] = await fs.readFile(path.resolve('docs/BUILD_CHECKLIST.md'));
+      files['BUILD-CHECKLIST.md'] = await fs.readFile(repoPath('docs/BUILD_CHECKLIST.md'));
       for (const skill of skillIds)
-        files[`skills/${skill}.md`] = await fs.readFile(path.resolve('docs/skills', `${skill}.md`));
+        files[`skills/${skill}.md`] = await fs.readFile(repoPath('docs/skills', `${skill}.md`));
     } catch {
-      /* the checklist and skills travel with the repository; exports made elsewhere go without them */
+      throw new AppError(
+        'Required export instructions are missing. Restore the docs folder from this checkout before exporting.',
+        500,
+      );
     }
     for (const asset of portable.assets) {
       try {

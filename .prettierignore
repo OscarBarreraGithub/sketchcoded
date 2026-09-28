@@ -4,5 +4,4 @@ dist/
 test-results/
 playwright-report/
 package-lock.json
-docs/ORIGINAL_BRIEF.md
 docs/screenshots/
