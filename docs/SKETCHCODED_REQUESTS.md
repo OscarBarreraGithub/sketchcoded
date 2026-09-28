@@ -49,3 +49,7 @@ Implementation and evidence: [REVIEW_2026-09-28.md](REVIEW_2026-09-28.md). The s
 - Provide cross-platform startup commands, configurable ports and data directories, and instructions for moving boards or hosting a fork.
 - Keep public documentation professional: replace raw chat prompts with edited requirements, correct spelling and grammar, and remove personal environment details. This supersedes the earlier request to retain the initial prompt verbatim.
 - Preserve product intent, authored drawings and user data while cleaning documentation. Use normal commits; this cleanup does not rewrite published Git history.
+
+## 2026-09-28 — Focus the public example
+
+Keep useful connected pages in the example and mark undrawn pages as left to the AI. Omit isolated, undeveloped frames that add no useful information to the public walkthrough. Preserve the full local planning backlog, original drawings, pin positions and authored yarn. The official example omits P2 Boards and P8 Review flow; its other seven undrawn pages are delegated.

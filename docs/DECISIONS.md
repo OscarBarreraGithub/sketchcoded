@@ -79,3 +79,7 @@ The public demo consumes a snapshot without local source paths and shares the ap
 Bundled resources resolve from the repository location, independently of the launch directory. Default data remains in that checkout's `.drawcode/` for compatibility; explicit relative data paths resolve from the caller's working directory. Command-line options override environment variables, and `npm start` uses a cross-platform production flag. Port 0 requests an available local port. Missing export instructions fail visibly instead of producing an incomplete bundle.
 
 Public documentation stores edited specifications and decisions rather than raw conversation transcripts or personal environment details. This supersedes the original verbatim-prompt preservation policy. Existing drawings and private data are unchanged. Cleanup uses normal commits and does not rewrite published history.
+
+## Curated public example · 2026-09-28
+
+The site exporter omits isolated planned frames that have no drawing, delegated page, entry role, pin or authored connection. It keeps all authored routes and detail references, and filters the accompanying ideas, layout and assets to the included frames. This is a publication projection; the local project and backlog are preserved. The optional `--include-planned` switch exports the complete snapshot. No frame IDs or account-specific rules are embedded in the exporter.

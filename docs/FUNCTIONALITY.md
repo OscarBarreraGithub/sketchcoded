@@ -10,8 +10,8 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 ## Home (the landing page, as drawn on 2026-09-25)
 
 - Title and tagline: Sketchcoded. Ideas, connected.
-- Example: this website. A frame showing this site as a Sketchcoded board; sends to a read-only version of the demo. Make it obvious it should be clicked. The public demo is live and uses the user’s own drawings; undrawn frames stay visibly planned.
-- Set up: tell your AI. A prompt to paste into an AI (“I want to set up github.com/…/sketchcode. Make sure to…”) with a Copy prompt button. On mobile this block sits below the example frame.
+- Example: this website. A frame showing this site as a Sketchcoded board; sends to a read-only version of the demo. Make it obvious it should be clicked. The public demo uses the original drawings and connected pages. Undrawn example pages are left to the AI; isolated planning frames stay in the local backlog.
+- Set up: tell your AI. A setup prompt generated from the configured repository address, with a Copy prompt button. On mobile this block sits below the example frame.
 - Runs local, sketches never leave. Rephrase: runs on your computer; your sketches never leave it. No account, no API key.
 - Read more: Guide. The guide distinguishes structural Review flow from the full checklist the agent verifies when authoring a board or building its site: overlaps, text size, zoom control and the other rules. It covers setup, everyday controls, recovery and agent handoff.
 - GitHub: a link pin. The address lives in the pin's notes; no frame, no yarn.
@@ -127,6 +127,10 @@ Written 2026-09-25 from the original brief, the README and the planning conversa
 ## Links out (the route for URLs)
 
 Anything that leaves the app for a web address is a pin with **Link out** as its purpose and the address written in its description, with any conditions in words. No yarn and no destination frame. The checks treat it as a way onward and ask for an address if none is written.
+
+## Public example
+
+The public walkthrough shows the original hand drawings and useful connected pages. Undrawn pages in the official example are left to the AI. Isolated, undeveloped planning frames are omitted from publication and retained in the local backlog. Regeneration applies the same curation automatically; the complete snapshot remains available with `--include-planned`.
 
 ## Installation and portability
 

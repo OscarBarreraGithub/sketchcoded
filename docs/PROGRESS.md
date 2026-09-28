@@ -6,7 +6,7 @@ Updated 2026-09-28. This is the current status; dated review reports retain thei
 
 The local screenshot flow designer, structural review and interactive preview are implemented. Later passes added planning, mobile drawings, provisional pins, agent handoff, delegated standard pages, thread categories and a six-panel tutorial. The integrated model generation/review workflow remains deferred.
 
-The separate public site is available at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and [read-only demo](https://sketchcoded.com/demo). The official demo uses the authored Sketchcoded board and its original hand drawings. Undrawn frames in that example are unfinished design work, not necessarily missing application features.
+The separate public site is available at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and [read-only demo](https://sketchcoded.com/demo). The official demo uses the authored Sketchcoded board and its original hand drawings. The public example contains three original drawings and seven delegated standard pages. Two isolated planning frames remain in the local backlog and are omitted from publication.
 
 ## Start here
 
@@ -77,3 +77,15 @@ Verification:
 - Visual verification belongs to the acting agent and the test workflow. Review flow does not inspect pixels.
 - Source-folder connections are machine-specific user data. Portable ZIPs omit those paths; reconnect a folder after moving machines if ongoing refresh is needed.
 - Public-document cleanup does not erase earlier Git commits.
+
+## Public example curation · 2026-09-28
+
+The source board is revision 219: P4, P5, P7, P9, P10 and P11 are now left to the AI, alongside the already-delegated P12 Guide. The full board retains all 12 frames, three drawings, 32 pins and eight yarns. I102 records the focused public example. The published snapshot contains ten frames and omits the isolated P2 Boards and P8 Review flow, along with their backlog items. Original images, positions, pins and routes are preserved. The exporter applies this selection on regeneration and offers `--include-planned` for the complete snapshot.
+
+Verification:
+
+- Build, all 105 unit/API tests, all 32 browser workflows, formatting and diff checks passed.
+- All seven delegated pages were checked in the app and public demo at 125%, 150%, 200% and 250% native browser zoom, at 1440×900 and 1280×720: 112 page checks. Scrolling and exit controls remained reachable, without horizontal overflow. The public demo's scroll hint now has a separate rail, and its exit button retains contrast on hover.
+- All eight existing demo routes and test rewind passed. The original pins, yarn and drawing assets match the previous snapshot; read-only checks left the source board at revision 219. Exporter tests cover automatic curation, the full-snapshot option, failure recovery and preservation of authored routes and details.
+- The [site CI matrix](https://github.com/OscarBarreraGithub/sketchcoded-site/actions/runs/36493874401) passed all six combinations of macOS, Linux and Windows with Node 22.12 and 24.
+- The [live example](https://sketchcoded.com/demo) and [deployment](https://45b8a6ff.sketchcoded.pages.dev/demo) serve the verified snapshot and updated guide and styles. No DNS changes were made. Temporary servers and browsers were stopped.
