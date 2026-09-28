@@ -57,7 +57,17 @@ Changes in this pass:
 - Edited requirements and decision records in place of raw conversation transcripts and stale personal handoffs.
 - Portability regressions and a CI matrix for supported operating systems.
 
-Local verification: `npm run build`, all **105** unit/API tests, all **32** browser workflows, formatting and diff checks pass. A separate checkout in a directory containing spaces installed with `npm ci`, built and passed its 104-test snapshot without private data. Portability tests launch from an unrelated directory, use an available port and a data path containing spaces, fetch all agent instructions and export a complete bundle. A missing-instructions regression rejects incomplete exports. The initial hosted matrix passed installation, build and all tests on macOS, Linux and Windows with Node 22.12 and 24. Windows exposed Git checkout line endings that disagreed with the formatter; `.gitattributes` now keeps text files in LF form across platforms. The corrected matrix is being verified. A separate built-app startup check confirmed that static resources and default storage work from an unrelated directory.
+Verification:
+
+- `npm run build`, all **105** unit/API tests, all **32** browser workflows, formatting and diff checks pass locally.
+- A separate checkout in a directory containing spaces installed with `npm ci`, built and passed its 104-test snapshot without private data. A built-app startup check confirmed static resources and default storage from an unrelated directory.
+- Portability regressions launch from another directory with an available port and a storage path containing spaces, fetch all agent instructions and export a complete bundle. Missing required instructions cause a visible export failure.
+- The [app CI matrix](https://github.com/OscarBarreraGithub/sketchcoded/actions/runs/36489045475) passed all six combinations of macOS, Linux and Windows with Node 22.12 and 24: clean installation, build, all 105 tests and formatting. `.gitattributes` keeps checkout line endings consistent across platforms.
+- The [site CI matrix](https://github.com/OscarBarreraGithub/sketchcoded-site/actions/runs/36489091375) passed the same six platform/version combinations for exporter regressions and public-file staging.
+- Homepage and guide passed 16 checks across both laptop sizes and all four native zoom levels. Long commands wrap, and the scroll hint has a reserved rail. Fork configuration updates setup commands, prompts and public links together. No browser runtime errors were reported.
+- The site now supports board selection by ID and preserves the old example after failed downloads. Deployment stages an explicit list of public files, excluding repository notes and maintenance tools.
+- The [published site](https://sketchcoded.com) and [deployment](https://81fb7ac8.sketchcoded.pages.dev) were checked for the updated guide, setup instructions, projects link, original drawings and deployment exclusions. No DNS records changed.
+- Private application data and authored drawings were preserved. Task servers and temporary browsers were stopped; the fresh-install checkout and temporary test artifacts were removed.
 
 ## Deliberate limits
 
@@ -67,5 +77,3 @@ Local verification: `npm run build`, all **105** unit/API tests, all **32** brow
 - Visual verification belongs to the acting agent and the test workflow. Review flow does not inspect pixels.
 - Source-folder connections are machine-specific user data. Portable ZIPs omit those paths; reconnect a folder after moving machines if ongoing refresh is needed.
 - Public-document cleanup does not erase earlier Git commits.
-
-The public-site follow-up added configurable setup links, board selection by ID, safe staged example replacement, and explicit staging of public files for deployment. Export and staging regressions pass. Homepage and guide checks passed at both laptop sizes and all four native zoom levels; long commands wrap, and the scroll hint has its own rail. Original drawings and private application data were preserved.

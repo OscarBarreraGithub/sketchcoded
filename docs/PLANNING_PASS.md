@@ -4,7 +4,7 @@ Historical acceptance record for planning and dual-layout support. Subsequent re
 
 ## Scope decisions
 
-- [x] **Desktop only for now.** No phone app and no phone-photo intake. Users bring image files that already live on their computer: connect a folder, choose files, or drag and drop. the README’s limits describe desktop sources only.
+- [x] **Desktop only for now.** No phone app and no phone-photo intake. Users bring image files that already live on their computer: connect a folder, choose files, or drag and drop. The README’s limits describe desktop sources only.
 - [x] **Priority order for every screen the user designs:** first the logic and pin placement, second the window-resizing behavior, third the mobile appearance. Sketchcoded’s own UI keeps that order too.
 
 ## Web and mobile layouts for one screen
@@ -20,7 +20,7 @@ Historical acceptance record for planning and dual-layout support. Subsequent re
 ## Planning stage: a functionality backlog that drives the drawings
 
 - [x] A **Planning view** stores every functionality idea for the product being designed. Ideas are easy to add at any time, easy to skim, searchable, and saved with the project so nothing is forgotten between sessions.
-- [x] Each idea can be **assigned to a screen** (“the home screen folder”), moved between screens, or left in the unassigned pool.
+- [x] Each idea can be **assigned to a screen**, moved between screens, or left in the unassigned pool.
 - [x] An assigned idea can be **placed on the drawing** in one click: it becomes a pin with the idea’s name and description, so the user draws and connects while the agent has already written down what each pin is.
 - [x] An idea can record the screen it **leads to**. Placing it creates the draft yarn automatically, and the board shows planned threads between frames before the drawings exist.
 - [x] Ideas already placed are **greyed out but legible**, and marked with the pin they became, so an idea is never pinned on two pages by accident.
@@ -33,7 +33,7 @@ Historical acceptance record for planning and dual-layout support. Subsequent re
 
 - [x] Create a board named **Sketchcoded** whose frames are the screens of the actual product and site. The user draws them; the agent pre-fills each frame’s ideas from the brief and documented product requirements.
 - [x] The agent tells the user **what belongs on the home page** so drawing can start immediately.
-- [x] All product functionality discussed so far is written down in **one durable place** that later feeds the public website (“what you can do”, with a small demo). It is kept both as the Sketchcoded board’s planning backlog and as a document in the repository.
+- [x] All product functionality discussed so far is written down in **one durable place** that later feeds the public website (feature explanations and a small demo). It is kept both as the Sketchcoded board’s planning backlog and as a document in the repository.
 
 ## Later refinements
 
