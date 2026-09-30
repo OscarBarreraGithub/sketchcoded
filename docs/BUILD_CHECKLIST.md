@@ -26,6 +26,8 @@ in that project’s own records and guides. Projects share this checklist, not t
 
 - [ ] Preserve authored product copy unless rewriting is requested; when it is, show the revised copy.
 
+- [ ] **Write direct, specific product copy.** Do not invent cute or whimsical labels, slogans, subtitles, inspirational phrases, or vague promises of companionship or reassurance. Every heading, label and supporting line must identify something, explain an action or communicate a concrete benefit. Omit decorative subtitles and filler that add no useful information. Apply this to new work; do not rewrite existing sites without a request.
+
 - [ ] Keep public repository documentation concise and edited. Record requirements and decisions instead of raw conversation transcripts; correct grammar and spelling and omit personal environment details.
 
 ## Portability
