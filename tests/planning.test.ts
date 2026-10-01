@@ -253,7 +253,8 @@ describe('planned frames', () => {
     expect(doc).toContain('### P3 Help (modal · no drawing yet)');
   });
 });
-describe('planning survives storage', () => {
+// Building the Little chat board rasterizes its sketches, which takes a few seconds on slow runners.
+describe('planning survives storage', { timeout: 30_000 }, () => {
   let root: string, store: Store;
   beforeEach(async () => {
     root = await fs.mkdtemp(path.join(os.tmpdir(), 'drawcode-plan-'));

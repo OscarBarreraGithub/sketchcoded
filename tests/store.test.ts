@@ -23,7 +23,8 @@ beforeEach(async () => {
 afterEach(async () => {
   await fs.rm(root, { recursive: true, force: true });
 });
-describe('durable local projects', () => {
+// Building the Little chat board rasterizes its sketches, which takes a few seconds on slow runners.
+describe('durable local projects', { timeout: 30_000 }, () => {
   it('boots with no boards, and a board built from sketches keeps valid references', async () => {
     expect(await store.list()).toEqual([]);
     await littleChat('Little chat');
