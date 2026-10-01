@@ -24,7 +24,7 @@ A selected chat is modeled as context on a transition to a reusable conversation
 
 ## Navigation semantics
 
-`push` appends a page frame. `replace` swaps the current frame and preserves whether it is a modal root. `reset` discards the entire stack. `modal` appends a modal root whose previous frame is its caller.
+`push` appends a page frame. `replace` swaps the current frame and preserves whether it is a modal root. `reset` discards the entire stack. `modal` appends a modal root whose previous frame is its caller. Back never goes in circles: going to a screen that is already in the stack (by `push`, `modal` or `replace`) takes the stack back to that screen, which keeps its earlier kind, instead of adding it again. After A → B → C → B → C the stack is A, B, C, and Back leads to B and then A.
 
 `back` and `dismiss` must have `target: null`. Back pops one frame. Dismiss removes the most recent modal root and everything above it, returning to its actual caller. It works with nested dialogs. An action without the required caller is explicitly unavailable in preview.
 

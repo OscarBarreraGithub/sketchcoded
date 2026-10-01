@@ -77,10 +77,20 @@ export function follow(
     if (!t.target) return { state, error: 'This connection has no destination yet.' };
     const frame: Frame = { screenId: t.target, kind: t.navigation === 'modal' ? 'modal' : 'page' };
     if (t.navigation === 'reset') stack = [frame];
-    else if (t.navigation === 'replace') {
-      frame.kind = stack.at(-1)?.kind ?? 'page';
-      stack[stack.length - 1] = frame;
-    } else stack.push(frame);
+    else {
+      if (t.navigation === 'replace') {
+        frame.kind = stack.at(-1)?.kind ?? 'page';
+        stack.pop();
+      }
+      // Back never goes in circles: going to a screen already in the history takes the history
+      // back to it, so after A → B → C → B → C, Back leads to B and then A.
+      const earlier = stack.findIndex((f) => f.screenId === frame.screenId);
+      if (earlier >= 0) {
+        frame.kind = stack[earlier].kind;
+        stack = stack.slice(0, earlier);
+      }
+      stack.push(frame);
+    }
   }
   return { state: { stack, trail: [...state.trail, t.id] } };
 }

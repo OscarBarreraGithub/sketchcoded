@@ -62,6 +62,25 @@ describe('authored preview navigation', () => {
     );
     expect(follow(startPreview('a'), transition('push', null)).error).toContain('no destination');
   });
+  it('never goes back in circles: returning to a screen takes the history back to it', () => {
+    const to = (target: string, navigation: Navigation = 'push') => ({
+      ...transition(navigation, target),
+      id: `to-${target}`,
+    });
+    let s = startPreview('a');
+    for (const target of ['b', 'c', 'b', 'c']) s = follow(s, to(target)).state;
+    expect(s.stack.map((f) => f.screenId)).toEqual(['a', 'b', 'c']);
+    s = follow(s, transition('back', null)).state;
+    s = follow(s, transition('back', null)).state;
+    expect(s.stack.map((f) => f.screenId)).toEqual(['a']);
+    expect(s.trail).toHaveLength(6);
+    // Replacing the current screen with an earlier one, or opening the caller from its own dialog,
+    // also returns to it rather than stacking a second copy.
+    const replaced = follow(follow(startPreview('a'), to('b')).state, to('a', 'replace')).state;
+    expect(replaced.stack).toEqual([{ screenId: 'a', kind: 'page' }]);
+    const fromDialog = follow(follow(startPreview('a'), to('d', 'modal')).state, to('a')).state;
+    expect(fromDialog.stack).toEqual([{ screenId: 'a', kind: 'page' }]);
+  });
   it('records chosen branches without mutating prior snapshots', () => {
     const original = startPreview('a');
     const next = follow(original, transition('push')).state;
