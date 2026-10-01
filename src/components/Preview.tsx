@@ -145,7 +145,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
   const aspect = asset ? asset.width / asset.height : 4 / 3;
   const fitWidth = fit ? drawingWidth(fit, aspect, asset?.width) : undefined;
   return (
-    <Modal title="Take your idea for a walk." onClose={onClose} className="preview-modal">
+    <Modal title="Test the flow" onClose={onClose} className="preview-modal">
       <div className="preview-toolbar">
         <label className="preview-start">
           <Flag size={15} />

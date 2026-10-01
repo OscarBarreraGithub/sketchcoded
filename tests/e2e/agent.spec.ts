@@ -210,7 +210,7 @@ test('every view hands its task to the agent, and the agent can read everything 
   await page.getByRole('button', { name: 'Close flow review', exact: true }).click();
   // Test flow: the current screen and the trail.
   await page.getByRole('button', { name: 'Test flow', exact: true }).click();
-  const preview = page.getByRole('dialog', { name: 'Take your idea for a walk.' });
+  const preview = page.getByRole('dialog', { name: 'Test the flow' });
   await preview.locator('.preview-pin').first().click();
   const choice = preview.locator('.branch-choice').first();
   if (await choice.count()) await choice.click();

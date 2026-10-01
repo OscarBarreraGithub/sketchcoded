@@ -22,7 +22,7 @@ const lessons = [
     'Review finds structural gaps. An intentional ending needs a reason; accepting it records a decision, not proof. Your agent separately checks the rendered layout against the full build checklist.',
   ],
   [
-    'Walk the flow',
+    'Test the flow',
     'Test flow follows your yarn. You choose written conditions; nothing evaluates them. Authored Back is app navigation. Rewind test is a separate testing aid, even after a reset or a Back action.',
   ],
   [

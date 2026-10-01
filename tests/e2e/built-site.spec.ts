@@ -129,7 +129,7 @@ test('a board left to the AI is a site you can walk in Test flow', async ({ page
   await expect(page.getByRole('heading', { name: made.name, exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Test flow' }).click();
-  const testflow = page.getByRole('dialog', { name: /Take your idea for a walk/ });
+  const testflow = page.getByRole('dialog', { name: 'Test the flow' });
   await expect(testflow).toBeVisible();
   // The built page, not a list of planned ideas: a product bar, a heading, a lede and real buttons.
   const site = testflow.locator('.std-page');
