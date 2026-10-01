@@ -13,7 +13,12 @@ See [sketchcoded.com](https://sketchcoded.com) for the design principles every S
 Paste this into your AI agent:
 
 ```text
-Set up Sketchcoded on this computer. Clone https://github.com/OscarBarreraGithub/sketchcoded, use Node 22.12 or later, run npm ci, then npm run dev. Reuse a running instance of this checkout; otherwise, if port 5173 is busy, use npm run dev -- --port 0. Open the local address printed by the server in my browser.
+Set up Sketchcoded on this computer.
+Clone https://github.com/OscarBarreraGithub/sketchcoded, use Node 22.12 or later,
+run npm ci, then npm run dev.
+Reuse a running instance of this checkout; otherwise, if port 5173 is busy,
+use npm run dev -- --port 0.
+Open the local address printed by the server in my browser.
 ```
 
 ## Run it yourself
