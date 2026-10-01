@@ -1,10 +1,8 @@
-import { Pencil } from 'lucide-react';
+/** The logo is the owner's hand-drawn alien on the brand tile (`npm run logo` builds it). */
 export function Brand() {
   return (
     <div className="brand">
-      <span className="brand-mark" aria-hidden="true">
-        <Pencil size={23} />
-      </span>
+      <img className="brand-logo" src="/favicon.svg" alt="" width={30} height={30} />
       <span>
         sketchcoded<span className="brand-period">.</span>
       </span>

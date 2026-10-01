@@ -254,33 +254,10 @@ hr {
 .brand-period {
   color: #b7795f;
 }
-.brand-mark {
-  width: 27px;
-  height: 29px;
-  border: 2px solid #4b5f49;
-  border-radius: 3px 14px 14px 3px;
-  position: relative;
-  transform: rotate(-5deg);
-}
-.brand-mark:after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 4px;
-  width: 11px;
-  height: 15px;
-  border: 1px solid #71846b;
-  border-radius: 0 10px 10px 0;
-}
-.brand-mark span {
-  position: absolute;
-  left: -5px;
-  top: -4px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #c27459;
-  box-shadow: 0 1px 2px #38422742;
+.brand-logo {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
 }
 .header-separator {
   height: 25px;
@@ -2462,8 +2439,8 @@ kbd {
   .brand {
     font-size: 23px;
   }
-  .brand-mark {
-    width: 25px;
+  .brand-logo {
+    width: 27px;
     height: 27px;
   }
 }
@@ -2477,13 +2454,9 @@ kbd {
     font-size: 21px;
     gap: 7px;
   }
-  .brand-mark {
-    width: 22px;
+  .brand-logo {
+    width: 24px;
     height: 24px;
-  }
-  .brand-mark:after {
-    height: 12px;
-    width: 9px;
   }
   .header-separator,
   .help-button,

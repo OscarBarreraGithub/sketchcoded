@@ -6,9 +6,9 @@ Updated 2026-09-30. Current status for anyone picking the product up. Requiremen
 
 The local screenshot flow designer, structural review and interactive Test flow are implemented, together with planning, web and mobile drawings, provisional pins, agent handoff, pages left to the AI, thread categories and a six-panel tutorial. The integrated model generation and review workflow remains deferred by design.
 
-The companion site is live at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and a [read-only example](https://sketchcoded.com/demo) made from the authored Sketchcoded board and its original hand drawings. The published example has nine frames: three drawings and six pages left to the AI, all connected, the same nine as the local board.
+The companion site is live at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and a [read-only example](https://sketchcoded.com/demo) made from the authored Sketchcoded board and its original hand drawings. The published example has eight frames: three drawings and five pages left to the AI, all connected, the same eight as the local board.
 
-The local Sketchcoded board is at revision 235. Home's “Example: this website” leads to The board, since the example on the site is that board; the separate P11 Example demo frame was removed, and so were the blank P2 Boards and P8 Review flow frames, whose 14 ideas are now in the unassigned pool. Every page has a way back through Back or Close pins, shown as small ↶ marks in the frame footers, and its categories are named Main path, Branch, Detour and Way back. Home → The board is accepted as one way (the site's logo returns home). Review flow has one open finding: the P6 Close pin waits to be placed on its drawing. The example opens on the view the board was left on, and was regenerated from revision 235.
+The local Sketchcoded board is at revision 237. Home's “Example: this website” leads to The board, since the example on the site is that board; the separate P11 Example demo frame was removed, and so were the blank P2 Boards and P8 Review flow frames and the P12 Guide frame, whose ideas are now in the unassigned pool. Home's “Read more: Guide” is a link out to sketchcoded.com/guide. Every page has a way back through Back or Close pins, shown as small ↶ marks in the frame footers, and its categories are named Main path, Branch, Detour and Way back. Home → The board is accepted as one way (the site's logo returns home). Review flow has one open finding: the P6 Close pin waits to be placed on its drawing. The example opens on the view the board was left on, and was regenerated from revision 237. The logo everywhere (app header, favicon, site) is the owner's hand-drawn alien on the green tile.
 
 ## Start here
 
@@ -61,7 +61,10 @@ See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model s
 
 ## Open
 
+- Publish: the 2026-09-30 and 2026-10-01 changes to the app and the site (logo, ways back as marks, opening view, eight-frame example, 404 page) are committed locally and verified, not yet deployed or pushed. Deploy with the site README after the user has looked; regenerate the example first if the board changed.
 - Place the P6 Close pin on the Screen editor drawing (the user's step), then regenerate the example.
+- The real-zoom acceptance test (`tests/e2e/review-acceptance.spec.ts`) failed once in a full browser run on 2026-10-01 and passed three times on its own; the failure details were not kept. Watch it in the next full runs and in CI.
+- On The board's drawing, pins 5 and 6, and pins 7 and 8, sit close together; at high browser zoom pin 8 covers pin 7 in Test flow. The user can nudge them apart in the screen editor.
 - Restructure the guide from `CATALOG.md`, starting with its “Guide topics” section.
 - Point things out on a built UI: planned on 2026-09-29, not built.
 - Decide whether the in-app How it works help folds into the six-panel tutorial.

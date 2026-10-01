@@ -1908,8 +1908,8 @@ kbd,
   .app-header .brand > span:last-child {
     display: none;
   }
-  .app-header .brand-mark {
-    display: inline-flex;
+  .app-header .brand-logo {
+    display: block;
   }
   .brand-link {
     min-width: 44px;

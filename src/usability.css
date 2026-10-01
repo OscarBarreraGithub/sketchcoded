@@ -958,7 +958,7 @@ textarea {
   .brand {
     font-size: 22px;
   }
-  .brand-mark {
+  .brand-logo {
     display: none;
   }
   .project-switcher {
@@ -1186,18 +1186,6 @@ textarea {
   pointer-events: none;
 }
 
-.brand-mark {
-  border: 0;
-  transform: rotate(-10deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #52684b;
-}
-.brand-mark::after,
-.brand-mark::before {
-  display: none;
-}
 .color-picker button {
   width: 44px;
   height: 44px;
@@ -1216,7 +1204,7 @@ textarea {
   min-height: 46px;
 }
 @media (max-width: 700px) {
-  .brand-mark {
+  .brand-logo {
     display: none;
   }
 }

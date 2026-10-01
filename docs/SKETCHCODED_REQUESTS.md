@@ -96,3 +96,5 @@ When a UI is already built, let the user highlight an element or area and point 
 - The ways back under each frame made the board busy. Keep them, but as a small ↶ mark in the frame's footer with the words on hover. (2026-10-01)
 - Remove the blank P2 Boards and P8 Review flow frames from the board; their ideas go to the unassigned pool. Accept Home → The board as one way: the example opens the board itself, and the site's logo returns home. (2026-10-01)
 - Running tests or a build must never reload a board that is open in the development server. (2026-10-01)
+- The logo is the owner's hand-drawn alien (from the Science with Agents branding), in cream ink on the brand's green tile, in the app header, the favicon and on the site. Keep the drawing's strokes; never redraw it. (2026-10-01)
+- Remove the Guide frame from the board. “Read more: Guide” on Home becomes a link out to the guide page; the frame's ideas go to the pool. (2026-10-01)
