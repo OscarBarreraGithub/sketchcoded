@@ -84,7 +84,7 @@ Public documentation stores edited specifications and decisions rather than raw 
 
 ## Curated public example · 2026-09-28
 
-The site exporter omits isolated planned frames that have no drawing, delegated page, entry role, pin or authored connection. It keeps all authored routes and detail references, and filters the accompanying ideas, layout and assets to the included frames. This is a publication projection; the local project and backlog are preserved. The optional `--include-planned` switch exports the complete snapshot. No frame IDs or account-specific rules are embedded in the exporter.
+The site exporter omits isolated planned frames that have no drawing, delegated page, entry role, pin or authored connection. It keeps all authored routes and detail references, and filters the accompanying ideas, layout and assets to the included frames. This is a publication projection; the local project and backlog are preserved. The optional `--include-planned` switch exports the complete snapshot. No frame IDs or account-specific rules are embedded in the exporter: frames to leave out (by code) and the wording of undrawn pages live in the site's `tools/example-pages.json`.
 
 ## Words on the board, waiting pins and the public example · 2026-09-30
 
@@ -105,3 +105,5 @@ A click on a frame opens it, as on the public example; a drag still moves it, an
 The app's type grew by about the step from 100% to 125% browser zoom: sizes under 12px scale by 1.25 and larger ones gain 3px, so reading text is at least 15px; board type keeps the same sizes in screen pixels (yarn labels 16px, card footers and pins 15px). Yarn label placement measures with the board's actual letter width (0.52 of the font size, measured at 0.45 to 0.51) so the larger labels still fit where they did. At the board's smaller zooms a planned frame drops its second line, and a way-back mark keeps its small look with a 44-pixel click area.
 
 Past 250% browser zoom (windows under 500 CSS px tall or 520 wide), the view toolbar scrolls sideways, and the screen editor and Test flow become one scrolling column with the drawing first and icon-only toolbar buttons (under 340 px tall). Under 420 px wide the zoom slider steps aside; the plus and minus buttons remain.
+
+In the public example, a page without a drawing is shown as its plan, not as a generated standard page: the frame's one-line purpose, then “I want this page to:” and one line per idea and per way onward, written in the author's voice in the site's settings (falling back to the idea's title). The ways onward are the only links, so the walk still leads back. The app's Test flow keeps walking generated standard pages. How it works (P10) is left out of the example by code; The board's Help button, which only led there, stays as a note.
