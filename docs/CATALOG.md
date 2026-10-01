@@ -56,11 +56,11 @@ Status: **Built** (in the app or site), **Done** (a record, rule or process chan
 
 - Name: Sketchcoded, with the domain sketchcoded.com. Approachable, not technical, not a startup billboard; drawn from chalkboard sketches, rough notes and clean output from messy input. Done.
 - Landing-page line on AI making generic apps and the human touch, settled as “Prompts make apps. Sketching makes your vision.”; approved alternate “Telling an AI what you want gets you an app. Showing it gets you your vision.” Done.
-- Brand line “Ideas, connected.” (from the home drawing). Done.
+- Brand line “Ideas, connected.”. Superseded (2026-10-01): dropped everywhere as an invented slogan; the tagline is “Prompts make apps. Sketching makes your vision.”
 - Remove the board tagline and “A little space for your next big idea”. Done.
 - No cute labels, slogans or decorative subtitles in any product; direct, specific copy only. Done (checklist).
 
-### Rules for every app (2026-09-08 to 2026-09-30)
+### Rules for every app (2026-09-08 to 2026-10-01)
 
 All are in the build checklist.
 
@@ -81,6 +81,8 @@ All are in the build checklist.
 - The checklist holds general, undated rules; project requests are kept separately, projects do not read each other's records, and preferences carry across. Done.
 - Agents check what they make, including overlap and zoom, when they build a site from a board and when they author a board or its AI pages. Done.
 - Examples and demos use the user's own drawings and board, never a stand-in. Done.
+- Back never goes in circles: going to a screen already in the history takes the history back to it, so after A → B → C → B → C, Back leads to B and then A (2026-10-01). In the checklist; Test flow and the example's walk follow it.
+- Every general tip from every prompt so far is in the checklist, not only measurable rules (2026-10-01): 88 rules added, among them every click does something, fit before scrolling, notes are notepads, every part earns its place, one of each, people get the summary, and how an agent should work (re-read the requests before calling work done, answer the question asked, one catch means a sweep). Done.
 
 ### Seeing the board (2026-09-08 to 2026-09-27)
 
@@ -133,7 +135,7 @@ All are in the build checklist.
 
 ### The site and the example (2026-09-25 to 2026-09-28)
 
-- A landing page: the name, a two-line description, a GitHub button, a copyable setup prompt, a way to open the example board, and a guide with an FAQ. Built.
+- A landing page: the name, a two-line description, a GitHub button, a copyable setup prompt, a way to open the example board, and a guide with an FAQ. Built; superseded (2026-10-01): the guide is folded into compact guidelines at the bottom of the home page, and there is no FAQ.
 - The site is its own repository, consistent with the app. Built.
 - The GitHub button sits below the prompt box with the GitHub logo. Built.
 - The example board is this website, planned on the user's real board with the user's drawings. Built.
@@ -145,6 +147,11 @@ All are in the build checklist.
 - The example opens on the view the board was left on in the app, close enough to read the yarn labels (2026-09-30). Built.
 - How it works is left out of the example, and a page left to the AI opens there as a one-line summary and “I want this page to:” with a list of what goes there, in the author's voice, centered, nothing else (2026-10-01). Built.
 - A frame opened in the example's walk fits the window without scrolling (2026-10-01). Built; at 1440×900 and 1280×720 every frame fits.
+- The example's walk has no Rewind test; Close detail appears only while a detail is open (2026-10-01). Built.
+- One static page: no top links and no footer, the guide folded into compact guidelines at the bottom of the home page, and one GitHub button, to the right of the setup prompt with Science with agents beneath it (2026-10-01). Built; not yet published.
+- The guidelines are two columns: Dev tools, starting with the frame labels that let you tell your agent exactly what you are working on, and Design principles in the author's voice, ending with a link to the general checklist (2026-10-01). Superseded the same day: one column of seven design principles in the author's order, the frame labels and Tell the agent among them. Built; not yet published.
+- The home page's opening text says what Sketchcoded is and is not: draw, pin, tie the logic, click through, leave pages to the agent; ramble about ideas and they become the plan and checklist; it builds nothing itself, it is the plan the agent builds from (2026-10-01). Built; not yet published.
+- Rewind test is off the site entirely, including the example's Test flow page; the app keeps it (2026-10-01). Built; not yet published.
 - On mobile, the setup box sits below the example; make it obvious the example should be clicked (from the home drawing). Built.
 - The app's own landing page copies the site's design, lists boards and starts new ones; the logo returns to it. Built.
 
@@ -157,13 +164,13 @@ All are in the build checklist.
 
 - **Point things out on a built UI** (above). Not built.
 - Ship the code clean: no sample boards, a one-page README, edited records only (2026-10-01). Done.
-- **Restructure the guide** as our principles for web design (2026-10-01): every request of the kind “nothing overlaps”, “text readable without zooming”, “zoom works all the way in”, “the page never scrolls, panels do”, “say when there is more below”, “44px targets”, written for the public from [BUILD_CHECKLIST.md](BUILD_CHECKLIST.md), with the guide topics below for using Sketchcoded. Not started.
-- **Place the P6 Close pin** on the Screen editor drawing. Every page on the example board now has a Back or Close and the colors use the category names; this one pin waits for its spot on the user's drawing.
+- **Restructure the guide** as our principles for web design (2026-10-01): every request of the kind “nothing overlaps”, “text readable without zooming”, “zoom works all the way in”, “the page never scrolls, panels do”, “say when there is more below”, “44px targets”, written for the public from [BUILD_CHECKLIST.md](BUILD_CHECKLIST.md), with the guide topics below for using Sketchcoded. Done differently (2026-10-01): the guide is now compact guidelines at the bottom of the home page; not yet published.
+- **Place the P6 Close pin** on the Screen editor drawing. Done (2026-10-01): placed in the overlay's top-right corner, and The board's crowded pins moved apart.
 - The integrated build and review loop from the original brief remains deferred by design.
 
 ## Guide topics
 
-What the guide still needs, checked against the published guide on 2026-09-30. Topics the 2026-09-28 review raised that the guide now covers (the live example, working with an agent, what Test flow simulates, safe storage and recovery, where the build rules live, the setup commands) are left out. This is input for the guide restructure.
+What the guide still needs, checked against the published guide on 2026-09-30. Topics the 2026-09-28 review raised that the guide now covers (the live example, working with an agent, what Test flow simulates, safe storage and recovery, where the build rules live, the setup commands) are left out. On 2026-10-01 the guide was folded into compact guidelines on the home page, so these topics have no page on the site; the repository README covers setup, storage, moving boards and the basic controls.
 
 | Topic                    | Add or correct                                                                                                                                                                                                                                           |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

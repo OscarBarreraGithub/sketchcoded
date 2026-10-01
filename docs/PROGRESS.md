@@ -6,9 +6,9 @@ Updated 2026-10-01. Current status for anyone picking the product up. Requiremen
 
 The local screenshot flow designer, structural review and interactive Test flow are implemented, together with planning, web and mobile drawings, provisional pins, agent handoff, pages left to the AI, thread categories and a six-panel tutorial. The integrated model generation and review workflow remains deferred by design.
 
-The companion site is live at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and a [read-only example](https://sketchcoded.com/demo) made from the authored Sketchcoded board and its original hand drawings. The published example has seven frames: three drawings and four pages left to the AI, all connected. How it works is left out, each page left to the AI shows its summary and “I want this page to:” list, and a frame opened in its walk fits a laptop window without scrolling.
+The companion site is live at [sketchcoded.com](https://sketchcoded.com), with our guidelines for web design at the bottom of its home page and a [read-only example](https://sketchcoded.com/demo) made from the authored Sketchcoded board and its original hand drawings. The published example has seven frames: three drawings and four pages left to the AI, all connected. How it works is left out, each page left to the AI shows its summary and “I want this page to:” list, and a frame opened in its walk fits a laptop window without scrolling.
 
-The local Sketchcoded board is at revision 266. Home's “Example: this website” leads to The board, since the example on the site is that board; the separate P11 Example demo frame was removed, and so were the blank P2 Boards and P8 Review flow frames and the P12 Guide frame, whose ideas are now in the unassigned pool. Home's “Read more: Guide” is a link out to sketchcoded.com/guide. Every page has a way back through Back or Close pins, shown as small ↶ marks in the frame footers, and its categories are named Main path, Branch, Detour and Way back. Home → The board is accepted as one way (the site's logo returns home). Review flow has one open finding: the P6 Close pin waits to be placed on its drawing. The example opens on the view the board was left on; it was last regenerated from revision 266. The logo everywhere (app header, favicon, site) is the owner's hand-drawn alien on the green tile.
+The local Sketchcoded board is at revision 269. Home's “Example: this website” leads to The board, since the example on the site is that board; the separate P11 Example demo frame was removed, and so were the blank P2 Boards and P8 Review flow frames and the P12 Guide frame, whose ideas are now in the unassigned pool. Home's “Read more: Guide” is a link out to sketchcoded.com/guide. Every page has a way back through Back or Close pins, shown as small ↶ marks in the frame footers, and its categories are named Main path, Branch, Detour and Way back. Home → The board is accepted as one way (the site's logo returns home). Review flow has no open findings: the P6 Close pin is placed in the Screen editor overlay's top-right corner, and The board's crowded pins were moved apart so their circles keep clear at the 420px minimum drawing size. The example opens on the view the board was left on; it was last regenerated from revision 269. The logo everywhere (app header, favicon, site) is the owner's hand-drawn alien on the green tile.
 
 ## Start here
 
@@ -33,7 +33,7 @@ The local Sketchcoded board is at revision 266. Home's “Example: this website�
 - Generated agent prompts and live briefs in every work view; three board-build levels and safe refresh after agent writes.
 - Six tutorial panels with practice state separate from saved boards.
 - Cross-platform setup with configurable port and data directory.
-- Public guide and read-only example, with links, layouts and history matching the app.
+- Public site: one page with compact design guidelines, and a read-only example with links, layouts and history matching the app.
 
 See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model semantics.
 
@@ -63,12 +63,11 @@ See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model s
 
 ## Open
 
-- Regenerate the example from the board as the user leaves it before deploying, so the site opens on their latest arrangement (last regenerated from revision 266).
+- Regenerate the example from the board as the user leaves it before deploying, so the site opens on their latest arrangement (last regenerated from revision 269).
 - In the example's walk, the longest page left to the AI (Test flow) still scrolls in windows shorter than about 700px, with “More below” showing; at 1440×900 and 1280×720 every frame fits.
-- Place the P6 Close pin on the Screen editor drawing (the user's step), then regenerate the example.
 - The real-zoom acceptance test (`tests/e2e/review-acceptance.spec.ts`) failed once in a full browser run on 2026-10-01, then passed alone three times and in two later full runs. Watch it in CI.
-- On The board's drawing, pins 5 and 6, and pins 7 and 8, sit close together; at high browser zoom pin 8 covers pin 7 in Test flow. The user can nudge them apart in the screen editor.
-- Restructure the guide as our principles for web design (the general rules in `BUILD_CHECKLIST.md`, written for the public), plus `CATALOG.md`'s “Guide topics” for using Sketchcoded.
+- On The board's drawing, the Export, Test and Help pins (9 to 11) sit on buttons drawn side by side; at the 420px minimum drawing size their circles touch but stay readable.
+- Publish the site changes made after the 2026-10-01 deploy, once the user has looked: one static page with no top links and no footer, the guide folded into two-column guidelines (Dev tools and Design principles) at the bottom of the home page (`/guide` redirects there), one GitHub button with Science with agents beneath it, no Rewind test anywhere on the site, Back that never goes in circles in the example's walk, the setup prompt without the removed sample board, and the example regenerated from revision 269.
 - Point things out on a built UI: planned on 2026-09-29, not built.
 - Decide whether the in-app How it works help folds into the six-panel tutorial.
 - Existing UI copy that predates the direct-copy rule (for example “From a sketch to a story.”) is unchanged, as that rule asks; rewrite it only on request.

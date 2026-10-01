@@ -11,6 +11,10 @@ These apply to anything built from a Sketchcoded board and to Sketchcoded itself
 - **A canvas never pans out of sight of its content.** It stops at the last item plus padding.
 - **Text is comfortable to read without zooming in.** At 100% browser zoom, anything read is at least 15px and nothing is under 14px. Canvas text keeps those sizes in screen pixels at the zoom the user works at, or steps aside.
 - **Look for what is too small.** Measure every view after a visual change: list each text under the minimum and each click target under 44px, at 100% and at the user's saved canvas view, and fix the list.
+- **Back never goes in circles.** Going to a screen already in the history takes the history back to it: after A → B → C → B → C, Back leads to B and then A. Sketchcoded's Test flow works this way, so build the same.
+- **Every click does something visible.** A click that only highlights reads as broken.
+- **Fit before scrolling.** What was just opened fits the window when it can.
+- **Every part earns its place, once.** Remove what nobody would use instead of explaining it; one button per destination.
 - **Make it obvious what is clickable** and which option is selected.
 - **Click targets ≥ 44px, fields ≥ 48px tall.** Long notes readable without a nested scrollbar.
 - **Order of work:** logic and placement first, window resizing second, mobile third. Mobile is a stacked version of the same screen.
