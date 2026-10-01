@@ -198,7 +198,7 @@ export function Planning({
           ) : status === 'assigned' && screen ? (
             isPlanned(screen) ? (
               <button className="button small" onClick={() => onScreen(screen.id)}>
-                <Pencil size={14} /> Needs a drawing first
+                <Pencil size={14} /> Open the frame to place it
               </button>
             ) : (
               <button className="button small primary" onClick={() => onPlace(idea.id)}>

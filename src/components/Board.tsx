@@ -39,6 +39,7 @@ import {
 } from '../../shared/model';
 import type { Update } from '../useProject';
 import { clampView, fitView, frameRects } from '../boardView';
+import { frameOf, placeBoardWords } from '../boardNotes';
 import { TellAgent } from './TellAgent';
 export function Board({
   project,
@@ -390,16 +391,40 @@ export function Board({
     const bend = Math.max(50, Math.abs(x2 - x1) * 0.22) + Math.max(0, parallelIndex) * 52,
       cy1 = y1 + bend,
       cy2 = y2 + bend;
+    const curve: [number, number][] = [
+      [x1, y1],
+      [x1 + (x2 - x1) * 0.3, cy1],
+      [x2 - (x2 - x1) * 0.2, cy2],
+      [x2, y2],
+    ];
     return {
-      d: `M ${x1} ${y1} C ${x1 + (x2 - x1) * 0.3} ${cy1}, ${x2 - (x2 - x1) * 0.2} ${cy2}, ${x2} ${y2}`,
-      x: (x1 + x2) / 2,
-      y: (y1 + y2) / 2 + bend * 0.75,
+      d: `M ${x1} ${y1} C ${curve[1].join(' ')}, ${curve[2].join(' ')}, ${x2} ${y2}`,
+      curve,
     };
   };
+  const words = placeBoardWords(
+    project.screens.map((s) => {
+      const pos = position(s);
+      return frameOf(s.id, { ...pos, height: screenSize(project, s).height });
+    }),
+    project.transitions.filter(isHistory).flatMap((t) => {
+      const frameId = project.pins.find((pin) => pin.id === t.pinId)?.screenId;
+      return frameId ? [{ id: t.id, frameId, text: `↶ ${t.summary || t.navigation}` }] : [];
+    }),
+    project.transitions
+      .filter((t) => !isHistory(t) && t.target)
+      .flatMap((t) => {
+        const p = points(t.pinId, t.target!, t.id);
+        return p
+          ? [{ id: t.id, text: t.summary || 'Add a condition', curve: p.curve, wordy: wordy(t) }]
+          : [];
+      }),
+    view.zoom,
+  );
   return (
     <main
       ref={ref}
-      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''} ${view.zoom < 0.4 ? 'zoomed-out' : ''} ${focus ? 'has-focus' : ''} ${crowded ? 'crowded' : ''} ${category ? 'filtered' : ''}`}
+      className={`board ${space ? 'hand-mode' : ''} ${connecting ? 'connecting' : ''} ${view.zoom < 0.4 ? 'zoomed-out' : ''} ${view.zoom < 0.8 ? 'small-type' : ''} ${focus ? 'has-focus' : ''} ${crowded ? 'crowded' : ''} ${category ? 'filtered' : ''}`}
       style={{ '--board-zoom': view.zoom } as CSSProperties}
       aria-label="Design board"
       onPointerDown={(e) => {
@@ -470,7 +495,7 @@ export function Board({
             <article
               key={s.id}
               data-screen={s.id}
-              className={`screen-card ${moving?.id === s.id ? 'moving' : ''} ${isPlanned(s) ? 'planned' : ''} ${focus === s.id ? 'focused' : ''} ${ties.frames.has(s.id) ? 'tied' : ''} ${inCategory && !inCategory.frames.has(s.id) ? 'off-category' : ''}`}
+              className={`screen-card ${moving?.id === s.id ? 'moving' : ''} ${isPlanned(s) ? 'planned' : ''} ${project.pins.some((pin) => pin.screenId === s.id && pin.provisional) ? 'has-slots' : ''} ${focus === s.id ? 'focused' : ''} ${ties.frames.has(s.id) ? 'tied' : ''} ${inCategory && !inCategory.frames.has(s.id) ? 'off-category' : ''}`}
               style={
                 {
                   left: pos.x,
@@ -502,7 +527,7 @@ export function Board({
                     <img src={assetUrl(a)} alt={s.title} draggable={false} />
                   ) : isLeftToAi(s) ? (
                     <div className="frame-planned left-to-ai">
-                      <span className="eyebrow">LEFT TO THE AI</span>
+                      <span className="post-it in-frame">Leave it up to the AI</span>
                       <strong>
                         {ideas.length
                           ? `A standard page with ${ideas.length} ${ideas.length === 1 ? 'idea' : 'ideas'}`
@@ -696,12 +721,12 @@ export function Board({
         {project.transitions
           .filter((t) => !isHistory(t) && t.target)
           .map((t) => {
-            const p = points(t.pinId, t.target!, t.id);
-            return p ? (
+            const at = words.get(t.id);
+            return at ? (
               <button
                 key={t.id}
-                className={`yarn-label-button ${wordy(t) ? '' : 'as-dot'} ${focus && !ties.yarn.has(t.id) ? 'aside' : ''} ${category && t.color !== category ? 'off-category' : ''}`}
-                style={{ left: p.x, top: p.y }}
+                className={`yarn-label-button ${at.dot ? 'as-dot' : ''} ${focus && !ties.yarn.has(t.id) ? 'aside' : ''} ${category && t.color !== category ? 'off-category' : ''}`}
+                style={{ left: at.x, top: at.y }}
                 aria-label={`Edit connection: ${t.summary}`}
                 title={t.summary}
                 onClick={() => onEdge(t.id)}
@@ -721,7 +746,10 @@ export function Board({
             <button
               key={t.id}
               className={`history-tag ${category && t.color !== category ? 'off-category' : ''}`}
-              style={{ left: pos.x + 15, top: pos.y + size.height + 12 + i * 31 }}
+              style={{
+                left: words.get(t.id)?.x ?? pos.x + 15,
+                top: words.get(t.id)?.y ?? pos.y + size.height + 12 + i * 31,
+              }}
               onClick={() => onEdge(t.id)}
             >
               ↶ {t.summary || t.navigation}

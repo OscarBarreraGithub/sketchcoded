@@ -910,10 +910,12 @@
 
 /* Rule (2026-09-26): a frame can be left to the AI. The post-it says so on the board; the builder
    generates a standard page for that frame from the plan. */
+/* Nothing overlaps: on a drawn frame the post-it sits on the drawing just under the title tape; on
+   an undrawn frame it is part of the frame's own words (below), so the floating one is not shown. */
 .post-it {
   position: absolute;
-  top: -8px;
-  left: 12px;
+  top: 38px;
+  left: 14px;
   z-index: 3;
   width: 96px;
   padding: 8px 9px 11px;
@@ -937,6 +939,30 @@
   transform: translateX(-50%) rotate(2deg);
   background: #ffffff80;
   box-shadow: 0 1px 2px #4f4f3320;
+}
+.screen-card.planned .post-it:not(.in-frame) {
+  display: none;
+}
+/* Pins written before the drawing wait down the right side of a planned frame (slotPosition), so
+   the frame's words keep left of that column. */
+.screen-card.planned.has-slots .card-image .frame-planned {
+  /* The slot column sits 14% in; a pin head is a 44px target, so half of it plus a gap. */
+  padding-right: calc(14% + 28px / var(--board-zoom, 1));
+}
+.post-it.in-frame {
+  position: static;
+  width: auto;
+  max-width: 100%;
+  padding: 6px 10px 8px;
+  /* A handwriting face reads small, so it keeps 16 screen pixels rather than the 12px floor. */
+  font-size: max(18px, calc(16px / var(--board-zoom, 1)));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: rotate(-3deg);
+}
+.post-it.in-frame::before {
+  display: none;
 }
 .frame-planned.left-to-ai {
   background: #fdf7d8;
@@ -1473,14 +1499,27 @@ kbd,
 .board.zoomed-out .layout-flag {
   display: none;
 }
-.board.zoomed-out .post-it {
+/* Below 80% the post-it's words would drop under 12px, so it becomes a small square sticker. The
+   tape title grows to stay legible and fills the top-left corner, so the square takes the
+   top-right corner. Zoomed out, the frame's own words step aside and the square marks it. */
+.board.small-type .post-it:not(.in-frame),
+.board.zoomed-out .screen-card.planned .post-it:not(.in-frame) {
+  display: block;
   width: calc(14px / var(--board-zoom));
   height: calc(14px / var(--board-zoom));
   padding: 0;
   font-size: 0;
   top: calc(-4px / var(--board-zoom));
+  left: auto;
+  right: 12px;
 }
-.board.zoomed-out .post-it::before {
+.board.small-type .home-marker ~ .post-it {
+  right: 44px;
+}
+.board.small-type:not(.zoomed-out) .screen-card.planned .post-it:not(.in-frame) {
+  display: none;
+}
+.board.small-type .post-it::before {
   display: none;
 }
 .paper-title {

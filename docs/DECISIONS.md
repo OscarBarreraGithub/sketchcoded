@@ -70,7 +70,9 @@ The official public example is a snapshot of the authored Sketchcoded board and 
 
 Every brief and export includes `verify-the-result`. Agents inspect the affected board and delegated pages when authoring, and the finished site when implementing. The full checklist applies, including real browser zoom, overlaps, control access and honest reporting of evidence. Review flow remains structural; no standalone visual checker is introduced.
 
-Content and local actions use annotation pins: no yarn, no missing-route warning and no false exit. Delegated pages participate in reachability and dead-end checks even without drawings. Pending edits are protected on route changes and against arriving agent refreshes. The six-panel tutorial uses isolated practice state.
+Content and local actions use annotation pins: no yarn, no missing-route warning and no false exit. Delegated pages participate in reachability, dead-end and one-way checks even without drawings. Pending edits are protected on route changes and against arriving agent refreshes. The six-panel tutorial uses isolated practice state.
+
+Short windows switch to compact toolbars so the board keeps working room at high browser zoom. Acceptance tests assert a minimum board size and maximum page bounds, not only the absence of page overflow. Generated standard pages stay inside their stage and scroll internally; Test flow keeps notices and unplaced pins in its scrolling sidebar, so selecting a pin cannot shrink the drawing.
 
 The public demo consumes a snapshot without local source paths and shares the app's standard-page descriptions. Authored Back, Dismiss and reset are distinct from test rewind. External links, mobile positions and detail references retain their meanings.
 
@@ -78,8 +80,18 @@ The public demo consumes a snapshot without local source paths and shares the ap
 
 Bundled resources resolve from the repository location, independently of the launch directory. Default data remains in that checkout's `.drawcode/` for compatibility; explicit relative data paths resolve from the caller's working directory. Command-line options override environment variables, and `npm start` uses a cross-platform production flag. Port 0 requests an available local port. Missing export instructions fail visibly instead of producing an incomplete bundle.
 
-Public documentation stores edited specifications and decisions rather than raw conversation transcripts or personal environment details. This supersedes the original verbatim-prompt preservation policy. Existing drawings and private data are unchanged. Cleanup uses normal commits and does not rewrite published history.
+Public documentation stores edited specifications and decisions rather than raw conversation transcripts or personal environment details. This supersedes the original verbatim-prompt preservation policy. Existing drawings and private data are unchanged. Cleanup uses normal commits and does not rewrite published history. Dated pass reports were folded into the current records on 2026-09-30: requirements into `SKETCHCODED_REQUESTS.md`, decisions here, verification into the `PROGRESS.md` milestones and open guide work into `CATALOG.md`.
 
 ## Curated public example · 2026-09-28
 
 The site exporter omits isolated planned frames that have no drawing, delegated page, entry role, pin or authored connection. It keeps all authored routes and detail references, and filters the accompanying ideas, layout and assets to the included frames. This is a publication projection; the local project and backlog are preserved. The optional `--include-planned` switch exports the complete snapshot. No frame IDs or account-specific rules are embedded in the exporter.
+
+## Words on the board, waiting pins and the public example · 2026-09-30
+
+Yarn labels and way-back notes are placed, not just drawn at a fixed offset (`src/boardNotes.ts`, mirrored in the public demo). A way back sits under its frame when that is clear, otherwise beside it; a label slides along its own yarn from the middle; a label with no clear spot shows as a mark with its words on hover or focus. Placement uses the board's type sizes at the current zoom and never moves a frame. Stacked ways back on one frame are spaced by their real height.
+
+The "Leave it up to the AI" post-it never covers a title. On an undrawn frame it is part of the frame's own words, which keep left of the column where waiting pins sit; on a drawn frame it sits on the drawing below the tape. Below 80% zoom, where its handwriting would read under 16 screen pixels, it becomes a small square in the frame's top-right corner.
+
+A provisional pin on a frame that has a drawing is still at a placeholder, so Test flow (in the app and the public demo) lists it beside the drawing as not placed yet, as it does for pins missing from a mobile drawing. The user places it in the screen editor; the review warns until then.
+
+The public site serves a 404 page for unknown addresses instead of the homepage, and its hero image is a screenshot of the example board in the current app.

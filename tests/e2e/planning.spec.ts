@@ -46,11 +46,11 @@ test('planning: plan a frame, add ideas, place one as a pin with its yarn, and k
   await expect(page.locator('.view-switch').getByRole('button', { name: /^Plan/ })).toContainText(
     '2',
   );
-  // A planned frame cannot take pins until it has a drawing.
+  // A planned frame opens its editor, where the idea can wait as a pin until the drawing arrives.
   await expect(
     page
       .locator('.idea-card', { hasText: 'Sign out' })
-      .getByRole('button', { name: 'Needs a drawing first' }),
+      .getByRole('button', { name: 'Open the frame to place it' }),
   ).toBeVisible();
   // Placing writes the pin's name and intent and ties the planned yarn.
   await search.getByRole('button', { name: 'Place on the drawing', exact: true }).click();
@@ -196,7 +196,8 @@ test('a frame left to the AI wears its post-it on the board, in the outline and 
   await expect(guide.getByText('left to the AI')).toBeVisible();
   await page.getByRole('button', { name: 'Board', exact: true }).click();
   const frame = page.getByRole('article', { name: 'Screen: Guide', exact: true });
-  await expect(frame.locator('.post-it')).toHaveText('Leave it up to the AI');
+  // On an undrawn frame the post-it is part of the frame's words; the corner one waits for zoom-out.
+  await expect(frame.locator('.post-it:visible')).toHaveText('Leave it up to the AI');
   await expect(frame.getByText('A standard page')).toBeVisible();
   // The review no longer asks for a drawing; the plan says the frame is left to the AI.
   await page.locator('.review-button').click();
@@ -271,6 +272,16 @@ test('strings are tied before the drawing: a provisional pin waits, then is plac
     await page.request.get(`/api/projects/${project.id}/brief?view=review`)
   ).text();
   expect(warned).toContain('rule pin-not-placed');
+  // Until it is placed, Test flow lists the pin beside the drawing instead of at its placeholder.
+  await close(page);
+  await page.getByRole('button', { name: 'Test flow', exact: true }).click();
+  await page.getByLabel('Preview starting screen').selectOption('wait-a');
+  await expect(page.locator('.preview-pin')).toHaveCount(0);
+  const waiting = page.locator('.preview-unplaced');
+  await expect(waiting).toContainText('Not placed on the drawing yet:');
+  await expect(waiting.getByRole('button', { name: 'Try Open two' })).toBeVisible();
+  await close(page);
+  await page.getByRole('button', { name: 'Edit Waiting one', exact: true }).click();
   await strip.getByRole('button', { name: /Open two/ }).click();
   const image = editor.locator('.editable-image img').first();
   await expect(image).toBeVisible();

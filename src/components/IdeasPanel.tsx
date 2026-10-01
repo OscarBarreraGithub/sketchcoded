@@ -67,7 +67,9 @@ export function IdeasPanel({
                     className="ideas-row"
                     key={idea.id}
                     onClick={() => (isPlanned(screen) ? onScreen(screen.id) : onPlace(idea.id))}
-                    title={isPlanned(screen) ? 'Needs a drawing first' : 'Place it on the drawing'}
+                    title={
+                      isPlanned(screen) ? 'Open the frame to place it' : 'Place it on the drawing'
+                    }
                   >
                     <MapPin size={13} />
                     <span>{idea.title}</span>

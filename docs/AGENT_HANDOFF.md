@@ -1,8 +1,8 @@
 # Handing a task to the agent
 
-Rule (2026-09-26): every view can hand its task to the agent. Wherever the user works, one button, **Tell the agent**, copies a generated prompt to the clipboard and shows it for manual copying and editing. The prompt names the view, the exact subject and where the instructions are, and points the agent at the running app's local API so it reads the current state instead of asking.
+Rule (2026-09-26): every view can hand its task to the agent. Wherever the user works, one button, **Tell the agent**, copies a generated prompt to the clipboard and shows it in a read-only terminal for checking or manual copying. The prompt names the view, the exact subject and where the instructions are, and points the agent at the running app's local API so it reads the current state instead of asking.
 
-Nothing is hand-written. Three registries in `shared/agent.ts` generate everything:
+Nothing is hand-written. Registries in `shared/agent.ts` (views, contexts, skills and build levels) generate everything.
 
 ## Views
 
@@ -24,7 +24,7 @@ Every brief additionally requires `verify-the-result`: the agent checks the rend
 
 ## Codes
 
-Everything the user and the agent talk about has a short code, given once and never reused: frames **P1, P2, …**, sketches **S1, S2, …**, ideas **I1, I2, …**. A pin is named by its frame and its number on that frame, **P3 pin 2**, which is what the board and the editor show. Codes are stored in the project (`code` on screens, assets and ideas; `withCodes()` in `shared/model.ts` assigns missing ones on the server and in the app) and appear on the frame footers, the library, the outline, the plan folders and idea cards, the editor title, Test flow, the yarn editor, `flow.md`, the planning outline, and at the front of every prompt and brief.
+Everything the user and the agent talk about has a short code, given once and never reused: frames **P1, P2, …**, sketches **S1, S2, …**, ideas **I1, I2, …**. A pin is named by its frame and its number on that frame, **P3 pin 2**, which is what the board and the editor show. Codes are stored in the project (`code` on screens, assets and ideas; `withCodes()` in `shared/model.ts` assigns missing ones on the server and in the app, and `codeCounters` keeps the highest issued number so a deleted code is never reused) and appear on the frame footers, the library, the outline, the plan folders and idea cards, the editor title, Test flow, the yarn editor, `flow.md`, the planning outline, and at the front of every prompt and brief.
 
 ## Context
 
@@ -42,20 +42,22 @@ A **skill** is one instruction document in `docs/skills/<id>.md`, served at `/ap
 | `build-rules`         | The user's layout and interaction rules (short form of the checklist)   | board, screen editor            |
 | `start-a-board`       | The three build levels for a new board and how to write for the builder | boards                          |
 | `describe-pins`       | Write what each pin does, from the plan, and tie its yarn               | screen editor                   |
-| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                  | connection editor               |
+| `connect-screens`     | Yarn: navigation kinds, conditions, fallbacks, history                  | connection editor, boards       |
 | `plan-the-backlog`    | Ideas: assign, move, answer what belongs on a frame                     | plan, outline, library, boards  |
 | `resolve-findings`    | What each review rule means; fix the board or accept with a reason      | review                          |
 | `walk-the-flow`       | Follow a Test flow trail and find the first missing step                | test flow                       |
 
-## What the agent reads from the running app
+## What the agent reads and writes through the running app
 
-All `GET`, all local only, all Markdown unless noted:
+All local only, all Markdown unless noted:
 
+- `GET /api/projects` (JSON) — the boards: id, name, last update and screen count. `POST /api/projects` with `{"name": …}` creates one (see `start-a-board`).
+- `/api/brief?view=boards&mode=…` — the brief for starting a new board, with no board yet.
 - `/api/projects/:id/brief?view=…&screen=…&pin=…&layout=…&transition=…&idea=…&finding=…&trail=a,b` — the brief for one task: the task, the skills to read, the frame (drawings, pins, yarn, ideas, findings) or the yarn, the plan, the outline, the findings, or the trail.
 - `/api/projects/:id/flow.md` and `/api/projects/:id/outline.md` — the whole documents.
 - `/api/checklist.md` — the configured general build requirements. They take precedence. A project's own requests are in its board, not here.
 - `/api/skills` (JSON) and `/api/skills/:id.md`.
-- `/api/projects/:id` (JSON) — the canonical project; `PUT` it back with `X-Drawcode-Client: local` to change the board (see `talk-to-sketchcoded`). The open board checks for changes every few seconds and on focus; when it has nothing unsaved (or only moved its viewport) it takes the newer copy and says “Updated from your agent”. Real unsaved edits still get the conflict banner, now with “Take the newer copy”. The agent writes once at the end and warns the user to pause editing until then.
+- `/api/projects/:id` (JSON) — the canonical project; `PUT` it back with `X-Drawcode-Client: local` to change the board (see `talk-to-sketchcoded`). The open board checks for changes every few seconds and on focus; when it has nothing unsaved (or only moved its viewport) it takes the newer copy and says “Updated from your agent”. Real unsaved edits get the conflict banner instead, with “Take the newer copy”. The agent writes once at the end and warns the user to pause editing until then.
 - `/assets/<file>` — the drawings.
 
 ## The prompt

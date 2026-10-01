@@ -14,6 +14,7 @@ import {
 import {
   assetUrl,
   isPlanned,
+  isProvisional,
   pinColor,
   pinUrl,
   type Layout,
@@ -110,7 +111,13 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
   // flow walks it like a real site. A drawing always wins; that is the user's own vision.
   const built = !asset && buildsItsOwnPage(screen);
   const last = project.transitions.find((t) => t.id === state.trail.at(-1));
-  const unplaced = showingMobile ? pins.filter((p) => !p.mobile) : [];
+  // A provisional pin's position is a placeholder until the user places it, so on a drawing it
+  // waits beside the image, like a pin that is not on the mobile drawing yet.
+  const unplaced = showingMobile
+    ? pins.filter((p) => !p.mobile)
+    : asset
+      ? pins.filter(isProvisional)
+      : [];
   // Rule (2026-09-26): every view works at every zoom. The drawing is sized to the stage in both
   // directions so every pin is in view without scrolling, however small the dialog.
   const stageRef = useRef<HTMLDivElement>(null),
@@ -237,7 +244,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
                 )}
                 {asset &&
                   pins
-                    .filter((p) => !showingMobile || p.mobile)
+                    .filter((p) => (showingMobile ? p.mobile : !isProvisional(p)))
                     .map((p) => {
                       const pos = showingMobile ? p.mobile! : p,
                         i = pins.indexOf(p);
@@ -268,7 +275,11 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
             )}
             {unplaced.length > 0 && (
               <div className="preview-unplaced">
-                <span>Not placed on the mobile drawing yet:</span>
+                <span>
+                  {showingMobile
+                    ? 'Not placed on the mobile drawing yet:'
+                    : 'Not placed on the drawing yet:'}
+                </span>
                 {unplaced.map((p) => (
                   <button
                     key={p.id}

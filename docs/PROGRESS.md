@@ -1,27 +1,29 @@
 # Product progress and handoff
 
-Updated 2026-09-28. This is the current status; dated review reports retain their original observations and explain the follow-up fixes.
+Updated 2026-09-30. Current status for anyone picking the product up. Requirements are in [SKETCHCODED_REQUESTS.md](SKETCHCODED_REQUESTS.md), decisions in [DECISIONS.md](DECISIONS.md), and every request so far with its status in [CATALOG.md](CATALOG.md).
 
 ## Current state
 
-The local screenshot flow designer, structural review and interactive preview are implemented. Later passes added planning, mobile drawings, provisional pins, agent handoff, delegated standard pages, thread categories and a six-panel tutorial. The integrated model generation/review workflow remains deferred.
+The local screenshot flow designer, structural review and interactive Test flow are implemented, together with planning, web and mobile drawings, provisional pins, agent handoff, pages left to the AI, thread categories and a six-panel tutorial. The integrated model generation and review workflow remains deferred by design.
 
-The separate public site is available at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and [read-only demo](https://sketchcoded.com/demo). The official demo uses the authored Sketchcoded board and its original hand drawings. The public example contains three original drawings and seven delegated standard pages. Two isolated planning frames remain in the local backlog and are omitted from publication.
+The companion site is live at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and a [read-only example](https://sketchcoded.com/demo) made from the authored Sketchcoded board and its original hand drawings. The published example has ten frames: three drawings and seven pages left to the AI. P2 Boards and P8 Review flow stay in the local backlog and are omitted from publication.
+
+The local Sketchcoded board is at revision 220. Every page has a way back through Back or Close pins, and its categories are named Main path, Branch, Detour and Way back. Review flow shows three findings: P2 and P8 wait for drawings, and the P6 Close pin waits to be placed on its drawing. The published example was regenerated from revision 220.
 
 ## Start here
 
-1. Read `AGENTS.md`, `ORIGINAL_BRIEF.md`, `SKETCHCODED_REQUESTS.md`, `DECISIONS.md` and `BUILD_CHECKLIST.md` before changing the product.
+1. Read `AGENTS.md`, then `ORIGINAL_BRIEF.md`, `SKETCHCODED_REQUESTS.md`, `DECISIONS.md`, `BUILD_CHECKLIST.md` and `CATALOG.md` before changing the product.
 2. Follow the repository README for setup, configuration, storage and recovery. Node 22.12 or later and npm are required; no account or API key is needed. The checkout can live anywhere.
 3. Run `npm ci`, then `npm run dev`. Use `-- --port 0` to choose an available port, and open the address printed by the server. Keep only one server per data directory.
-4. Preserve `.drawcode/` or the configured data directory. A fresh installation creates the Little chat sample; it does not need any maintainer's private boards. Use isolated data for tests.
-5. Use the active board's plan and generated outline when discussing its requirements. Only update an existing product-planning board when that work is authorized. Keep `FUNCTIONALITY.md` current independently of local data.
-6. The companion site is the separate `sketchcoded-site` repository. It can be cloned anywhere. Its README describes configuration, example regeneration and deployment to the intended account. A fork uses its own hosting project.
+4. Preserve `.drawcode/` or the configured data directory. A fresh installation creates the Little chat sample and needs no maintainer board. Use isolated data for tests.
+5. Use the active board's plan and generated outline when discussing its requirements. Update an existing product-planning board only when that work is authorized. Keep `FUNCTIONALITY.md` current independently of local data.
+6. The companion site is the separate `sketchcoded-site` repository and can be cloned anywhere. Its README covers configuration, example regeneration and deployment. A fork uses its own hosting project.
 7. Stop task servers and test browsers, including their child processes, before handing back unless asked to keep them running.
 
 ## Implemented scope
 
-- Local file/folder intake, immutable image snapshots, watched folders and New/Used library sections.
-- A pannable, zoomable board with named and resizable frames, pins, branching yarn, thread filtering and an outline alternative.
+- Local file and folder intake, immutable image snapshots, watched folders and New/Used library sections.
+- A pannable, zoomable board with named, resizable frames, pins, branching yarn, thread filtering and an outline alternative.
 - A planning backlog with assignments, placed markers and copyable text; planned frames and provisional pins before drawing.
 - Web and mobile drawings of the same screen, with shared navigation and separate pin positions.
 - Interaction, link, detail and content/local-action pins with distinct semantics.
@@ -30,44 +32,23 @@ The separate public site is available at [sketchcoded.com](https://sketchcoded.c
 - Autosave, atomic backups, revision conflicts, undo/redo and portable export/import with the checklist and skills.
 - Generated agent prompts and live briefs in every work view; three board-build levels and safe refresh after agent writes.
 - Six tutorial panels with practice state separate from saved boards.
-- Public guide and read-only example, with external links, layouts and history matching the app.
+- Cross-platform setup with configurable port and data directory.
+- Public guide and read-only example, with links, layouts and history matching the app.
 
-See `FUNCTIONALITY.md` for the feature catalogue and `GRAPH.md` for model semantics.
+See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model semantics.
 
 ## Milestones
 
-| Date          | Result                                                                      | Verification at that milestone                                                         |
-| ------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| 2026-09-07    | Initial local designer, graph, review, preview and export                   | Build, 40 domain/storage/API tests, 9 browser workflows, formatting                    |
-| 2026-09-08    | Branding, outline, detail references, controls and browser zoom             | Build, 49 tests, 13 browser workflows, native zoom and formatting; `USABILITY_PASS.md` |
-| 2026-09-25    | Planning, two layouts, link pins, workstation and separate public site      | Build, 66 tests, 16 browser workflows and formatting; `PLANNING_PASS.md`               |
-| 2026-09-26–27 | Live agent handoff, codes, provisional pins, generated pages and categories | Subsequent regression coverage is included in the review follow-up below               |
-| 2026-09-28    | Review fixes, tutorial, agent verification and public-demo alignment        | Build, 102 unit/API tests, 32 browser workflows and formatting; `REVIEW_2026-09-28.md` |
-
-The review follow-up verified actual Chromium tab zoom at 125%, 150%, 200% and 250% at 1440×900 and 1280×720. It covered tutorial panels, workspace size and bounded generated pages. Evidence includes `screenshots/review-2026-09-28-zoom-fixed.png`. Public homepage, guide, demo navigation and the projects link were checked after deployment. No DNS changes were needed.
-
-## Portability and documentation follow-up · 2026-09-28
-
-Changes in this pass:
-
-- Cross-platform startup with explicit port and storage options, plus existing environment-variable support.
-- Repository-relative static assets, checklist and skills, so launching elsewhere does not lose required resources.
-- Complete exports that fail visibly if required instructions are missing.
-- Setup, migration and fork-hosting instructions without personal machine or signed-in-account assumptions.
-- Edited requirements and decision records in place of raw conversation transcripts and stale personal handoffs.
-- Portability regressions and a CI matrix for supported operating systems.
-
-Verification:
-
-- `npm run build`, all **105** unit/API tests, all **32** browser workflows, formatting and diff checks pass locally.
-- A separate checkout in a directory containing spaces installed with `npm ci`, built and passed its 104-test snapshot without private data. A built-app startup check confirmed static resources and default storage from an unrelated directory.
-- Portability regressions launch from another directory with an available port and a storage path containing spaces, fetch all agent instructions and export a complete bundle. Missing required instructions cause a visible export failure.
-- The [app CI matrix](https://github.com/OscarBarreraGithub/sketchcoded/actions/runs/36489045475) passed all six combinations of macOS, Linux and Windows with Node 22.12 and 24: clean installation, build, all 105 tests and formatting. `.gitattributes` keeps checkout line endings consistent across platforms.
-- The [site CI matrix](https://github.com/OscarBarreraGithub/sketchcoded-site/actions/runs/36489091375) passed the same six platform/version combinations for exporter regressions and public-file staging.
-- Homepage and guide passed 16 checks across both laptop sizes and all four native zoom levels. Long commands wrap, and the scroll hint has a reserved rail. Fork configuration updates setup commands, prompts and public links together. No browser runtime errors were reported.
-- The site now supports board selection by ID and preserves the old example after failed downloads. Deployment stages an explicit list of public files, excluding repository notes and maintenance tools.
-- The [published site](https://sketchcoded.com) and [deployment](https://81fb7ac8.sketchcoded.pages.dev) were checked for the updated guide, setup instructions, projects link, original drawings and deployment exclusions. No DNS records changed.
-- Private application data and authored drawings were preserved. Task servers and temporary browsers were stopped; the fresh-install checkout and temporary test artifacts were removed.
+| Date          | Result                                                                                                                                                                                     | Verification                                                                                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-07    | Local designer, graph, review, preview and export                                                                                                                                          | Build, 40 unit/API tests, 9 browser workflows, formatting                                                                                                                                                                     |
+| 2026-09-08    | Sketchcoded rename, App outline, detail references, board controls, browser zoom                                                                                                           | Build, 49 tests, 13 browser workflows including real Chromium zoom at 125–250%, formatting                                                                                                                                    |
+| 2026-09-25    | Planning backlog, planned frames, web and mobile drawings, link pins, workstation, separate public site                                                                                    | Build, 66 tests, 16 browser workflows, formatting; the screen editor kept a fixed 1190×920 px while switching pins                                                                                                            |
+| 2026-09-26–27 | Agent handoff, codes, provisional pins, build levels, standard pages, thread categories                                                                                                    | Covered by the 2026-09-28 regression suite                                                                                                                                                                                    |
+| 2026-09-28    | Review follow-up: save safety, workspace at high zoom, checks for pages left to the AI, durable codes, annotation pins, tutorial, public-demo alignment; 22 static pins became annotations | Build, 102 unit/API tests, 32 browser workflows, formatting; at 1280×720 and real 250% zoom the board keeps 184 CSS px of height (was 22.8)                                                                                   |
+| 2026-09-28    | Portability: cross-platform startup, port and data options, repository-relative resources, complete exports, CI matrix                                                                     | Build, 105 unit/API tests, 32 browser workflows; a fresh checkout in a path with spaces passed; app and site CI passed on macOS, Linux and Windows with Node 22.12 and 24; 16 site checks at both laptop sizes and four zooms |
+| 2026-09-28    | Focused public example: ten frames, seven pages left to the AI                                                                                                                             | Build, 105 tests, 32 browser workflows; 112 delegated-page checks (7 pages, 4 zooms, 2 window sizes, app and demo); site CI passed                                                                                            |
+| 2026-09-30    | Requirements catalog; ways back and named categories on the Sketchcoded board                                                                                                              | Board review findings went from 18 to 3                                                                                                                                                                                       |
 
 ## Deliberate limits
 
@@ -75,17 +56,24 @@ Verification:
 - One local server owns each data directory. Hosted collaboration, authentication and cloud sync are not implemented.
 - No model runs inside Sketchcoded. Prose conditions are not executed or proved; generated standard pages are navigable prototypes without a backend.
 - Visual verification belongs to the acting agent and the test workflow. Review flow does not inspect pixels.
-- Source-folder connections are machine-specific user data. Portable ZIPs omit those paths; reconnect a folder after moving machines if ongoing refresh is needed.
-- Public-document cleanup does not erase earlier Git commits.
+- Source-folder connections are machine-specific. Portable ZIPs omit those paths; reconnect a folder after moving machines if ongoing refresh is needed.
+- Earlier documentation remains in Git history; cleanup uses normal commits.
 
-## Public example curation · 2026-09-28
+## Open
 
-The source board is revision 219: P4, P5, P7, P9, P10 and P11 are now left to the AI, alongside the already-delegated P12 Guide. The full board retains all 12 frames, three drawings, 32 pins and eight yarns. I102 records the focused public example. The published snapshot contains ten frames and omits the isolated P2 Boards and P8 Review flow, along with their backlog items. Original images, positions, pins and routes are preserved. The exporter applies this selection on regeneration and offers `--include-planned` for the complete snapshot.
+- Place the P6 Close pin on the Screen editor drawing (the user's step), then regenerate the example.
+- Restructure the guide from `CATALOG.md`, starting with its “Guide topics” section.
+- Point things out on a built UI: planned on 2026-09-29, not built.
+- P2 Boards and P8 Review flow wait for drawings.
+- Existing UI copy that predates the direct-copy rule (for example “From a sketch to a story.”) is unchanged, as that rule asks; rewrite it only on request.
 
-Verification:
+## Verification · 2026-09-30
 
-- Build, all 105 unit/API tests, all 32 browser workflows, formatting and diff checks passed.
-- All seven delegated pages were checked in the app and public demo at 125%, 150%, 200% and 250% native browser zoom, at 1440×900 and 1280×720: 112 page checks. Scrolling and exit controls remained reachable, without horizontal overflow. The public demo's scroll hint now has a separate rail, and its exit button retains contrast on hover.
-- All eight existing demo routes and test rewind passed. The original pins, yarn and drawing assets match the previous snapshot; read-only checks left the source board at revision 219. Exporter tests cover automatic curation, the full-snapshot option, failure recovery and preservation of authored routes and details.
-- The [site CI matrix](https://github.com/OscarBarreraGithub/sketchcoded-site/actions/runs/36493874401) passed all six combinations of macOS, Linux and Windows with Node 22.12 and 24.
-- The [live example](https://sketchcoded.com/demo) and [deployment](https://45b8a6ff.sketchcoded.pages.dev/demo) serve the verified snapshot and updated guide and styles. No DNS changes were made. Temporary servers and browsers were stopped.
+Changes: ways back and category names on the Sketchcoded board; yarn labels and way-back notes placed clear of every frame in the app and the public example (`src/boardNotes.ts`); the AI post-it never covers a title; waiting pins listed beside the drawing in Test flow; the example's legend and controls in a strip below the cork; a 404 page, the logo's full stop, guide paragraph spacing and a current hero image on the site; stale pass reports and unused screenshots removed and their content folded into the current records.
+
+- `npm run build`, all **111** unit/API tests (six new for word placement), all **32** browser workflows (one extended for waiting pins in Test flow) and `npm run format:check` pass.
+- App board, measured in the browser at fit (36%), 46%, 59%, 75% and 100%: no label or way-back note covers a frame, a title tape or another label; no post-it covers a title; the words of planned frames keep clear of waiting pins.
+- Site, at actual Chromium tab zoom of 125%, 150%, 200% and 250% in 1440×900 and 1280×720 windows, plus a 390×844 phone window: home, guide, example and 404 pages (36 checks) have no page scroll or horizontal overflow, no text under 12px, a visible scroll hint wherever a panel scrolls, and no example label or note over a frame. At every zoom the example walks Home → Guide → Home with its controls reachable. No browser errors.
+- Example walks: every page has its way back (Guide and the example demo return Home; App outline and Planning return to the board; each dialog closes to the board); P6's Close waits beside the drawing until it is placed.
+- Site exporter and staging tests pass (`node --test`); staging includes the 404 page and still excludes repository notes and tools.
+- The user's data was only written once, through the app's API (revision 219 → 220, backup kept outside the repository). Screenshots and the example came from a copy of the data on a separate port. Servers and test browsers were stopped afterwards.

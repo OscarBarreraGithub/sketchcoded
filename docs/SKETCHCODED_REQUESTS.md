@@ -14,7 +14,7 @@ Record requirements and decisions rather than conversation transcripts. Preserve
 - **No tagline on the board.** Keep the workspace header compact. (2026-09-26)
 - **Copy.** Name: Sketchcoded. Brand line: “Ideas, connected.” Landing-page message: “Prompts make apps. Sketching makes your vision.” Approved alternate: “Telling an AI what you want gets you an app. Showing it gets you your vision.” Describe the local workflow accurately: no account, API key or automatic upload. Generate the setup prompt from the configured repository address and provide a copy button. (2026-09-25; updated 2026-09-28)
 - **Scope.** Desktop only for input: image files already on the computer, no phone capture (2026-09-25). The landing site is its own repository and its own thing; keep name, tagline, setup prompt and feature list identical between site and app (2026-09-25). No agent chat inside the workstation; the plan is where ideas go, the export and the API are where an agent reads from (2026-09-25). No LLM runs inside Sketchcoded yet; nothing written in words is executed or proved (2026-09-07).
-- **Process for this repository.** Read `AGENTS.md`, `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md`, this file and the checklist before changing anything. Run `npm run build`, `npm test`, `npm run test:ui` (build first) and `npm run format:check`; record results in `docs/PROGRESS.md`. Keep `docs/FUNCTIONALITY.md` current, along with any authorized local product-planning board. Leave a development server running only when explicitly requested; verification uses a scratch server and a scratch data folder.
+- **Process for this repository.** Read `AGENTS.md`, `docs/ORIGINAL_BRIEF.md`, `docs/PROGRESS.md`, `docs/DECISIONS.md`, this file, `docs/CATALOG.md` and the checklist before changing anything. Run `npm run build`, `npm test`, `npm run test:ui` (build first) and `npm run format:check`; record results in `docs/PROGRESS.md`. Keep `docs/FUNCTIONALITY.md` current, along with any authorized local product-planning board. Leave a development server running only when explicitly requested; verification uses a scratch server and a scratch data folder.
 - **Where things are written down.** The checklist holds general rules only, without dates. Requests specific to Sketchcoded go here, the work in `docs/PROGRESS.md`, and what is still to do in the board’s backlog. Project records do not talk to each other; preferences do. (2026-09-26)
 - **The prompt is three lines.** Subject, the brief’s address, and “Anything I add below this line is part of the task.” Everything else (task, skills, rules) lives in the brief the app serves, so the copied text is compact and only the address changes between views. (2026-09-27)
 - **A new board is written at one of three levels**, chosen with a three-position switch in the handoff dialog: Just the list (ideas only, a to-do list of what to draw and connect), Frames and strings (planned frames with the yarn already tied through provisional pins; the default, so later changes are tweaks instead of starting over) and Built out (frames and strings with every frame left to the AI; the user takes the post-it off the one or two pages they draw themselves). The same switch appears for an empty board. (2026-09-27)
@@ -29,6 +29,32 @@ Record requirements and decisions rather than conversation transcripts. Preserve
 - **The example board is the real board.** The public demo shows the user's own Sketchcoded board with their hand drawings, never a mock drawn in code. (2026-09-27)
 - **Planned cards keep a fixed box.** Zoomed out under 40%, planned frames show only their tape and code, tape titles trim to the tape, and the layout math and the rendering agree, so thirty planned frames fit the window as a readable map. (2026-09-27, from the first agent-built board)
 
+## 2026-09-08 — Rename and usability
+
+- Rename the product to Sketchcoded without disrupting saved projects: keep the `.drawcode/` storage directory and existing client identifiers, and keep importing older bundles.
+- Add a text outline of the app beside the board: each screen once, with its pins and destinations, readable without the yarn.
+- Make moving around the board simple: scrolling, blank-space panning and a draggable zoom slider instead of tool modes.
+- Let a pin open a closer look at a detail sketch, separate from app navigation.
+- Explain what Review flow checks and what to do with each finding.
+- Show whether each sketch is already used, and where.
+- Make it clear what the data field on a connection holds.
+
+The general requests from this pass (browser zoom, click targets, field sizes, no nested scrolling for long notes) are in the checklist.
+
+## 2026-09-25 — Planning, two drawings and the workstation
+
+- A Plan view holds every functionality idea, saved with the project: easy to add, skim and search. An idea can be assigned to a screen, moved between screens or left in the pool, and can name the screen it leads to.
+- Placing an assigned idea makes a pin with its text, and its yarn when it leads somewhere. Placed ideas stay listed and greyed with their pin, so nothing is pinned on two pages.
+- A screen can be planned before it is drawn; dropping a sketch on the frame fills it. A planned card shows a count of its ideas; the list is in the editor, Plan and the outline.
+- The plan reads two ways: on the board, and as a copyable text outline that every export includes.
+- The agent keeps the backlog current from what the user describes, proposes screen assignments and moves ideas on request (`AGENTS.md`, Planning routine).
+- A screen can hold a web drawing and a mobile drawing that share its title, purpose, pins and yarn; each pin has a position on both. The board card shows a phone thumbnail, Test flow switches layouts, Review flow reports pins missing from the mobile drawing (waivable) and exports describe both. The editor's Web / Mobile toggle supersedes the first side-by-side layout.
+- The workstation: a library in New and Used sections; an Ideas panel listing what is left to place; Board, App outline and Plan tabs with the selected one filled; frames resized from their corner; a home marker on entry frames; pin colors with a meaning per board (refined into yarn categories on 2026-09-27); a pins list in the screen editor that moves, deletes and highlights pins.
+- A web address is a link pin with the address in its description, never a frame. This supersedes the first model of external sites as ending frames.
+- Sketchcoded is planned on its own board: the frames are the product's screens, drawn by the user, with ideas written by the agent. The product's functionality is kept in one place, that board's backlog, mirrored in `docs/FUNCTIONALITY.md`.
+- Planning is explained in the help dialog and the README.
+- Superseded: planned connections drawn on the board (see “One kind of line on the board”, 2026-09-26) and an agent box in the workstation (removed the same day; see Scope).
+
 ## 2026-09-28 — Review follow-up
 
 - Protect pending edits when returning to the boards list and when an agent refresh arrives during typing.
@@ -41,7 +67,7 @@ Record requirements and decisions rather than conversation transcripts. Preserve
 - Require agents to verify the full checklist when authoring a board, including delegated pages, and again when building the resulting site. Inspect rendered text, overlaps, controls and real browser zoom, and report evidence. Review flow remains a structural checker; no automatic visual checker is promised.
 - Keep the shared checklist general. Board-reading semantics belong in agent skills; product history belongs here.
 
-Implementation and evidence: [REVIEW_2026-09-28.md](REVIEW_2026-09-28.md). The source-board reconciliation is summarized in [BOARD_SYNC_2026-09-28.md](BOARD_SYNC_2026-09-28.md).
+All of these are implemented; verification is in the milestones of [PROGRESS.md](PROGRESS.md). The Sketchcoded board's records were brought into agreement with the implemented behavior at the same time, without changing its drawings, pin positions or yarn.
 
 ## 2026-09-28 — Portable setup and public documentation
 
@@ -53,3 +79,14 @@ Implementation and evidence: [REVIEW_2026-09-28.md](REVIEW_2026-09-28.md). The s
 ## 2026-09-28 — Focus the public example
 
 Keep useful connected pages in the example and mark undrawn pages as left to the AI. Omit isolated, undeveloped frames that add no useful information to the public walkthrough. Preserve the full local planning backlog, original drawings, pin positions and authored yarn. The official example omits P2 Boards and P8 Review flow; its other seven undrawn pages are delegated.
+
+## 2026-09-29 — Point things out on a built UI
+
+When a UI is already built, let the user highlight an element or area and point it out to the agent, so nothing has to be described in words. A plan was made (select or box an area, add a note, hand it over with a screenshot and the page's location through Tell the agent); it is not built. Recorded on 2026-09-30.
+
+## 2026-09-30 — Catalog, selling points, guide and example board
+
+- Catalog every request given to Claude and Codex, and distill about ten selling points from it: [CATALOG.md](CATALOG.md).
+- Restructure the guide completely, starting from that catalog.
+- Every page on the example board has a way back: Back to the board on App outline and Planning, Close on the dialogs, Home on the Guide and the example demo. These are Back and Close steps, so no new lines cross the board. The board's colors use the category names the guide teaches (Main path, Branch, Detour, Way back), and the stale note on the example pin was removed.
+- Make the website and both repositories ready to share: every fix discussed for the site and example, no stale documents or unused files.

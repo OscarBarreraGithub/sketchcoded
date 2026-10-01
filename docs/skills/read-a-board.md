@@ -19,7 +19,7 @@ A pin describes content or an interaction on a drawing. `x`, `y` are fractions o
 
 ## Yarn (transitions)
 
-A transition belongs to a pin (`pinId`) and goes to `target` (a screen id) or, for history kinds, to `null`. `navigation`: `push` (open and keep history), `replace`, `reset` (start fresh), `modal`, `back`, `dismiss`. `summary` is the label on the yarn and the option in Test flow. `condition` (when), `logic` (what happens), `context` (data needed) are prose. `fallback: true` marks the branch taken when no condition applies. Never invent routes that are not drawn.
+A transition belongs to a pin (`pinId`) and goes to `target` (a screen id) or, for history kinds, to `null`. `navigation`: `push` (open and keep history), `replace`, `reset` (start fresh), `modal`, `back`, `dismiss`. `summary` is the label on the yarn and the option in Test flow. `condition` (when), `logic` (what happens), `context` (data needed) are prose. `fallback: true` marks the branch taken when no condition applies. Never invent routes the user has not authored.
 
 ## Ideas (the plan)
 
