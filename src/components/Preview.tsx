@@ -23,7 +23,7 @@ import {
   type Transition,
   codeOf,
 } from '../../shared/model';
-import { follow, startPreview, type PreviewState } from '../../shared/navigation';
+import { arrive, follow, type PreviewState } from '../../shared/navigation';
 import { buildsItsOwnPage } from '../../shared/standard-page';
 import { Modal } from './Modal';
 import { ScrollHints } from './ScrollHints';
@@ -34,7 +34,8 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
   const initial = appScreens.find((s) => s.entry)?.id ?? appScreens[0]?.id;
   const hasMobile = project.screens.some((s) => s.mobileAssetId);
   const [start, setStart] = useState(initial),
-    [state, setState] = useState(() => startPreview(initial)),
+    [state, setState] = useState(() => arrive(project, initial).state),
+    [via, setVia] = useState(() => arrive(project, initial).via),
     [rewinds, setRewinds] = useState<PreviewState[]>([]),
     [choice, setChoice] = useState<string | null>(null),
     [notice, setNotice] = useState(''),
@@ -101,8 +102,10 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
     else setChoice(p.id);
   };
   const reset = (id = start) => {
+    const arrival = arrive(project, id);
     setStart(id);
-    setState(startPreview(id));
+    setState(arrival.state);
+    setVia(arrival.via);
     setRewinds([]);
     setChoice(null);
     setNotice('');
@@ -298,6 +301,13 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
                 ? 'Left to the AI, so this page is built from the plan. Click anything that leads somewhere.'
                 : 'Click a pin to try a path or open a closer look.'}
             </p>
+            {via.length > 0 && !state.trail.length && (
+              <p className="preview-hint">
+                <Flag size={14} /> Arrived from{' '}
+                {via.map((id) => project.screens.find((s) => s.id === id)?.title).join(' → ')}, the
+                way a visitor gets here, so Back and Close lead where they really do.
+              </p>
+            )}
             {notice && (
               <div className="preview-notice" role="status">
                 {notice}

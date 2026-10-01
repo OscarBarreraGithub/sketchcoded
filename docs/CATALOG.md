@@ -139,6 +139,7 @@ All are in the build checklist.
 - sketchcoded.com is hosted and live. Done.
 - “See more projects” links to sciencewithagents.com. Built.
 - The example keeps useful undrawn pages, left to the AI, and drops pages that add nothing. Built.
+- “Example: this website” leads to The board itself, so the whole example is connected (2026-09-30). Built.
 - On mobile, the setup box sits below the example; make it obvious the example should be clicked (from the home drawing). Built.
 - The app's own landing page copies the site's design, lists boards and starts new ones; the logo returns to it. Built.
 

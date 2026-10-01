@@ -10,7 +10,7 @@ Started 2026-09-25 from the original brief and the product requirements; kept cu
 ## Home (the landing page, as drawn on 2026-09-25)
 
 - Title and tagline: Sketchcoded. Ideas, connected.
-- Example: this website. A frame showing this site as a Sketchcoded board; sends to a read-only version of the demo. Make it obvious it should be clicked. The public demo uses the original drawings and connected pages. Undrawn example pages are left to the AI; isolated planning frames stay in the local backlog.
+- Example: this website. A frame showing this site as a Sketchcoded board; it leads to The board, because the read-only demo is that board. Make it obvious it should be clicked. The public demo uses the original drawings and connected pages. Undrawn example pages are left to the AI; isolated planning frames stay in the local backlog.
 - Set up: tell your AI. A setup prompt generated from the configured repository address, with a Copy prompt button. On mobile this block sits below the example frame.
 - Runs on your computer; your sketches never leave it. No account, no API key.
 - Read more: Guide. The guide distinguishes structural Review flow from the full checklist the agent verifies when authoring a board or building its site: overlaps, text size, zoom control and the other rules. It covers setup, everyday controls, recovery and agent handoff.
@@ -113,7 +113,7 @@ Started 2026-09-25 from the original brief and the product requirements; kept cu
 
 ## Test flow (dialog)
 
-- Choose a start: entry screens, or any screen as a labeled test entry.
+- Choose a start: entry screens, or any screen as a labeled test entry. Starting away from an entry arrives along the shortest authored route, so the screen's own Back and Close lead where they really do; Test flow says where it arrived from.
 - Click pins to follow paths; several yarns show a scenario chooser with conditions.
 - Web or mobile: switch layouts; pins not yet on mobile are listed under the drawing. A pin written before the drawing arrived waits beside the drawing the same way until it is placed.
 - Rewind test, separate from app Back, which must be authored as yarn.

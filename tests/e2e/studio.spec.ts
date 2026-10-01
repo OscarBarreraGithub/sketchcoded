@@ -57,11 +57,13 @@ test('play-through branches, authored back, restart and independent test rewind'
   await page.getByRole('button', { name: 'Try Back to your people', exact: true }).click();
   await page.getByRole('button', { name: 'Rewind test', exact: true }).click();
   await expect(page.getByAltText('Preview: When a chat is blocked', { exact: true })).toBeVisible();
+  // A test entry arrives the way a visitor would, so the screen's own Back still leads somewhere.
   await page.getByLabel('Preview starting screen').selectOption('conversation');
+  await expect(page.locator('.preview-hint', { hasText: 'Arrived from' })).toContainText(
+    'Your people',
+  );
   await page.getByRole('button', { name: 'Try Back to your people', exact: true }).click();
-  await expect(
-    page.getByRole('status').filter({ hasText: 'There is no previous screen' }),
-  ).toBeVisible();
+  await expect(page.getByAltText('Preview: Your people', { exact: true })).toBeVisible();
   await page.getByLabel('Preview starting screen').selectOption('welcome');
   await expect(page.getByRole('button', { name: 'Rewind test', exact: true })).toBeDisabled();
   await close(page);

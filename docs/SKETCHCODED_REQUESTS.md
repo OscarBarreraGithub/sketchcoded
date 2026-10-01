@@ -90,3 +90,5 @@ When a UI is already built, let the user highlight an element or area and point 
 - Restructure the guide completely, starting from that catalog.
 - Every page on the example board has a way back: Back to the board on App outline and Planning, Close on the dialogs, Home on the Guide and the example demo. These are Back and Close steps, so no new lines cross the board. The board's colors use the category names the guide teaches (Main path, Branch, Detour, Way back), and the stale note on the example pin was removed.
 - Make the website and both repositories ready to share: every fix discussed for the site and example, no stale documents or unused files.
+- Starting a walk from any frame on the example must not dead-end: a page's Back or Close works wherever the walk began.
+- “Example: this website” on Home leads to The board, because the example on the site is the board itself, so the whole board is connected. The separate P11 Example demo frame is removed; this supersedes the 2026-09-28 count of seven delegated pages (now six).

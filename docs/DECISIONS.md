@@ -95,3 +95,5 @@ The "Leave it up to the AI" post-it never covers a title. On an undrawn frame it
 A provisional pin on a frame that has a drawing is still at a placeholder, so Test flow (in the app and the public demo) lists it beside the drawing as not placed yet, as it does for pins missing from a mobile drawing. The user places it in the screen editor; the review warns until then.
 
 The public site serves a 404 page for unknown addresses instead of the homepage, and its hero image is a screenshot of the example board in the current app.
+
+Starting Test flow away from an entry (in the app, or by clicking a frame in the public example) arrives the way a visitor would: along the shortest authored route from an entry, replayed with the usual navigation rules (`arrive` in `shared/navigation.ts`, mirrored in the demo). The route only sets up history, so Back and Close on that screen return where they really lead; it is not part of the test's trail, rewind stops at the start, and Test flow names the screens it arrived through. A screen that no entry reaches still starts on its own, so a missing route is not hidden.
