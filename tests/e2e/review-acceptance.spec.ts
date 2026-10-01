@@ -2,6 +2,7 @@ import { test, expect, chromium } from '@playwright/test';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createLittleChat } from './little-chat';
 
 test('both laptop sizes retain working room, all tutorial panels and generated pages at actual tab zoom', async () => {
   test.setTimeout(150000);
@@ -18,12 +19,7 @@ test('both laptop sizes retain working room, all tutorial panels and generated p
     const page = await context.newPage();
     const headers = { 'X-Drawcode-Client': 'local' };
     const name = `Acceptance ${Date.now()}`;
-    const p = await (
-      await page.request.post('http://127.0.0.1:5174/api/projects', {
-        headers,
-        data: { name, demo: true },
-      })
-    ).json();
+    const p = await createLittleChat(page.request, name, 'http://127.0.0.1:5174');
     const full = await (
       await page.request.get(`http://127.0.0.1:5174/api/projects/${p.id}`)
     ).json();

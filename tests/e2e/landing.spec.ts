@@ -1,14 +1,12 @@
 import { test, expect } from '@playwright/test';
-const headers = { 'X-Drawcode-Client': 'local' };
+import { createLittleChat } from './little-chat';
 test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
 
 test('the landing page lists the boards, opens one, comes back from the brand, and starts a new board', async ({
   page,
 }) => {
   const name = `Landing check ${Date.now()}`;
-  const made = await (
-    await page.request.post('/api/projects', { headers, data: { name, demo: true } })
-  ).json();
+  const made = await createLittleChat(page.request, name);
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Sketchcoded', level: 1 })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Your boards' })).toBeVisible();

@@ -8,6 +8,8 @@ import { Store } from '../server/store';
 import { createApp } from '../server/app';
 import { analyze } from '../shared/graph';
 import { repoPath } from '../server/paths';
+import { createLittleChatIn } from './fixtures/little-chat';
+const littleChat = (name: string) => createLittleChatIn(store, name);
 const sketch = (color = 'tan') =>
   Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="80"><rect width="100" height="80" fill="${color}"/></svg>`,
@@ -22,7 +24,9 @@ afterEach(async () => {
   await fs.rm(root, { recursive: true, force: true });
 });
 describe('durable local projects', () => {
-  it('boots with a working demo, normalized images and valid references', async () => {
+  it('boots with no boards, and a board built from sketches keeps valid references', async () => {
+    expect(await store.list()).toEqual([]);
+    await littleChat('Little chat');
     const [summary] = await store.list();
     const p = await store.read(summary.id);
     expect(p.screens).toHaveLength(4);
@@ -53,7 +57,7 @@ describe('durable local projects', () => {
     expect((await store.read(p.id)).name).toBe('First');
   });
   it('keeps code allocation history when an older API client omits counters', async () => {
-    let p = await store.create('Codes', true);
+    let p = await littleChat('Codes');
     const max = p.codeCounters!.P;
     p = await store.save({ ...p, codeCounters: undefined, screens: [], pins: [], transitions: [] });
     const next = {
@@ -98,8 +102,7 @@ describe('durable local projects', () => {
     expect(result.warnings[0]).toContain('could not be read');
   });
   it('exports all graph information and assets without local source paths', async () => {
-    const [summary] = await store.list();
-    const p = await store.read(summary.id);
+    const p = await littleChat('Little chat');
     p.folders = ['/private/sketches'];
     p.assets[0].source = '/private/sketches/secret.png';
     const zip = await store.export(p),
@@ -124,8 +127,7 @@ describe('durable local projects', () => {
     await expect(store.read('../../etc/passwd')).rejects.toThrow('Invalid project');
   });
   it('reports missing disk assets at export instead of creating a broken bundle', async () => {
-    const [summary] = await store.list();
-    const p = await store.read(summary.id);
+    const p = await littleChat('Little chat');
     await fs.unlink(path.join(store.assetsDir, p.assets[0].file));
     await expect(store.export(p)).rejects.toThrow('missing from disk');
   });

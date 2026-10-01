@@ -46,10 +46,8 @@ export function createApp(store: Store) {
   });
   app.get('/api/projects', async (_req, res) => res.json(await store.list()));
   app.post('/api/projects', async (req, res) => {
-    const { name, demo } = z
-      .object({ name: z.string().trim().min(1).max(200), demo: z.boolean().optional() })
-      .parse(req.body);
-    res.status(201).json(await store.create(name, demo));
+    const { name } = z.object({ name: z.string().trim().min(1).max(200) }).parse(req.body);
+    res.status(201).json(await store.create(name));
   });
   app.get('/api/projects/:id/example', async (req, res) =>
     res.json(publicExample(await store.read(req.params.id))),

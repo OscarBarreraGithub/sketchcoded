@@ -8,8 +8,6 @@ import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import { emptyProject, projectSchema, withCodes, type Asset, type Project } from '../shared/model';
 import { skillIds } from '../shared/agent';
 import { analyze, decisionFor } from '../shared/graph';
-import { demoProject } from '../shared/demo';
-import { demoArt } from './demo-art';
 import { repoPath } from './paths';
 
 export class AppError extends Error {
@@ -39,8 +37,6 @@ export class Store {
   async init() {
     await fs.mkdir(this.assetsDir, { recursive: true });
     await fs.mkdir(this.projectsDir, { recursive: true });
-    if (!(await fs.readdir(this.projectsDir)).some((f) => f.endsWith('.json')))
-      await this.create('Little chat', true);
   }
   async importImage(bytes: Buffer, name: string, source?: string): Promise<Asset> {
     if (bytes.length > MAX_IMAGE) throw new AppError(`${name}: images must be under 25 MB.`);
@@ -72,16 +68,8 @@ export class Store {
       importedAt: new Date().toISOString(),
     };
   }
-  async create(name: string, demo = false) {
-    let project: Project;
-    if (demo) {
-      const assets: Asset[] = [];
-      for (const [name, svg] of Object.entries(demoArt))
-        assets.push(await this.importImage(Buffer.from(svg), name));
-      project = demoProject(assets, randomUUID());
-      project.name = name;
-    } else project = emptyProject(name, randomUUID());
-    return this.save(project, true);
+  async create(name: string) {
+    return this.save(emptyProject(name, randomUUID()), true);
   }
   async list() {
     const names = (await fs.readdir(this.projectsDir)).filter((f) => f.endsWith('.json'));

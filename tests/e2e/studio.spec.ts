@@ -2,14 +2,19 @@ import { test, expect, type Page } from '@playwright/test';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { createLittleChat } from './little-chat';
 const headers = { 'X-Drawcode-Client': 'local' };
 async function openFresh(page: Page, demo = true) {
-  const response = await page.request.post('/api/projects', {
-    headers,
-    data: { name: demo ? 'Browser chat' : 'My sketchbook', demo },
-  });
-  expect(response.ok()).toBeTruthy();
-  const project = await response.json();
+  let project;
+  if (demo) project = await createLittleChat(page.request, 'Browser chat');
+  else {
+    const response = await page.request.post('/api/projects', {
+      headers,
+      data: { name: 'My sketchbook' },
+    });
+    expect(response.ok()).toBeTruthy();
+    project = await response.json();
+  }
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
   await page.goto(`/board/${project.id}`);
   await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
@@ -354,11 +359,7 @@ test('two-tab conflicts preserve the server version and allow exporting unsaved 
 test('looking around the board is not a change: the save indicator stays put while panning', async ({
   page,
 }) => {
-  const response = await page.request.post('/api/projects', {
-    headers: { 'X-Drawcode-Client': 'local' },
-    data: { name: 'Quiet viewport', demo: true },
-  });
-  const project = await response.json();
+  const project = await createLittleChat(page.request, 'Quiet viewport');
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
   await page.goto(`/board/${project.id}`);
   await expect(page.getByRole('heading', { name: 'Quiet viewport', exact: true })).toBeVisible();

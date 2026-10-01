@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { createLittleChat } from './little-chat';
 const headers = { 'X-Drawcode-Client': 'local' };
 async function open(page: import('@playwright/test').Page) {
   const name = `Save safety ${Date.now()}`;
-  const p = await (
-    await page.request.post('/api/projects', { headers, data: { name, demo: true } })
-  ).json();
+  const p = await createLittleChat(page.request, name);
   await page.goto('/');
   await page
     .getByRole('button', { name: new RegExp(`${name}.*4 screens`) })

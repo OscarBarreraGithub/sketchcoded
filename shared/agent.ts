@@ -85,7 +85,7 @@ export const skills: Record<SkillId, { title: string; summary: string }> = {
     summary: 'What each review rule means; fix the board or accept with a reason.',
   },
   'walk-the-flow': {
-    title: 'Walk the flow',
+    title: 'Test the flow',
     summary: 'Follow a Test flow trail and find the first missing step.',
   },
   'start-a-board': {

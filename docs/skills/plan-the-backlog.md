@@ -11,6 +11,6 @@
 - **Write for the builder.** A purpose says what the screen is for; an idea is one thing on a screen, titled as the user would say it. No stage numbers, build order, disclaimers or notes to yourself, and no checklists or layout contracts as ideas: the user's general rules are in the checklist already.
 - Keep the plan readable: one idea per capability, a title of a few words, details in `detail`.
 
-When you are working inside the Sketchcoded repository itself, also keep `docs/FUNCTIONALITY.md` in step with the board's backlog.
+When you are working inside the Sketchcoded repository itself and `notes/FUNCTIONALITY.md` exists (it is local, not in Git), keep it in step with the board's backlog.
 
 Write back through the API once, at the end (skill: talk-to-sketchcoded, which also says when to warn the user); the open board refreshes itself when the user has nothing unsaved.

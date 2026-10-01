@@ -3,14 +3,10 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import type { Project } from '../../shared/model';
+import { createLittleChat } from './little-chat';
 const headers = { 'X-Drawcode-Client': 'local' };
 async function fresh(page: Page, customize?: (p: Project) => void) {
-  const response = await page.request.post('http://127.0.0.1:5174/api/projects', {
-    headers,
-    data: { name: 'Sketchcoded usability', demo: true },
-  });
-  expect(response.ok()).toBeTruthy();
-  let p: Project = await response.json();
+  let p: Project = await createLittleChat(page.request, 'Sketchcoded usability');
   if (customize) {
     customize(p);
     const saved = await page.request.put(`http://127.0.0.1:5174/api/projects/${p.id}`, {

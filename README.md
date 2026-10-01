@@ -1,212 +1,52 @@
 # Sketchcoded
 
-**Ideas, connected.** A local bulletin board for turning rough UI sketches into a connected, playable app specification.
+**Ideas, connected.** Draw the screens of the app you're imagining, pin them to a board, tie them together with yarn, and hand your agent a plan it can build from. It runs on your computer; your sketches never leave it. No account, no API key.
 
-Bring image files of your sketches from your computer into a library. Plan what the app should do, pin sketches to a board, describe the interactions, and connect them with yarn. Give a screen a web drawing and a mobile drawing. Review the flow, play through the sketches, and export a project that a future implementation agent can read.
+![A Sketchcoded board](docs/screenshots/board.png)
 
-![Sketchcoded bulletin board](docs/screenshots/board.png)
+The [guide](https://sketchcoded.com/guide) covers everything in detail, and [the example](https://sketchcoded.com/demo) is the board this project was planned on.
 
-## Start
+## Run it
 
-Requires Node.js **22.12 or later** and npm.
+Requires Node.js 22.12 or later.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the address the server prints (by default **http://127.0.0.1:5173**). The app opens on a landing page that lists your boards. The first launch creates the **Little chat** example board with four screens, conditional chat branches, an intentional one-way login, and authored Back actions. No account, API key, or external service is needed. Fonts and images are served locally.
+Open http://127.0.0.1:5173 and stop the server with Ctrl+C when you are done. For the built app, run `npm run build` and then `npm start`.
 
-Keep the server running while you or your agent work on a board, and stop it with **Ctrl+C** when finished.
+- `--port 0` picks a free port: `npm run dev -- --port 0`.
+- `--data-dir "./my boards"` keeps boards somewhere else. By default they are in `.drawcode/` inside this checkout, which Git ignores.
 
-For the built app:
+The server listens on 127.0.0.1 only. Run one server per data directory.
 
-```sh
-npm run build
-npm start
-```
+## What you do
 
-These commands work in macOS and Linux terminals, Windows PowerShell and Command Prompt. Clone or download the repository into any directory and run the commands from that checkout. No particular username, folder layout, GitHub login or hosting account is required.
+1. **Bring your sketches.** Drop image files into the library, or connect a folder to keep watching it.
+2. **Plan, if you like.** List what each screen should do before you draw it; planned frames wait on the board.
+3. **Pin and connect.** Click a screen to open it, add a pin where something happens, and tie yarn to the screen it leads to. A yarn's color is its category: main path, branch, detour or way back.
+4. **Leave pages to the AI.** A frame wearing the post-it becomes a standard page built from its plan; draw only the pages you care about.
+5. **Check it.** **Review flow** finds dead ends and missing ways back. **Test flow** lets you click through the sketches.
+6. **Hand it over.** Every view has a **Tell the agent** button that copies a short prompt. Your agent reads the live board from the running app and writes back to it. **Export project** saves a `.sketchcoded.zip` with the board, its drawings, `flow.md` and the agent's instructions.
 
-### Configuration
+## Your rules
 
-```sh
-npm run dev -- --port 5180
-npm run dev -- --port 0
-npm start -- --data-dir "./my boards"
-npm start -- --help
-```
+`docs/BUILD_CHECKLIST.md` is the list of requirements an agent checks before calling work done: text you can read without zooming in, nothing overlapping, zoom that works all the way in, and more. Edit it to make it yours. `docs/skills/` holds the instructions agents follow. The app serves both and includes them in every export.
 
-`--port 0` chooses an available port. Open the address printed by the server; copied agent briefs automatically use that address. `--data-dir` chooses where projects and image snapshots are saved. Quote paths containing spaces. Flags override `PORT` and `DRAWCODE_DATA_DIR` environment variables when those are set by your shell or process manager. `NODE_ENV=production` remains supported, but `npm start` does not require shell-specific environment syntax. `.env` files are not loaded automatically.
+## Your files
 
-Without an explicit data directory, storage is `.drawcode/` inside this checkout, even when launched from elsewhere. An explicitly supplied relative path resolves from the process's working directory. The server binds to `127.0.0.1` and is intended for local use; changing the port does not enable remote access. Run only one server per data directory.
+Boards save automatically, and each save keeps the previous version as a `.bak` next to it. To move boards to another computer, export them and use **Import project** there.
 
-### Move to another machine or user
-
-Export each board as a `.sketchcoded.zip`, install the app on the new machine, then use **Import project**. ZIPs contain the drawings, graph, checklist and agent skills; they omit local source-folder paths. Imported boards are independent copies. Reconnect source folders using their new full paths if you want to keep refreshing them.
-
-To move the entire workspace, stop the app and copy the complete data directory, including both `projects/` and `assets/`, then start with `--data-dir` pointing to that copy. Full-directory copies retain old source-folder connections; disconnect or update those on the new machine. Copying the Git repository alone does not copy private boards. Never commit the data directory.
-
-### Use your own conventions
-
-Edit `docs/BUILD_CHECKLIST.md` for your team's general requirements; it is served to agents and included in future exports. Keep board-specific requests in each board's ideas, pins and review decisions. A fresh installation needs no maintainer board, private asset directory or personal account.
-
-The separate public site is optional. Its `links.js` configures repository and projects links; its README explains how to choose a source board and deploy with your own hosting account. The app itself has no dependency on the official domain or repository owner.
-
-## Working with your agent
-
-A yarn's color is its category: Main path, Branch, Detour, Way back, plus two you can name. The **Threads** button beside Board / App outline / Plan filters the board to one category, so its yarn stays lit and the frames it never touches shrink and dull in place; you read one journey at a time without losing the shape of the board.
-
-Every frame, sketch and idea has a short code (P1, S2, I3; a pin is “P3 pin 2”), shown wherever it appears, so you and your agent can point at the same thing. Codes are never reused.
-
-Every view has a **Tell the agent** button. It copies a three-line prompt that leads with that code and names what you are looking at (the board, a frame, a pin, a yarn, an idea, a finding, a Test flow trail, the sketch library) and links the task brief the running app serves for exactly that (`/api/projects/<id>/brief?…`); the brief carries the task, the skills to read (`/api/skills/<name>.md`) and your general requirements (`/api/checklist.md`). Whatever you type under the prompt in your agent's chat is part of the task. Your agent reads the live board from the running app’s address (by default `http://127.0.0.1:5173`) and writes back through the same API, so there is no export or back-and-forth for a change to one frame; the open board picks up the agent's change by itself when you have nothing unsaved.
-
-The app opens on a landing page at `/` with your boards and a way to start one; the brand at the top left brings you back. To start a board for another project, choose **New board with your agent** there (or in the Boards menu) and pick how much the agent builds: **Just the list** (a to-do list of what to draw and connect), **Frames and strings** (planned frames waiting for your drawings, with the yarn already tied between them through provisional pins; the default) or **Built out** (frames and strings with every frame left to the AI: Sketchcoded builds each page and **Test flow walks the whole site**, so you only draw the one or two pages you care about and fine-tune the rest). The agent creates the board through the local API and writes it; you open it from the landing page. When you drop a drawing on a frame that already has strings, the editor asks you to place each waiting pin; the yarn follows. All boards are stored in the configured data directory (by default `.drawcode/`); Export keeps a copy inside a codebase. Details: [docs/AGENT_HANDOFF.md](docs/AGENT_HANDOFF.md).
-
-The agent must inspect affected board views and pages left to the AI, then repeat the full checklist checks on the finished app when building it. This includes text size (at least 15px for anything read, measured in every view), overlaps, and real browser zoom at 125%, 150%, 200% and 250% at both laptop sizes and on to the 500% maximum, with results reported. Review flow checks the graph; it does not perform this visual verification.
-
-The landing page’s **Try the six-step tutorial** lets you practice planning, provisional pins, branches, review decisions, Test flow and agent handoff without changing a board.
-
-## Make a flow
-
-1. **Plan first, if you like.** Open **Plan** and write down every idea for the app: a title, details, which screen it belongs on, and where it leads. Screens you have not drawn yet can be planned as empty frames. See [Plan before you draw](#plan-before-you-draw).
-2. **Bring in sketches.** Use the drop box at the top of the library: drop image files, click to browse, choose **Add a folder** to import a folder once, or **Connect a folder to watch it** and enter its full path. A watched folder's new and changed images appear every 20 seconds; the refresh button checks immediately. Images are files already on this computer.
-3. **Arrange the board.** Drag a library thumbnail onto the board and give it a required title, or drop it onto a planned frame to fill that frame. Clicking a thumbnail also adds it. Drag cards to move them. Use the zoom controls, **F** to fit, or **Space + drag** to pan. Scroll zooms around the pointer; **Shift + scroll** pans. Drag blank space to pan without changing tools. The zoom slider also works with arrow keys. Browser Cmd/Ctrl zoom remains available.
-4. **Describe an interaction.** Click a screen to open it, choose **Add a pin**, and click the sketch. Give the pin a name and a description, or choose **Place** beside a planned idea so the pin is written for you. Drag an existing pin to move it. Screen details let you set its purpose, type, entry-point status, board size, its web and mobile drawings, and the **Leave it up to the AI** post-it.
-5. **Tie the yarn.** From the pin editor, choose **Connect to a screen**; the editor closes, and you click the destination on the board. You can also click a numbered board pin and then a card. One pin can have many yarns. Click a yarn or its label to edit the source pin, destination, short summary, condition, detailed logic, and data passed. Back and Dismiss actions are available in the pin editor and appear below the screen on the board.
-6. **Review the flow.** Open **Review flow**. Locate an issue, fix it, or accept an intentional concern with a reason. Accepted decisions remain visible, travel with the export, and reopen if relevant evidence changes. Structural errors cannot be waived.
-7. **Try the sketches.** Click **Test flow**. A pin with one connection follows it directly; a pin with several connections offers a scenario chooser with descriptions. You choose the condition to simulate. Switch between **Web** and **Mobile** when a screen has both drawings. Restart, change the starting screen, or rewind the test. Rewind is explicitly separate from app navigation.
-
-**Read the app as an outline:** switch from **Board** to **App outline** for a searchable directory of screens, pins, and paths. Each screen appears once; shared destinations link to that entry. **Show on board** centers the selected sketch. Switching views preserves your board position.
-
-**Show a closer look:** choose **Detail reference** in a pin’s **Pin purpose** field. Attach a sketch from the dropdown or choose it on the board. A regular sketch with no app connections becomes a detail sketch automatically; a screen already used in the flow keeps its role. Detail references appear as dashed olive threads and are identified in the outline. In Test flow, they open a larger illustration and return to the same app screen without advancing the test or creating a return route. You can also set **Screen type** to **Detail / enlarged sketch** for a dedicated reference.
-
-**Find sketches already used:** each library image shows a **Used** count or **Not used yet**. Expand the count to jump to its placements. The library groups sketches into New and Used sections. On smaller or zoomed browser windows, **Sketch library** opens the library drawer.
-
-**Comfortable editing:** fields have consistent heights, notes expand with their text, and each dialog has one content scrollbar and a visible close button. Narrow and zoomed windows rearrange the interface; short windows use compact toolbars while panels scroll inside the fixed window.
-
-**Undo / redo:** toolbar buttons or Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z. Deleting a screen removes its pins and incident yarns; deleting a pin removes its branches. Both are undoable. The image remains in the library.
-
-**Boards:** the menu beside the Sketchcoded logo opens saved boards, creates a blank board or another chat example, starts a board with your agent, imports exported projects and opens **How it works**. Rename a board with its pencil button.
-
-## Plan before you draw
-
-**Plan** is the third view beside Board and App outline. It holds every functionality idea for the product you are designing, so the drawings can follow the plan instead of the other way round.
-
-- **Add an idea any time.** A title, details, the screen it belongs on, and the screen it leads to. Ideas without a screen wait in a pool; each screen has a folder.
-- **Plan a frame before drawing it.** Give it a title and purpose. It appears on the board as an empty dashed frame with a count of its ideas. Drop a sketch onto it, or choose a drawing in its editor, and it becomes a normal screen with its ideas ready to place.
-- **Place an idea.** Choose **Place on the drawing**, click the spot on the sketch, and the pin is created with the idea’s name and description. If the idea leads somewhere, the yarn is tied as a draft you can refine. Until then, the planned connection is listed in the plan and in the text outline; the board draws only real yarn.
-- **Nothing lands twice.** Placed ideas stay in the list, greyed out with their pin number. Moving a placed idea to another screen removes its pin, undoably, so it can be placed again.
-- **Talk about it.** **Copy as text** or **Show as text** gives a markdown outline with `[x]` placed, `[ ]` waiting, and `( )` unassigned markers plus the planned threads. The same outline is included in every export’s `flow.md`, so a conversation about the plan and the exported specification use the same words.
-
-## Web and mobile layouts
-
-A screen can hold two drawings of the same view. In the screen editor, choose a **Web drawing** and a **Mobile drawing** from the library; a Web / Mobile toggle switches the drawing. Pins are placed on the web drawing first. Each pin can then be placed on the mobile drawing too, from the strip under it or from the pin’s **Mobile layout** section. Pins not yet on mobile are a waivable review finding. Yarn is authored once per pin and applies to both layouts. On the board, a card with a mobile drawing shows a small phone thumbnail. In Test flow, switch between **Web** and **Mobile**; pins not yet on the mobile drawing are listed under it so no path is lost. Exports describe both drawings and both positions.
-
-## The workstation
-
-The left column holds the **sketch library** in two sections, **New** and **Used**; a sketch moves to Used the moment it lands on a frame. Below it, the **Ideas** panel lists what is still left to do, grouped by screen; click an idea to place it. The **Plan** tab holds the full planning view, where ideas are added and edited.
-
-On the board, drag a frame’s corner to **resize** it, and look for the small house on the frame where the app starts. Pins carry one of six **colors** (four starting categories and two spares); in the pin editor, pick the color and write what it means on this board, and the legend appears under the pins list.
-
-In the screen editor, switch between the **Web** and **Mobile** drawings above the image. The pins list on the right moves or deletes a pin in one click and highlights the selected pin on the image.
-
-## Content and local actions
-
-Choose **Content / local action** as a pin’s purpose for a heading, copy button, filter, or other intention that stays on the same screen. Keep its behavior in the description. It has no yarn and does not count as a way onward. Test flow shows its description; the exported specification carries the same intention.
-
-## Links out
-
-A pin that leaves the app for a web address is a **link pin**. Choose **Link out** as its purpose and write the address in its description, with any conditions in plain words. That is all: no yarn, no destination frame. The board shows link pins with a dashed ring, Test flow reports where the link would go, and Review flow asks for an address if none is written. Never model an external site as a screen.
-
-## Navigation that means something
-
-Each connection has an explicit navigation action:
-
-| Action          | Behavior in the preview                                                           |
-| --------------- | --------------------------------------------------------------------------------- |
-| Open screen     | Push the destination onto app history.                                            |
-| Replace current | Replace only the current history entry.                                           |
-| Start fresh     | Clear history and open the destination; useful after login.                       |
-| Open as dialog  | Remember the actual caller and open a modal frame.                                |
-| Go back         | Pop app history; report an unavailable action when no prior frame exists.         |
-| Dismiss         | Close the current dialog and any pages nested inside it, returning to its caller. |
-
-Screen types describe intent. A login label does **not** automatically excuse a one-way path. An intentional ending needs an explanation. Alternate entry points are supported. A screen can represent a reusable view, with context such as `conversationId` passed by a connection.
-
-Checks detect broken references, missing images in the graph, missing titles/intent, unconnected pins, missing entries, unreachable screens, dead ends, possible one-way paths, uncertain history contexts, duplicate branch summaries, multiple fallbacks, natural-language branching that needs review, planned frames waiting for a drawing (unless the frame is left to the AI), provisional pins not yet placed on their drawing, pins missing from a mobile layout, link pins without an address, detail sketches without a reference, and yarn attached to a link or content/local-action pin.
-
-A structural return path can be indirect. Conversely, a cycle does not prove that prose conditions permit a return in every state. The checker distinguishes hard structural errors from concerns that need judgment. See [the graph contract](docs/GRAPH.md) for the precise limits.
-
-## Your files and the future workflow
-
-Projects auto-save after a short pause. The status beside the board menu reports whether changes have reached disk. Unsaved edits trigger a browser leave warning. Each save uses an atomic file replacement and keeps the previous version as a backup. Concurrent saves from another tab cause a visible conflict; the app does not overwrite the other tab’s work.
-
-```text
-.drawcode/
-  projects/<project-id>.json      # Current board and graph
-  projects/<project-id>.json.bak  # Previous saved version
-  assets/<sha256>.webp           # Immutable image snapshots
-```
-
-Source folders are read only. Source changes create new library versions; screens already on the board retain their selected snapshot and pin positions. Moving or deleting source images does not break saved boards. Disconnecting a folder stops refreshing it and keeps the imported images.
-
-**Export project** downloads a `.sketchcoded.zip` containing:
-
-- `project.json`: the versioned canonical graph, layout, library, planning backlog, layouts, and review decisions.
-- `schema.json`: the JSON Schema for the project format.
-- `flow.md`: the same specification organized by screen, pin, branch, planning backlog, and review finding for a human or future agent.
-- `review.json`: current findings, acceptance status, and recorded reasons.
-- `assets/`: all the project’s normalized image snapshots.
-- `BUILD-CHECKLIST.md`: the configured general build requirements. Decisions for this board in particular are in `flow.md`: its backlog, its pins’ words and its accepted findings.
-- `skills/`: instructions for reading and authoring the board, building from it, and verifying the rendered result.
-- `READ-ME.md`: a guide to reading the bundle.
-
-The Sketchcoded name keeps the existing `.drawcode/` storage directory and client identifiers so saved boards continue working. Older `.drawcode.zip` bundles still import. Local source-folder paths are omitted. Importing a bundle creates a separate board, validates the graph and image hashes, and never replaces an existing board. Export uses the current in-memory project, so it can rescue unsaved edits after a two-tab conflict while the server is running.
-
-The agentic generation and review workflow is intentionally deferred, as requested in the original brief. No natural-language condition is executed and no code is generated from the board yet.
-
-## Limits and recovery
-
-- Designed for desktop browsers, with a compact layout for smaller windows. Images are files already on this computer; there is no phone capture or upload from a phone. Mouse/trackpad authoring is the main interaction; file selection and add buttons provide alternatives to dragging.
-- A screen needs a web drawing for final pin positions; provisional pins and yarn can exist before it is drawn. The mobile drawing adds a second position for each pin; it does not hold pins of its own.
-- Dialogs keep a fixed size and scroll inside. Nothing on screen grows or shrinks because of what was clicked. Wherever content continues off screen, a “More below” pill and a visible scrollbar say so.
-- Supported input: PNG, JPEG, WebP, GIF, AVIF, TIFF, and SVG. Animated or multipage images use the first frame/page. Images are oriented correctly, stripped of source metadata, and normalized to WebP at a maximum of 4096 pixels per side. Keep originals if you need their original format or resolution.
-- Images: 25 MB each, 40 per upload batch. Folder sync: up to 500 images, 5,000 entries, and eight nested levels per folder; hidden files and symlinks are skipped. The UI reports skipped/unreadable files during manual import or refresh.
-- ZIP import: 150 MB compressed / 250 MB expanded. Projects support up to 500 screens, 5,000 pins, 10,000 connections, and 2,000 assets within the 8 MB JSON request limit.
-- The local server must be running to save, refresh folders, or export. If it stops, restart it; the visible save-error bar offers retry. Keep the tab open until it reports saved. There is no offline service worker or cloud sync.
-- For a two-tab conflict, export the unsaved work, reload the tab, then import that export as a separate board if needed.
-- If a project JSON is damaged, stop the server and copy its `.json.bak` over the damaged `.json`, keeping a separate copy of both first. If an asset is missing from `.drawcode/assets`, restore it from a project ZIP or filesystem backup. Source-file deletion alone does not cause this.
-- Undo history is session-local. Saved review decisions and their reasons persist; resolved decisions remain available in the review history.
-- There is no automatic asset garbage collection. Keeping snapshots avoids losing images that may still be needed by another board or a backup.
-
-## Development and verification
+## Development
 
 ```sh
-npm test                  # Graph, navigation, planning, persistence, API, and bundle tests
-npm run build             # TypeScript and production build
+npm test               # unit and API tests
+npm run build          # type check and build
 npx playwright install chromium
-npm run test:ui           # Real browser authoring and preview workflows
-npm run format:check      # Formatting
+npm run test:ui        # browser tests, on an isolated server at port 5174
+npm run format:check
 ```
 
-Browser tests include actual Chromium tab zoom at 125%, 150%, 200%, and 250%, using a test-only extension under `tests/fixtures/zoom-extension/`. The extension is loaded only in an isolated temporary test browser.
-
-Browser tests start an isolated built server on port 5174 and store their boards under `.drawcode/ui-tests/`. Run `npm run build` before them. The application on port 5173 and its projects are kept separate.
-
-GitHub Actions checks clean installation, build, unit/API tests and formatting on macOS, Linux and Windows with Node 22.12 and 24. Browser workflows are run separately using the commands above.
-
-The shared graph, navigation and planning code has no React or server dependency. `server/` handles local images and persistence; `src/components/` contains the board, library, planning view, editors, review panel, and preview. The Little chat sample's sketches are drawn in code in `server/demo-art.ts`.
-
-- [Original product brief](docs/ORIGINAL_BRIEF.md)
-- [Current status and handoff](docs/PROGRESS.md)
-- [What Sketchcoded can do](docs/FUNCTIONALITY.md), by screen
-- [Every request so far, with status and selling points](docs/CATALOG.md)
-- [Build checklist for agents](docs/BUILD_CHECKLIST.md) (general rules, shared by every project)
-- [Sketchcoded product requirements](docs/SKETCHCODED_REQUESTS.md) (this project’s own record)
-- [Development decisions](docs/DECISIONS.md)
-- [Graph format and checker semantics](docs/GRAPH.md)
-- [Handing a task to the agent](docs/AGENT_HANDOFF.md)
-- [Agent skills](docs/skills/), served by the app and included in every export
-
-Implementation references: [Vite’s server API](https://vite.dev/guide/api-javascript.html), [React effects](https://react.dev/reference/react/useEffect), and [Sharp’s image operations](https://sharp.pixelplumbing.com/api-operation/).
+The browser tests include real browser zoom at 125% to 250%. `AGENTS.md` has the conventions for agents working on this repository.

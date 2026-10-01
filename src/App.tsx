@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bot,
   ArrowDownToLine,
-  ArrowRight,
   BookOpen,
   Check,
   ChevronDown,
@@ -24,7 +23,6 @@ import {
   RefreshCw,
   ShieldCheck,
   SlidersHorizontal,
-  Sparkles,
   Upload,
   X,
 } from 'lucide-react';
@@ -374,7 +372,7 @@ function Studio({
       notify((e as Error).message);
     }
   };
-  const create = async (demo: boolean) => {
+  const create = async () => {
     setFormError('');
     if (!name.trim()) return;
     setBusy(true);
@@ -384,7 +382,7 @@ function Studio({
       onOpen(
         await api<Project>('/api/projects', {
           method: 'POST',
-          body: JSON.stringify({ name: name.trim(), demo }),
+          body: JSON.stringify({ name: name.trim() }),
         }),
       );
     } catch (e) {
@@ -1087,26 +1085,13 @@ function Studio({
             />
           </label>
           {formError && <p className="form-error">{formError}</p>}
-          <div className="new-board-options">
+          <div className="modal-actions">
             <button
-              className="new-board-option"
+              className="button primary"
               disabled={busy || !name.trim()}
-              onClick={() => void create(false)}
+              onClick={() => void create()}
             >
-              <FilePlus2 size={26} />
-              <strong>A blank board</strong>
-              <span>Start with your own sketches.</span>
-              <ArrowRight size={17} />
-            </button>
-            <button
-              className="new-board-option"
-              disabled={busy || !name.trim()}
-              onClick={() => void create(true)}
-            >
-              <Sparkles size={26} />
-              <strong>The chat example</strong>
-              <span>Explore a connected idea.</span>
-              <ArrowRight size={17} />
+              <FilePlus2 size={17} /> Create the board
             </button>
           </div>
         </Modal>

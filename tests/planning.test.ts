@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { strFromU8, unzipSync } from 'fflate';
 import { Store } from '../server/store';
+import { createLittleChatIn } from './fixtures/little-chat';
 import { analyze } from '../shared/graph';
 import { flowDocument } from '../shared/flow-document';
 import { planningOutline } from '../shared/planning';
@@ -263,8 +264,7 @@ describe('planning survives storage', () => {
     await fs.rm(root, { recursive: true, force: true });
   });
   it('saves, exports and imports ideas, planned frames and mobile layouts', async () => {
-    const [summary] = await store.list();
-    let p = await store.read(summary.id);
+    let p = await createLittleChatIn(store);
     const home = p.screens[0];
     p.screens.push({
       id: 'planned',

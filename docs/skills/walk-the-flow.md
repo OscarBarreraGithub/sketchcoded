@@ -1,4 +1,4 @@
-# Walk the flow
+# Test the flow
 
 Test flow plays the sketches: the user starts at an entry screen, clicks pins, chooses a yarn at each fork. The brief gives the trail so far as yarn ids, in order, and the current screen.
 

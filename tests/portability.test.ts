@@ -8,6 +8,7 @@ import { strFromU8, unzipSync } from 'fflate';
 import { serverConfig } from '../server/config';
 import { repoPath } from '../server/paths';
 import { skillIds } from '../shared/agent';
+import { demoArt, demoProject } from './fixtures/little-chat';
 
 describe('portable startup', () => {
   it('keeps default storage with the checkout and resolves explicit paths from the caller', () => {
@@ -83,8 +84,36 @@ describe('portable startup', () => {
           await readFile(repoPath('docs/skills', `${skill}.md`), 'utf8'),
         );
       }
-      const [summary] = await (await fetch(`${url}/api/projects`)).json();
-      const project = await (await fetch(`${url}/api/projects/${summary.id}`)).json();
+      // A board with sketches, built through the API as a user's agent would build it.
+      const write = { 'Content-Type': 'application/json', 'X-Drawcode-Client': 'local' };
+      const made = await (
+        await fetch(`${url}/api/projects`, {
+          method: 'POST',
+          headers: write,
+          body: JSON.stringify({ name: 'Little chat' }),
+        })
+      ).json();
+      const form = new FormData();
+      for (const [file, svg] of Object.entries(demoArt))
+        form.append('images', new Blob([svg], { type: 'image/svg+xml' }), file);
+      const { assets } = await (
+        await fetch(`${url}/api/images`, {
+          method: 'POST',
+          headers: { 'X-Drawcode-Client': 'local' },
+          body: form,
+        })
+      ).json();
+      const project = await (
+        await fetch(`${url}/api/projects/${made.id}`, {
+          method: 'PUT',
+          headers: write,
+          body: JSON.stringify({
+            ...demoProject(assets, made.id),
+            name: 'Little chat',
+            revision: made.revision,
+          }),
+        })
+      ).json();
       const brief = await (
         await fetch(
           `${url}/api/projects/${project.id}/brief?view=screen-editor&screen=${project.screens[0].id}`,

@@ -1292,37 +1292,6 @@ hr {
   display: flex;
   gap: 11px;
 }
-.new-board-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 24px;
-}
-.new-board-option {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  text-align: left;
-  padding: 20px 15px;
-  border: 1px solid #dce2d1;
-  background: #f6f8ed;
-  border-radius: 8px;
-  color: #819273;
-}
-.new-board-option strong {
-  font-size: 16px;
-  color: #51654a;
-  font-weight: 500;
-}
-.new-board-option span {
-  font-size: 13px;
-  color: #96a087;
-}
-.new-board-option:hover {
-  border-color: #8f9f7e;
-  background: #edf2e2;
-}
 .screen-modal {
   width: 1190px;
   padding: 0;

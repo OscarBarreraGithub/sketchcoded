@@ -1,12 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
+import { createLittleChat } from './little-chat';
 const headers = { 'X-Drawcode-Client': 'local' };
 async function fresh(page: Page) {
-  const response = await page.request.post('/api/projects', {
-    headers,
-    data: { name: 'Agent handoff', demo: true },
-  });
-  expect(response.ok()).toBeTruthy();
-  const project = (await response.json()) as { id: string; name: string };
+  const project = await createLittleChat(page.request, 'Agent handoff');
   await page.addInitScript((id) => localStorage.setItem('drawcode:last-board', id), project.id);
   await page.goto(`/board/${project.id}`);
   await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
