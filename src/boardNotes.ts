@@ -1,14 +1,12 @@
 import type { Rect } from './boardView';
 
 /**
- * Rule: nothing overlaps. The words on the cork — the label on each yarn and the note for each
- * way back — are placed where they cover no frame, no title tape and no other words. A way back
- * sits under its frame when there is room, otherwise beside it; a yarn label slides along its own
- * yarn from the middle; a label with no clear spot anywhere waits as a small mark that shows its
- * words on hover or focus. Sizes follow the board's type, which grows as the board zooms out.
+ * Rule: nothing overlaps. The label on each yarn is placed where it covers no frame, no title tape
+ * and no other label: it slides along its own yarn from the middle, and a label with no clear spot
+ * anywhere waits as a small mark that shows its words on hover or focus. Sizes follow the board's
+ * type, which grows as the board zooms out. (Ways back are marks on their frames, not on the cork.)
  */
 export type Frame = { id: string; paper: Rect; tape: Rect };
-export type Note = { id: string; frameId: string; text: string };
 export type Label = { id: string; text: string; curve: Point[]; wordy: boolean };
 export type Point = [number, number];
 export type Placement = { x: number; y: number; dot: boolean };
@@ -36,7 +34,6 @@ const SPOTS = [0.5, 0.42, 0.58, 0.34, 0.66, 0.26, 0.74, 0.18, 0.82];
 
 export function placeBoardWords(
   frames: Frame[],
-  notes: Note[],
   labels: Label[],
   zoom: number,
 ): Map<string, Placement> {
@@ -56,29 +53,6 @@ export function placeBoardWords(
     height: box.height + gap * 2,
   });
   const placed = new Map<string, Placement>();
-
-  const byFrame = new Map(frames.map((f) => [f.id, f]));
-  const count = new Map<string, number>();
-  for (const note of notes) {
-    const frame = byFrame.get(note.frameId);
-    if (!frame) continue;
-    const i = count.get(note.frameId) ?? 0;
-    count.set(note.frameId, i + 1);
-    const w = width(note.text),
-      { paper } = frame,
-      step = i * (height + gap);
-    const spots: Rect[] = [
-      { x: paper.x + 15, y: paper.y + paper.height + 12 + step },
-      { x: paper.x + paper.width - w, y: paper.y + paper.height + 12 + step },
-      { x: paper.x + paper.width + 12, y: paper.y + paper.height - height - step },
-      { x: paper.x + paper.width - w, y: frame.tape.y - height - gap - step },
-      { x: paper.x - w - 12, y: paper.y + paper.height - height - step },
-    ].map((p) => ({ ...p, width: w, height }));
-    const box = spots.find((s) => clear(grow(s))) ?? spots[0];
-    placed.set(note.id, { x: box.x, y: box.y, dot: false });
-    taken.push(grow(box));
-  }
-
   for (const label of labels) {
     const find = (w: number, h: number) => {
       for (const s of SPOTS) {

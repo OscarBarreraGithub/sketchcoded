@@ -407,10 +407,6 @@ export function Board({
       const pos = position(s);
       return frameOf(s.id, { ...pos, height: screenSize(project, s).height });
     }),
-    project.transitions.filter(isHistory).flatMap((t) => {
-      const frameId = project.pins.find((pin) => pin.id === t.pinId)?.screenId;
-      return frameId ? [{ id: t.id, frameId, text: `↶ ${t.summary || t.navigation}` }] : [];
-    }),
     project.transitions
       .filter((t) => !isHistory(t) && t.target)
       .flatMap((t) => {
@@ -609,6 +605,29 @@ export function Board({
                         <Smartphone size={11} />
                       </i>
                     )}
+                    {/* A way back is a small mark on its frame, not words on the cork: the words
+                        show on hover or focus, and clicking it opens the way back. */}
+                    {project.transitions
+                      .filter(
+                        (t) =>
+                          isHistory(t) &&
+                          project.pins.find((pin) => pin.id === t.pinId)?.screenId === s.id,
+                      )
+                      .map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          className={`way-back-mark ${category && t.color !== category ? 'off-category' : ''}`}
+                          aria-label={`Way back: ${t.summary || t.navigation}`}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdge(t.id);
+                          }}
+                        >
+                          ↶<span>{t.summary || t.navigation}</span>
+                        </button>
+                      ))}
                   </span>
                   <span className="card-agent" onPointerDown={(e) => e.stopPropagation()}>
                     <TellAgent
@@ -735,27 +754,6 @@ export function Board({
               </button>
             ) : null;
           })}
-        {project.screens.map((s) => {
-          const history = project.transitions.filter(
-              (t) =>
-                isHistory(t) && project.pins.find((pin) => pin.id === t.pinId)?.screenId === s.id,
-            ),
-            pos = position(s),
-            size = screenSize(project, s);
-          return history.map((t, i) => (
-            <button
-              key={t.id}
-              className={`history-tag ${category && t.color !== category ? 'off-category' : ''}`}
-              style={{
-                left: words.get(t.id)?.x ?? pos.x + 15,
-                top: words.get(t.id)?.y ?? pos.y + size.height + 12 + i * 31,
-              }}
-              onClick={() => onEdge(t.id)}
-            >
-              ↶ {t.summary || t.navigation}
-            </button>
-          ));
-        })}
       </div>
       {!project.screens.length && (
         <div className="board-empty">

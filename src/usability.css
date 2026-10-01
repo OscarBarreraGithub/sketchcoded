@@ -400,8 +400,7 @@ textarea {
 .paper-title {
   min-height: 44px;
 }
-.yarn-label-button,
-.history-tag {
+.yarn-label-button {
   min-height: calc(44px / var(--board-zoom));
 }
 .yarn-hit {
@@ -1289,7 +1288,6 @@ textarea {
 .review-context p {
   color: #69795c;
 }
-.yarn-label-button,
-.history-tag {
+.yarn-label-button {
   min-width: calc(44px / var(--board-zoom));
 }

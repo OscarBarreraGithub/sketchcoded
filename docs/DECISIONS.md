@@ -78,7 +78,7 @@ The public demo consumes a snapshot without local source paths and shares the ap
 
 ## Portability and repository documentation · 2026-09-28
 
-Bundled resources resolve from the repository location, independently of the launch directory. Default data remains in that checkout's `.drawcode/` for compatibility; explicit relative data paths resolve from the caller's working directory. Command-line options override environment variables, and `npm start` uses a cross-platform production flag. Port 0 requests an available local port. Missing export instructions fail visibly instead of producing an incomplete bundle.
+The development server's file watcher ignores test reports, build output and board data, so a build or a test run never reloads a board open in it (2026-10-01). Bundled resources resolve from the repository location, independently of the launch directory. Default data remains in that checkout's `.drawcode/` for compatibility; explicit relative data paths resolve from the caller's working directory. Command-line options override environment variables, and `npm start` uses a cross-platform production flag. Port 0 requests an available local port. Missing export instructions fail visibly instead of producing an incomplete bundle.
 
 Public documentation stores edited specifications and decisions rather than raw conversation transcripts or personal environment details. This supersedes the original verbatim-prompt preservation policy. Existing drawings and private data are unchanged. Cleanup uses normal commits and does not rewrite published history. Dated pass reports were folded into the current records on 2026-09-30: requirements into `SKETCHCODED_REQUESTS.md`, decisions here, verification into the `PROGRESS.md` milestones and open guide work into `CATALOG.md`.
 
@@ -88,12 +88,14 @@ The site exporter omits isolated planned frames that have no drawing, delegated 
 
 ## Words on the board, waiting pins and the public example · 2026-09-30
 
-Yarn labels and way-back notes are placed, not just drawn at a fixed offset (`src/boardNotes.ts`, mirrored in the public demo). A way back sits under its frame when that is clear, otherwise beside it; a label slides along its own yarn from the middle; a label with no clear spot shows as a mark with its words on hover or focus. Placement uses the board's type sizes at the current zoom and never moves a frame. Stacked ways back on one frame are spaced by their real height.
+Yarn labels are placed, not just drawn at the curve's middle (`src/boardNotes.ts`, mirrored in the public demo): a label slides along its own yarn from the middle, and a label with no clear spot shows as a mark with its words on hover or focus. Placement uses the board's type sizes at the current zoom and never moves a frame. A way back (Back or Close) is a small ↶ mark in its frame's footer, the size of the footer's other buttons, with its words floating above it on hover or focus; clicking it in the app opens the way back. Words for ways back under each frame made the board busy, so they were replaced on 2026-10-01.
 
 The "Leave it up to the AI" post-it never covers a title. On an undrawn frame it is part of the frame's own words, which keep left of the column where waiting pins sit; on a drawn frame it sits on the drawing below the tape. Below 80% zoom, where its handwriting would read under 16 screen pixels, it becomes a small square in the frame's top-right corner.
 
 A provisional pin on a frame that has a drawing is still at a placeholder, so Test flow (in the app and the public demo) lists it beside the drawing as not placed yet, as it does for pins missing from a mobile drawing. The user places it in the screen editor; the review warns until then.
 
 The public site serves a 404 page for unknown addresses instead of the homepage, and its hero image is a screenshot of the example board in the current app.
+
+The public example opens on the board's saved viewport (its zoom and position when the author left it in the app), anchored to the board's top-left corner, instead of fitting every frame; Fit still shows the whole board. The author chooses the opening view by arranging and zooming the board, so a sprawling board can open close enough to read its yarn labels.
 
 Starting Test flow away from an entry (in the app, or by clicking a frame in the public example) arrives the way a visitor would: along the shortest authored route from an entry, replayed with the usual navigation rules (`arrive` in `shared/navigation.ts`, mirrored in the demo). The route only sets up history, so Back and Close on that screen return where they really lead; it is not part of the test's trail, rewind stops at the start, and Test flow names the screens it arrived through. A screen that no entry reaches still starts on its own, so a missing route is not hidden.

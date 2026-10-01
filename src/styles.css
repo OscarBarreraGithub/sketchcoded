@@ -1083,20 +1083,6 @@ hr {
   fill: #fff6dd;
   stroke: #ad8b5f;
 }
-.history-tag {
-  position: absolute;
-  z-index: 3;
-  border: 1px dashed #ab987780;
-  padding: 4px 9px;
-  border-radius: 4px;
-  font-size: 10px;
-  color: #7f795d;
-  background: #e8dabb9c;
-  white-space: nowrap;
-}
-.history-tag:hover {
-  background: #f4ebd4;
-}
 .board-controls {
   position: absolute;
   z-index: 8;

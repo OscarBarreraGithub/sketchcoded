@@ -894,13 +894,12 @@
    frames they belong to, so they step aside until the user zooms in; the yarn itself stays. */
 .board.zoomed-out .board-pin,
 .board.zoomed-out .yarn-label-button,
-.board.zoomed-out .history-tag {
+.board.zoomed-out .way-back-mark {
   visibility: hidden;
   opacity: 0;
 }
 .board .board-pin,
-.board .yarn-label-button,
-.board .history-tag {
+.board .yarn-label-button {
   transition: opacity 0.15s ease;
 }
 .legend-note {
@@ -1140,8 +1139,7 @@ kbd,
   font-size: 12px;
 }
 .yarn-label-button,
-.yarn-label text,
-.history-tag {
+.yarn-label text {
   font-size: max(14px, calc(13px / var(--board-zoom)));
   padding: 8px 14px;
   color: #6b5a40;
@@ -1150,6 +1148,48 @@ kbd,
 .card-footer,
 .card-footer span {
   font-size: max(11px, calc(12px / var(--board-zoom)));
+}
+/* A way back is a small mark in its frame's footer, not words on the cork (2026-10-01). Its words
+   float above it on hover or focus, so nothing in the footer moves; clicking it opens the way
+   back. It is the size of the footer's other buttons. */
+.way-back-mark {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  margin-left: 6px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  color: #718060;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.way-back-mark:hover {
+  background: #eef1e6;
+}
+.card-footer .way-back-mark > span {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  z-index: 8;
+  display: none;
+  transform: translateX(-50%);
+  padding: 6px 11px;
+  border: 1px solid #b3bfa4;
+  border-radius: 999px;
+  background: #eef1e6;
+  box-shadow: 0 2px 6px #4a3c2433;
+  color: #5f6e55;
+  font-size: max(13px, calc(13px / var(--board-zoom, 1)));
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.way-back-mark:hover > span,
+.way-back-mark:focus-visible > span {
+  display: block;
 }
 .frame-planned small,
 .frame-planned .eyebrow {
@@ -1718,7 +1758,7 @@ kbd,
   opacity: 0;
   pointer-events: none;
 }
-.history-tag.off-category {
+.way-back-mark.off-category {
   opacity: 0.14;
 }
 .board.filtered .yarn-thread:not(.off-category) .yarn {

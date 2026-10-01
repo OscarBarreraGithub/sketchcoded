@@ -17,6 +17,8 @@ export function publicExample(p: Project) {
       pinId,
     })),
     layout: p.layout,
+    /** The view the author left the board on; the public example opens on it. */
+    viewport: p.viewport,
     colorLabels: p.colorLabels,
     standardPages: Object.fromEntries(
       p.screens.filter(buildsItsOwnPage).map((s) => [s.id, standardPage(p, s)]),

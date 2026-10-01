@@ -43,7 +43,7 @@ Started 2026-09-25 from the original brief and the product requirements; kept cu
 - Drag a sketch onto the board: a tack, a paper title, a spot on the cork.
 - Planned frames: frames from the planning stage wait as empty dashed paper with a count of their ideas (the list is in the editor, Plan and the outline); drop a sketch to fill one. A planned frame keeps a fixed 2:1 box on the cork and, zoomed out under 40%, shows only its tape and code so thirty of them still read as a map.
 - Strings before drawings: a planned frame can carry provisional pins (placeholder spots down its right side) with real yarn, written by the agent or added in the editor (Add a pin, or Place on an idea). When a drawing lands on the frame, the editor shows “Place on the drawing” for each waiting pin; click one, click the drawing, and the yarn follows. Review flow warns until every waiting pin is placed.
-- Pins and yarn: numbered pins on each sketch; click a pin then a card to tie color-coded yarn; labels show the branch summary. Labels and way-back notes find a spot clear of every frame; a label with no room shows as a mark with its words on hover.
+- Pins and yarn: numbered pins on each sketch; click a pin then a card to tie color-coded yarn; labels show the branch summary. Labels find a spot clear of every frame; a label with no room shows as a mark with its words on hover. A way back (Back or Close) is a small ↶ mark in its frame's footer; hover it for its words, click it to edit it.
 - Ideas panel beside the library: organized ideas, expand, scroll, and make clear what is still left to do.
 - Project name in the header; a ? button opens How it works.
 - A home marker on each entry frame, where the app starts.
@@ -131,7 +131,7 @@ Anything that leaves the app for a web address is a pin with **Link out** as its
 
 ## Public example
 
-The public walkthrough shows the original hand drawings and useful connected pages. Undrawn pages in the official example are left to the AI. Isolated, undeveloped planning frames are omitted from publication and retained in the local backlog. Regeneration applies the same curation automatically; the complete snapshot remains available with `--include-planned`.
+The public walkthrough shows the original hand drawings and useful connected pages. Undrawn pages in the official example are left to the AI. Isolated, undeveloped planning frames are omitted from publication and retained in the local backlog. Regeneration applies the same curation automatically; the complete snapshot remains available with `--include-planned`. The example opens on the view the board was left on in the app, at the same zoom and position; visitors can still move frames, pan, zoom and fit, and a reload returns to that view.
 
 ## Installation and portability
 

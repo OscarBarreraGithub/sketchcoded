@@ -264,6 +264,8 @@ it('publishes the same standard pages without local source paths or review recor
   p.folders = ['/private/drawings'];
   const snapshot = publicExample(p);
   expect(snapshot.standardPages.home).toEqual(standardPage(p, p.screens[0]));
+  // The example opens where the author left the board.
+  expect(snapshot.viewport).toEqual(p.viewport);
   expect(JSON.stringify(snapshot)).not.toContain('/private');
   expect(snapshot).not.toHaveProperty('reviews');
   expect(snapshot).not.toHaveProperty('folders');
