@@ -144,6 +144,7 @@ All are in the build checklist.
 - “Example: this website” leads to The board itself, so the whole example is connected (2026-09-30). Built.
 - The example opens on the view the board was left on in the app, close enough to read the yarn labels (2026-09-30). Built.
 - How it works is left out of the example, and a page left to the AI opens there as a one-line summary and “I want this page to:” with a list of what goes there, in the author's voice, centered, nothing else (2026-10-01). Built.
+- A frame opened in the example's walk fits the window without scrolling (2026-10-01). Built; at 1440×900 and 1280×720 every frame fits.
 - On mobile, the setup box sits below the example; make it obvious the example should be clicked (from the home drawing). Built.
 - The app's own landing page copies the site's design, lists boards and starts new ones; the logo returns to it. Built.
 

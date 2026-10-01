@@ -106,3 +106,4 @@ When a UI is already built, let the user highlight an element or area and point 
 - In the example, a frame left to the AI wears the app's “Leave it up to the AI” post-it, larger (two lines, with its strip of tape), instead of “LEFT TO THE AI / A standard page”, which said the same nothing on every frame. (2026-10-01)
 - In the example, clicking a pin that leads to no other frame (content, link or not yet tied) shows its title, and its description, beside the pin; before, nothing visible happened. (2026-10-01)
 - Ship the code clean: no example boards in the app, no stale documents, and a README people will read. Edited requests are fine to publish; raw prompts, with their typos, are not. (2026-10-01)
+- In the example's walk, a frame fits the window: its drawing, its note and the pins still to place, with no scrolling down. (2026-10-01)
