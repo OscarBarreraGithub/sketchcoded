@@ -8,8 +8,9 @@
  * - `public/favicon.svg`, the browser-tab icon: the same alien, in cream ink when the browser is
  *   dark, so it never disappears into a dark tab bar.
  *
- * Copy both to the site repository's `assets/` (`logo.svg`, `favicon.svg`). Run with
- * `npm run logo`.
+ * Both carry a width and height of their own, so a browser that has not loaded the page's styles
+ * still draws the alien small. Copy both to the site repository's `assets/` (`logo.svg`,
+ * `favicon.svg`). Run with `npm run logo`.
  */
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -44,7 +45,7 @@ const x = +((size - width) / 2).toFixed(2),
 const image = (href, attrs = '') =>
   `<image href="${href}" x="${x}" y="${y}" width="${width}" height="${height}"${attrs}/>`;
 const svg = (body) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">${body}</svg>\n`;
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${body}</svg>\n`;
 
 const darkInk = await inked(dark);
 await writeFile(logo, svg(image(darkInk)));

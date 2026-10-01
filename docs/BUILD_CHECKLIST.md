@@ -108,6 +108,7 @@ in that project’s own records and guides. Projects share this checklist, not t
 - [ ] **Product, site and docs agree,** and new pages reuse the existing design.
 - [ ] **Keep a list of what it can do,** in plain words, updated as features land, so a site or guide can be written from it.
 - [ ] **Built to be customized.** Others can change any part of their copy, and later updates can still be ported into it by their agent.
+- [ ] **A deploy never mixes old and new.** Pages refer to their stylesheets, scripts and images by a fingerprint of their content, so a browser holding yesterday's copies fetches the new ones, and every image has a size of its own, so a page that loads without its styles still looks right. Test in Chromium, WebKit (Safari) and Firefox, not only one browser.
 - [ ] **Match a design by porting it.** To match an existing site, find its real, deployed source and port it exactly rather than recreating it.
 
 ## Process, for any agent working with the user
