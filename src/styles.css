@@ -255,8 +255,8 @@ hr {
   color: #b7795f;
 }
 .brand-logo {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
 }
 .header-separator {
@@ -2409,8 +2409,8 @@ kbd {
     font-size: 26px;
   }
   .brand-logo {
-    width: 27px;
-    height: 27px;
+    width: 32px;
+    height: 32px;
   }
 }
 @media (max-width: 720px) {
@@ -2424,8 +2424,8 @@ kbd {
     gap: 7px;
   }
   .brand-logo {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
   }
   .header-separator,
   .help-button,
