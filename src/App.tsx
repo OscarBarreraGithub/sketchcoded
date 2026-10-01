@@ -1221,7 +1221,7 @@ function Studio({
               [
                 '04',
                 'Pin an intention',
-                'Open a screen with its title, its arrow or a double-click, add a pin, and describe what that part of the UI should do. Place each pin on the mobile drawing too. Choose Detail reference to attach a closer look without adding an app navigation step.',
+                'Click a screen to open it, add a pin, and describe what that part of the UI should do. Place each pin on the mobile drawing too. Choose Detail reference to attach a closer look without adding an app navigation step.',
               ],
               [
                 '05',

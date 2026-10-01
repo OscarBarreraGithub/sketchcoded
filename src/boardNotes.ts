@@ -37,13 +37,15 @@ export function placeBoardWords(
   labels: Label[],
   zoom: number,
 ): Map<string, Placement> {
-  // The board's type: at least 14px, and 13 screen pixels when zoomed out (see the stylesheet).
-  const font = Math.max(14, 13 / zoom),
+  // The board's type: at least 17px, and 16 screen pixels when zoomed out (see the stylesheet).
+  const font = Math.max(17, 16 / zoom),
     height = Math.max(44 / zoom, font * 1.3 + 16),
-    maxWidth = Math.max(260, 220 / zoom),
+    maxWidth = Math.max(320, 270 / zoom),
     gap = 6 / zoom,
     dot = 9 / zoom + gap * 2;
-  const width = (text: string) => Math.min(maxWidth, text.length * font * 0.56 + 30);
+  // Measured on the board's type, a letter averages 0.45 to 0.51 of the font size; the gap around
+  // each box covers the rest.
+  const width = (text: string) => Math.min(maxWidth, text.length * font * 0.52 + 30);
   const taken: Rect[] = frames.flatMap((f) => [f.paper, f.tape]);
   const clear = (box: Rect) => !taken.some((t) => overlapArea(box, t) > 0);
   const grow = (box: Rect): Rect => ({

@@ -53,6 +53,7 @@ import { StickyNote } from 'lucide-react';
 import { TellAgent } from './TellAgent';
 import { Modal, Confirm } from './Modal';
 import { ScrollHints } from './ScrollHints';
+import { drawingWidth } from '../drawingFit';
 type Placing =
   | { mode: 'new' }
   | { mode: 'idea'; ideaId: string }
@@ -220,7 +221,8 @@ export function ScreenEditor({
     );
   };
   // Rule (2026-09-26): every view works at every zoom. The drawing is sized to the room the stage
-  // has, in both directions, so the whole sketch is visible for placing pins in a small dialog.
+  // has, in both directions, down to the size where its pins would pile up; below that the stage
+  // scrolls.
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -235,13 +237,10 @@ export function ScreenEditor({
   }, []);
   const stageStyle = (a?: { width: number; height: number }) => {
     const aspect = a ? a.width / a.height : layout === 'mobile' ? 9 / 16 : 4 / 3;
-    const width = fit
-      ? Math.max(120, Math.floor(Math.min(fit.width, (fit.height - 6) * aspect)))
-      : undefined;
+    const width = fit ? drawingWidth(fit, aspect, a?.width) : undefined;
     return {
       aspectRatio: `${aspect}`,
       width: width === undefined ? undefined : `${width}px`,
-      maxWidth: '100%',
     };
   };
   const caption =
@@ -420,6 +419,7 @@ export function ScreenEditor({
                 {active && pins.filter((v) => layout === 'web' || v.mobile).map(stagePin)}
               </div>
             </div>
+            <ScrollHints target={stageRef} label="More of the drawing" />
             {layout === 'web' && asset && pins.some((v) => v.provisional) && (
               <div className="unplaced-strip provisional-strip">
                 <span>Place on the drawing:</span>
@@ -501,7 +501,7 @@ export function ScreenEditor({
                       value="annotation"
                       disabled={project.transitions.some((t) => t.pinId === pin.id)}
                     >
-                      Content / local action — stays on this screen
+                      Content / local action — stays here
                     </option>
                     <option
                       value="detail"

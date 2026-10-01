@@ -11,7 +11,7 @@
   --red: #b95144;
   --serif: 'Newsreader', Georgia, serif;
   --hand: 'Caveat', cursive;
-  font-size: 13px;
+  font-size: 16px;
 }
 * {
   box-sizing: border-box;
@@ -87,7 +87,7 @@ input[type='range'] {
 label {
   display: block;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 15px;
   margin: 18px 0 0;
 }
 label > input:not([type='checkbox']),
@@ -112,7 +112,7 @@ hr {
   margin: 10px 0;
 }
 .eyebrow {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1.8px;
   font-weight: 600;
   color: #8d9185;
@@ -134,7 +134,7 @@ hr {
   background: #fbfcf7;
   border-radius: 6px;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 15px;
   transition:
     background 0.15s,
     transform 0.15s;
@@ -157,7 +157,7 @@ hr {
 }
 .button.small {
   min-height: 32px;
-  font-size: 11px;
+  font-size: 14px;
   padding: 7px 10px;
 }
 .full {
@@ -184,7 +184,7 @@ hr {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 500;
   color: #6e7d69;
   padding: 7px 0;
@@ -206,13 +206,13 @@ hr {
 }
 .field-help {
   color: #92988a;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.6;
   margin-top: 8px;
 }
 .required {
   float: right;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1px;
   color: #9d9f94;
   margin-top: 2px;
@@ -247,7 +247,7 @@ hr {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 25px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -1.35px;
 }
@@ -273,7 +273,7 @@ hr {
   align-items: center;
   gap: 9px;
   color: #6e7767;
-  font-size: 12px;
+  font-size: 15px;
 }
 .project-trigger > span {
   max-width: 180px;
@@ -285,7 +285,7 @@ hr {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 10px;
+  font-size: 13px;
   color: #969b8d;
   white-space: nowrap;
 }
@@ -347,7 +347,7 @@ hr {
   padding: 11px;
   border-radius: 5px;
   text-align: left;
-  font-size: 12px;
+  font-size: 15px;
 }
 .project-menu > button:hover {
   background: #f0f2e9;
@@ -358,7 +358,7 @@ hr {
 .project-menu small {
   display: block;
   color: #929787;
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 3px;
 }
 .studio-layout {
@@ -382,11 +382,11 @@ hr {
   justify-content: space-between;
 }
 .library-heading .eyebrow {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.55px;
 }
 .library-heading h2 {
-  font-size: 15px;
+  font-size: 18px;
   letter-spacing: -0.4px;
   font-weight: 600;
   margin-top: 8px;
@@ -395,7 +395,7 @@ hr {
   align-items: center;
 }
 .library-heading h2 span {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 400;
   background: #eeefe6;
   border: 1px solid #e2e5d9;
@@ -431,13 +431,13 @@ hr {
   flex: 1;
 }
 .folder-button strong {
-  font-size: 11px;
+  font-size: 14px;
   display: block;
   font-weight: 500;
 }
 .folder-button small {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   color: #969c8a;
   margin-top: 5px;
 }
@@ -461,12 +461,12 @@ hr {
   min-width: 0;
   border: 0;
   background: none;
-  font-size: 10px;
+  font-size: 13px;
   padding: 7px 0;
   box-shadow: none;
 }
 .search-box kbd {
-  font-size: 13px;
+  font-size: 16px;
   color: #b0b5a6;
 }
 .library-scroll {
@@ -480,7 +480,7 @@ hr {
 .library-section {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.5px;
   color: #979e8d;
   margin: 4px 0 14px;
@@ -521,7 +521,7 @@ hr {
   position: absolute;
   right: 9px;
   bottom: 10px;
-  font-size: 6px;
+  font-size: 8px;
   font-weight: 600;
   letter-spacing: 0.7px;
   padding: 3px 5px;
@@ -554,7 +554,7 @@ hr {
   align-items: center;
   gap: 8px;
   padding-top: 9px;
-  font-size: 11px;
+  font-size: 14px;
   color: #737c68;
 }
 .asset-caption > span:nth-child(2) {
@@ -565,7 +565,7 @@ hr {
   flex: 1;
 }
 .asset-number {
-  font-size: 8px;
+  font-size: 10px;
   color: #a3aa98;
   font-family: monospace;
 }
@@ -602,12 +602,12 @@ hr {
   background: #edf1e3;
 }
 .import-zone strong {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: #6f7e62;
 }
 .import-zone .import-main > span {
-  font-size: 12px;
+  font-size: 15px;
   color: #939c85;
 }
 .import-more {
@@ -621,8 +621,8 @@ hr {
   background: #eff2e7;
 }
 .import-more .text-button {
-  font-size: 12px;
-  min-height: 34px;
+  font-size: 15px;
+  min-height: 44px;
   color: #5f6e55;
 }
 .import-divider {
@@ -641,7 +641,7 @@ hr {
   border-top: 1px solid #e5e8dc;
   height: 35px;
   flex-shrink: 0;
-  font-size: 8px;
+  font-size: 10px;
   color: #9da58f;
 }
 .library.drop-active {
@@ -659,11 +659,11 @@ hr {
 }
 .empty-library p {
   color: #7a866d;
-  font-size: 12px;
+  font-size: 15px;
 }
 .empty-library small {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 8px;
   line-height: 1.6;
 }
@@ -676,7 +676,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1px;
   color: #929e81;
 }
@@ -696,7 +696,7 @@ hr {
   gap: 6px;
   align-items: center;
   color: #89977a;
-  font-size: 10px;
+  font-size: 13px;
 }
 .source > span {
   flex: 1;
@@ -729,12 +729,12 @@ hr {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 8px;
+  font-size: 10px;
   color: #969c88;
   letter-spacing: 1.4px;
 }
 .board-local {
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1px;
   border: 1px solid #dfe4d4;
   padding: 3px 5px;
@@ -750,7 +750,7 @@ hr {
 .board-title h1 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 35px;
+  font-size: 38px;
   line-height: 1.12;
   letter-spacing: -1px;
   max-width: 470px;
@@ -762,7 +762,7 @@ hr {
   color: #a2a88f;
 }
 .workspace-header p {
-  font-size: 10px;
+  font-size: 13px;
   color: #959c89;
   margin-top: 7px;
   letter-spacing: 0.05px;
@@ -776,7 +776,7 @@ hr {
 .board-counts {
   display: flex;
   gap: 18px;
-  font-size: 9px;
+  font-size: 11px;
   color: #929c84;
 }
 .board-counts > span {
@@ -786,7 +786,7 @@ hr {
 }
 .review-button {
   min-height: 34px;
-  font-size: 10px;
+  font-size: 13px;
   padding: 7px 10px;
   border-color: #d9dfcc;
 }
@@ -798,7 +798,7 @@ hr {
   background: #ede6d6;
   color: #a78a59;
   padding: 2px 5px;
-  font-size: 9px;
+  font-size: 11px;
   margin-left: 4px;
 }
 .review-clear {
@@ -846,7 +846,7 @@ hr {
   mix-blend-mode: multiply;
 }
 .tiny-star {
-  font-size: 18px;
+  font-size: 21px;
   color: #927c58;
 }
 .board-world {
@@ -900,7 +900,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.6px;
   color: #9b9b87;
   padding: 0 5px;
@@ -947,7 +947,7 @@ hr {
   min-width: 72%;
   max-width: 105%;
   font-family: var(--hand);
-  font-size: 27px;
+  font-size: 30px;
   font-weight: 600;
   white-space: nowrap;
   box-shadow: 0 3px 4px #64513128;
@@ -984,7 +984,7 @@ hr {
   border: 2px solid #fff7e7;
   background: radial-gradient(circle at 35% 25%, #d88573, #ae4d41 70%);
   color: #fff8e9;
-  font-size: 11px;
+  font-size: 14px;
   box-shadow: 1px 3px 5px #553d2855;
   z-index: 5;
   display: flex;
@@ -1052,7 +1052,7 @@ hr {
 }
 .yarn-label text {
   font-family: 'DM Sans', sans-serif;
-  font-size: 10px;
+  font-size: 13px;
   fill: #8b785d;
   letter-spacing: 0.2px;
 }
@@ -1096,7 +1096,7 @@ hr {
 }
 .zoom-value {
   min-width: 48px;
-  font-size: 10px;
+  font-size: 13px;
   color: #78846b;
 }
 .board-help {
@@ -1109,7 +1109,7 @@ hr {
   align-items: center;
   color: #8d7c5d;
   white-space: nowrap;
-  font-size: 8px;
+  font-size: 10px;
   pointer-events: none;
 }
 .board-help i {
@@ -1123,7 +1123,7 @@ hr {
   right: 24px;
   bottom: 27px;
   font-family: var(--hand);
-  font-size: 15px;
+  font-size: 18px;
   color: #8b7656;
   display: flex;
   align-items: center;
@@ -1165,7 +1165,7 @@ hr {
   gap: 9px;
   box-shadow: 0 3px 12px #75613d24;
   padding: 5px 8px 5px 15px;
-  font-size: 11px;
+  font-size: 14px;
   white-space: nowrap;
 }
 .mini-pin {
@@ -1211,17 +1211,17 @@ hr {
 .board-empty h2 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 30px;
+  font-size: 33px;
 }
 .board-empty p {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.8;
   margin-top: 12px;
   color: #968668;
 }
 .handwritten {
   font-family: var(--hand);
-  font-size: 22px;
+  font-size: 25px;
   display: flex;
   gap: 8px;
   justify-content: center;
@@ -1234,7 +1234,7 @@ hr {
   background: #f7eee2;
   color: #a87868;
   text-align: center;
-  font-size: 12px;
+  font-size: 15px;
 }
 .modal {
   border: 1px solid #e4e5d8;
@@ -1261,7 +1261,7 @@ hr {
 }
 .modal-heading h2 {
   font-family: var(--serif);
-  font-size: 29px;
+  font-size: 32px;
   font-weight: 400;
   letter-spacing: -0.6px;
   margin-top: 9px;
@@ -1286,7 +1286,7 @@ hr {
   border-top: 1px solid #e4e7da;
   margin-top: 24px;
   padding-top: 17px;
-  font-size: 10px;
+  font-size: 13px;
   color: #959f87;
   line-height: 1.8;
   display: flex;
@@ -1311,12 +1311,12 @@ hr {
   color: #819273;
 }
 .new-board-option strong {
-  font-size: 13px;
+  font-size: 16px;
   color: #51654a;
   font-weight: 500;
 }
 .new-board-option span {
-  font-size: 10px;
+  font-size: 13px;
   color: #96a087;
 }
 .new-board-option:hover {
@@ -1333,7 +1333,7 @@ hr {
   border-bottom: 1px solid #e1e5d7;
 }
 .screen-modal .modal-heading h2 {
-  font-size: 25px;
+  font-size: 28px;
 }
 .screen-editor {
   display: flex;
@@ -1388,7 +1388,7 @@ hr {
 .editor-pin {
   width: 29px;
   height: 29px;
-  font-size: 12px;
+  font-size: 15px;
   cursor: grab;
   border-width: 3px;
 }
@@ -1403,7 +1403,7 @@ hr {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 9px;
+  font-size: 11px;
   color: #9aa58d;
   line-height: 1.5;
 }
@@ -1422,31 +1422,31 @@ hr {
 }
 .editor-inspector h3 {
   font-family: var(--serif);
-  font-size: 23px;
+  font-size: 26px;
   font-weight: 400;
   margin-top: 7px;
 }
 .editor-inspector label {
-  font-size: 10px;
+  font-size: 13px;
 }
 .editor-inspector input,
 .editor-inspector textarea,
 .editor-inspector select {
-  font-size: 11px;
+  font-size: 14px;
 }
 .check-row {
   display: flex;
   align-items: center;
   gap: 9px;
   line-height: 1.5;
-  font-size: 11px;
+  font-size: 14px;
 }
 .check-row > span {
   flex: 1;
 }
 .check-row small {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   color: #949e87;
   font-weight: 400;
   margin-top: 2px;
@@ -1459,7 +1459,7 @@ hr {
 .section-heading {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.2px;
   color: #9aa58c;
   margin-bottom: 13px;
@@ -1471,7 +1471,7 @@ hr {
   width: 100%;
   padding: 8px 0;
   text-align: left;
-  font-size: 11px;
+  font-size: 14px;
   margin-bottom: 5px;
 }
 .pin-row > span {
@@ -1483,7 +1483,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 11px;
 }
 .pin-row > svg {
   margin-left: auto;
@@ -1491,7 +1491,7 @@ hr {
 }
 .inspector-back {
   margin: -10px 0 15px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .inspector-title {
   display: flex;
@@ -1500,7 +1500,7 @@ hr {
   margin-bottom: 21px;
 }
 .inspector-title h3 {
-  font-size: 22px;
+  font-size: 25px;
   margin-top: 4px;
 }
 .pin-swatch {
@@ -1521,14 +1521,14 @@ hr {
   text-align: left;
   padding: 10px 0;
   margin-bottom: 5px;
-  font-size: 11px;
+  font-size: 14px;
 }
 .connection-row > span:nth-child(2) {
   flex: 1;
 }
 .connection-row small {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   color: #9ba78b;
   margin-top: 5px;
 }
@@ -1565,7 +1565,7 @@ hr {
   margin: 23px 0;
 }
 .route-screen {
-  font-size: 12px;
+  font-size: 15px;
   flex: 1;
   text-align: center;
 }
@@ -1581,7 +1581,7 @@ hr {
   gap: 15px;
 }
 .edge-modal label {
-  font-size: 11px;
+  font-size: 14px;
 }
 .edge-options {
   display: flex;
@@ -1598,7 +1598,7 @@ hr {
   gap: 7px;
 }
 .color-picker legend {
-  font-size: 9px;
+  font-size: 11px;
   color: #9aa58c;
   margin-bottom: 10px;
 }
@@ -1646,12 +1646,12 @@ hr {
 .review-heading h2 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 28px;
+  font-size: 31px;
   margin-top: 7px;
   letter-spacing: -0.6px;
 }
 .review-heading p {
-  font-size: 11px;
+  font-size: 14px;
   color: #97a086;
   line-height: 1.6;
   margin-top: 10px;
@@ -1665,7 +1665,7 @@ hr {
 }
 .review-tabs button {
   padding: 13px 0;
-  font-size: 10px;
+  font-size: 13px;
   color: #98a189;
   position: relative;
 }
@@ -1682,7 +1682,7 @@ hr {
   background: #7a9261;
 }
 .review-tabs span {
-  font-size: 9px;
+  font-size: 11px;
   padding: 2px 4px;
   background: #eaf0df;
   border-radius: 3px;
@@ -1705,7 +1705,7 @@ hr {
   margin-top: 1px;
 }
 .review-context p {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.7;
 }
 .issue {
@@ -1734,13 +1734,13 @@ hr {
 }
 .issue-heading small {
   display: block;
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1px;
   color: #a7aa91;
   margin-bottom: 5px;
 }
 .issue-heading strong {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
   display: block;
@@ -1756,27 +1756,27 @@ hr {
   padding: 0 15px 16px;
 }
 .issue-body > p {
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.8;
   color: #77866a;
 }
 .issue-body > .text-button {
-  font-size: 10px;
+  font-size: 13px;
   margin: 6px 0 5px;
 }
 .issue-body label {
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 9px;
 }
 .issue-body textarea {
-  font-size: 10px;
+  font-size: 13px;
   margin-bottom: 10px;
 }
 .stale-reason {
   background: #f6efdd;
   padding: 9px;
   margin: 10px 0;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.7;
   color: #a49066;
 }
@@ -1793,19 +1793,19 @@ hr {
   color: #83946e;
 }
 .accepted-reason p {
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.7;
   flex: 1;
 }
 .accepted-reason small {
   display: block;
   color: #a1ae8e;
-  font-size: 8px;
+  font-size: 10px;
   margin-top: 6px;
 }
 .accepted-reason > .text-button {
   padding: 0;
-  font-size: 9px;
+  font-size: 11px;
 }
 .review-empty {
   padding: 42px 13px;
@@ -1814,13 +1814,13 @@ hr {
 }
 .review-empty h3 {
   font-family: var(--serif);
-  font-size: 23px;
+  font-size: 26px;
   font-weight: 400;
   margin: 15px 0 9px;
   color: #71865e;
 }
 .review-empty p {
-  font-size: 10px;
+  font-size: 13px;
   color: #a2af91;
   line-height: 1.8;
 }
@@ -1829,13 +1829,13 @@ hr {
   gap: 7px;
   justify-content: center;
   align-items: center;
-  font-size: 8px;
+  font-size: 10px;
   color: #a2ad90;
   border-top: 1px solid #e2e7d6;
   padding: 13px;
 }
 .archived-reviews {
-  font-size: 10px;
+  font-size: 13px;
   color: #98a585;
   line-height: 1.8;
   margin: 16px 5px;
@@ -1846,7 +1846,7 @@ hr {
 }
 .archived-reviews small {
   display: block;
-  font-size: 8px;
+  font-size: 10px;
   word-break: break-word;
 }
 .preview-modal {
@@ -1885,7 +1885,7 @@ hr {
   border: 0;
   background: none;
   padding: 3px;
-  font-size: 11px;
+  font-size: 14px;
   box-shadow: none;
 }
 .preview-body {
@@ -1908,7 +1908,7 @@ hr {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 14px;
   color: #8e9d7b;
   margin-bottom: 21px;
   align-self: flex-start;
@@ -1921,7 +1921,7 @@ hr {
   box-shadow: 0 0 0 3px #9da9811c;
 }
 .badge {
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1px;
   border: 1px solid #d0d9bd;
   border-radius: 3px;
@@ -1946,7 +1946,7 @@ hr {
   height: 33px;
   cursor: pointer;
   border: 3px solid #fff9e8;
-  font-size: 12px;
+  font-size: 15px;
   box-shadow:
     0 0 0 6px #b6664920,
     1px 3px 6px #754c3454;
@@ -1969,7 +1969,7 @@ hr {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 10px;
+  font-size: 13px;
   color: #a0ad8e;
   margin-top: 23px;
 }
@@ -1984,13 +1984,13 @@ hr {
 }
 .preview-sidebar h3 {
   font-family: var(--serif);
-  font-size: 27px;
+  font-size: 30px;
   font-weight: 400;
   margin-top: 10px;
   letter-spacing: -0.4px;
 }
 .preview-sidebar > p {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.85;
   color: #7d8a6d;
   margin-top: 13px;
@@ -2005,10 +2005,10 @@ hr {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .preview-route > div {
-  font-size: 10px;
+  font-size: 13px;
   position: relative;
   padding: 16px 0 0 21px;
 }
@@ -2021,7 +2021,7 @@ hr {
   background: #d2dec0;
 }
 .preview-route small {
-  font-size: 9px;
+  font-size: 11px;
   color: #9baa8b;
 }
 .last-branch {
@@ -2030,20 +2030,20 @@ hr {
   padding-top: 21px;
 }
 .last-branch strong {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 500;
   display: block;
   margin: 10px 0;
 }
 .last-branch p {
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.8;
   color: #a1ad92;
 }
 .last-branch small {
   display: block;
   color: #a7b197;
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.7;
   margin-top: 9px;
 }
@@ -2062,7 +2062,7 @@ hr {
   border-color: #9db786;
 }
 .branch-choice > span {
-  font-size: 11px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2071,14 +2071,14 @@ hr {
 }
 .branch-choice small {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.8;
   color: #7d8b6b;
   margin-top: 9px;
 }
 .branch-choice em {
   display: block;
-  font-size: 8px;
+  font-size: 10px;
   font-style: normal;
   color: #a3b18e;
   margin-top: 10px;
@@ -2087,7 +2087,7 @@ hr {
   border-top: 1px solid #e2e8d6;
   margin-top: 20px;
   padding-top: 15px;
-  font-size: 9px;
+  font-size: 11px;
   color: #a5b091;
   line-height: 1.8;
 }
@@ -2097,7 +2097,7 @@ hr {
   background: #faf2dd;
   color: #a5956d;
   padding: 12px;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
   margin-top: 15px;
   max-width: 580px;
@@ -2111,7 +2111,7 @@ hr {
   background: #f8fbef;
 }
 .preview-footer > span {
-  font-size: 9px;
+  font-size: 11px;
   color: #a2ae8e;
   line-height: 1.5;
 }
@@ -2135,17 +2135,17 @@ hr {
 }
 .help-steps > div > span {
   font-family: var(--hand);
-  font-size: 25px;
+  font-size: 28px;
   line-height: 1;
   color: #b3bd9a;
 }
 .help-steps h3 {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   margin-bottom: 7px;
 }
 .help-steps p {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
   color: #94a184;
 }
@@ -2158,7 +2158,7 @@ hr {
   border-top: 1px solid #e1e7d5;
 }
 .shortcut-list > span {
-  font-size: 9px;
+  font-size: 11px;
   color: #a0ad8d;
   display: flex;
   align-items: center;
@@ -2170,7 +2170,7 @@ kbd {
   border: 1px solid #e0e6d3;
   border-bottom-width: 2px;
   border-radius: 3px;
-  font-size: 9px;
+  font-size: 11px;
   color: #8c9b78;
 }
 .toast {
@@ -2188,7 +2188,7 @@ kbd {
   border: 1px solid #dfe8cb;
   box-shadow: 0 5px 25px #3d4d2529;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: 14px;
   max-width: calc(100vw - 35px);
   animation: modal-in 0.2s ease;
 }
@@ -2205,7 +2205,7 @@ kbd {
   gap: 15px;
   background: #f8e7da;
   padding: 10px 26px;
-  font-size: 11px;
+  font-size: 14px;
   color: #b37a60;
   flex-shrink: 0;
 }
@@ -2218,7 +2218,7 @@ kbd {
   margin-top: 20px;
 }
 .import-report p {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.8;
   margin: 10px 0;
   padding: 10px;
@@ -2241,7 +2241,7 @@ kbd {
 .boot-screen h1 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 35px;
+  font-size: 38px;
 }
 .boot-screen p {
   max-width: 550px;
@@ -2304,7 +2304,7 @@ kbd {
     padding-right: 40px;
   }
   .board-title h1 {
-    font-size: 39px;
+    font-size: 42px;
   }
 }
 @media (max-width: 1200px) {
@@ -2326,7 +2326,7 @@ kbd {
     padding-right: 16px;
   }
   .library-heading h2 {
-    font-size: 14px;
+    font-size: 17px;
   }
   .folder-button {
     margin-left: 16px;
@@ -2354,10 +2354,10 @@ kbd {
     width: 205px;
   }
   .library-heading .eyebrow {
-    font-size: 7px;
+    font-size: 9px;
   }
   .library-heading h2 {
-    font-size: 13px;
+    font-size: 16px;
   }
   .folder-button {
     gap: 7px;
@@ -2367,7 +2367,7 @@ kbd {
     width: 25px;
   }
   .folder-button strong {
-    font-size: 10px;
+    font-size: 13px;
   }
   .asset-preview > img {
     height: 100px;
@@ -2377,11 +2377,11 @@ kbd {
     padding: 22px;
   }
   .board-title h1 {
-    font-size: 30px;
+    font-size: 33px;
     max-width: 260px;
   }
   .workspace-header p {
-    font-size: 9px;
+    font-size: 11px;
     max-width: 260px;
   }
   .board-local {
@@ -2389,7 +2389,7 @@ kbd {
   }
   .board-counts {
     gap: 9px;
-    font-size: 8px;
+    font-size: 10px;
   }
   .board-summary {
     gap: 13px;
@@ -2402,7 +2402,7 @@ kbd {
     box-shadow: -10px 0 35px #5c5d3830;
   }
   .board-help {
-    font-size: 7px;
+    font-size: 9px;
     gap: 6px;
   }
   .preview-sidebar {
@@ -2416,7 +2416,7 @@ kbd {
     padding: 17px;
   }
   .editor-toolbar .button {
-    font-size: 10px;
+    font-size: 13px;
   }
   .screen-editor {
     min-height: 470px;
@@ -2428,7 +2428,7 @@ kbd {
     width: 260px;
   }
   .screen-modal .modal-heading h2 {
-    font-size: 24px;
+    font-size: 27px;
   }
   .header-actions {
     gap: 7px;
@@ -2437,7 +2437,7 @@ kbd {
     max-width: 130px;
   }
   .brand {
-    font-size: 23px;
+    font-size: 26px;
   }
   .brand-logo {
     width: 27px;
@@ -2451,7 +2451,7 @@ kbd {
     gap: 12px;
   }
   .brand {
-    font-size: 21px;
+    font-size: 24px;
     gap: 7px;
   }
   .brand-logo {
@@ -2476,7 +2476,7 @@ kbd {
     gap: 6px;
   }
   .header-actions .button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 8px 10px;
     min-height: 34px;
   }
@@ -2487,15 +2487,15 @@ kbd {
     padding: 19px 10px 15px;
   }
   .library-heading .eyebrow {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 0.8px;
   }
   .library-heading h2 {
-    font-size: 11px;
+    font-size: 14px;
     gap: 5px;
   }
   .library-heading h2 span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .library-heading .icon-button {
     width: 22px;
@@ -2510,7 +2510,7 @@ kbd {
     background: none;
   }
   .folder-button strong {
-    font-size: 9px;
+    font-size: 11px;
   }
   .folder-button small,
   .folder-button > svg {
@@ -2522,7 +2522,7 @@ kbd {
     padding: 0 6px;
   }
   .search-box > input {
-    font-size: 8px;
+    font-size: 10px;
   }
   .search-box kbd {
     display: none;
@@ -2531,7 +2531,7 @@ kbd {
     padding: 0 10px 10px;
   }
   .library-section {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 1px;
   }
   .asset {
@@ -2544,21 +2544,21 @@ kbd {
     height: 81px;
   }
   .asset-used {
-    font-size: 5px;
+    font-size: 6px;
     right: 5px;
     bottom: 6px;
     letter-spacing: 0.3px;
     padding: 2px 3px;
   }
   .asset-caption {
-    font-size: 9px;
+    font-size: 11px;
     gap: 5px;
   }
   .asset-caption > svg {
     display: none;
   }
   .asset-number {
-    font-size: 7px;
+    font-size: 9px;
   }
   .import-zone {
     margin: 8px 10px 10px;
@@ -2566,13 +2566,13 @@ kbd {
     gap: 7px;
   }
   .import-zone strong {
-    font-size: 9px;
+    font-size: 11px;
   }
   .import-zone span {
-    font-size: 7px;
+    font-size: 9px;
   }
   .library-footer {
-    font-size: 6px;
+    font-size: 8px;
     gap: 4px;
   }
   .workspace-header {
@@ -2581,7 +2581,7 @@ kbd {
     align-items: flex-start;
   }
   .board-eyebrow {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 1px;
   }
   .board-title {
@@ -2589,7 +2589,7 @@ kbd {
     gap: 1px;
   }
   .board-title h1 {
-    font-size: 25px;
+    font-size: 28px;
     max-width: 155px;
   }
   .board-title .icon-button {
@@ -2600,7 +2600,7 @@ kbd {
     width: 11px;
   }
   .workspace-header p {
-    font-size: 8px;
+    font-size: 10px;
     max-width: 190px;
     line-height: 1.5;
     margin-top: 4px;
@@ -2619,7 +2619,7 @@ kbd {
   }
   .review-count {
     margin-left: 0;
-    font-size: 8px;
+    font-size: 10px;
   }
   .board-controls {
     gap: 5px;
@@ -2641,7 +2641,7 @@ kbd {
   }
   .zoom-value {
     min-width: 38px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .board-help {
     bottom: 12px;
@@ -2655,7 +2655,7 @@ kbd {
     width: min(315px, 100%);
   }
   .connection-banner {
-    font-size: 9px;
+    font-size: 11px;
     max-width: 95%;
     white-space: normal;
     top: 12px;
@@ -2666,7 +2666,7 @@ kbd {
     padding: 20px;
   }
   .modal-heading h2 {
-    font-size: 25px;
+    font-size: 28px;
   }
   .screen-modal,
   .preview-modal {
@@ -2691,7 +2691,7 @@ kbd {
     gap: 8px;
   }
   .editor-toolbar .text-button {
-    font-size: 9px;
+    font-size: 11px;
   }
   .sketch-stage {
     padding: 22px 8px;
@@ -2714,7 +2714,7 @@ kbd {
     margin-top: 14px;
   }
   .sketch-caption {
-    font-size: 8px;
+    font-size: 10px;
   }
   .preview-toolbar {
     padding: 9px 15px;
@@ -2722,13 +2722,13 @@ kbd {
   }
   .preview-start select {
     max-width: 170px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .preview-toolbar > div {
     gap: 9px;
   }
   .preview-toolbar .text-button {
-    font-size: 9px;
+    font-size: 11px;
   }
   .preview-body {
     height: auto;
@@ -2747,7 +2747,7 @@ kbd {
     padding: 21px;
   }
   .preview-sidebar h3 {
-    font-size: 25px;
+    font-size: 28px;
   }
   .preview-route {
     max-height: 120px;
@@ -2760,7 +2760,7 @@ kbd {
     gap: 10px;
   }
   .preview-footer > span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .preview-footer > .preview-step {
     display: none;
@@ -2769,7 +2769,7 @@ kbd {
     max-width: 100% !important;
   }
   .preview-hint {
-    font-size: 9px;
+    font-size: 11px;
   }
   .form-columns {
     gap: 10px;
@@ -2779,7 +2779,7 @@ kbd {
     gap: 7px;
   }
   .route-screen {
-    font-size: 10px;
+    font-size: 13px;
   }
   .color-picker {
     gap: 5px;
@@ -2793,30 +2793,30 @@ kbd {
     margin-right: 10px;
   }
   .source-heading {
-    font-size: 6px;
-  }
-  .source {
     font-size: 8px;
   }
-  .modal-actions .button {
+  .source {
     font-size: 10px;
   }
+  .modal-actions .button {
+    font-size: 13px;
+  }
   .modal-actions > .delete-action {
-    font-size: 9px;
+    font-size: 11px;
   }
   .toast {
     bottom: 15px;
-    font-size: 10px;
+    font-size: 13px;
     width: max-content;
   }
   .board-empty {
     max-width: 90%;
   }
   .board-empty h2 {
-    font-size: 25px;
+    font-size: 28px;
   }
   .board-empty p {
-    font-size: 10px;
+    font-size: 13px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2843,7 +2843,7 @@ kbd {
   border-radius: 4px;
   background: #efe5cb;
   box-shadow: 0 2px 3px #6a512626;
-  font-size: 10px;
+  font-size: 13px;
   color: #8b785d;
   letter-spacing: 0.2px;
 }

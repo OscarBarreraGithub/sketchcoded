@@ -56,7 +56,7 @@
 }
 .std-product {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 18px;
   letter-spacing: -0.2px;
   margin-right: auto;
   overflow: hidden;
@@ -77,13 +77,13 @@
 }
 .std-hero h1 {
   margin: 0;
-  font-size: 27px;
+  font-size: 30px;
   line-height: 1.15;
   letter-spacing: -0.4px;
 }
 .std-hero p {
   margin: 10px 0 0;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.6;
   color: #4d5a51;
   max-width: 62ch;
@@ -120,14 +120,14 @@
 .std-card h2,
 .std-row h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.25;
 }
 .std-card p,
 .std-row p {
   margin: 0;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.55;
   color: #566257;
 }
@@ -135,7 +135,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   color: #3d4a41;
 }
@@ -145,12 +145,12 @@
   border: 1px solid #ccd3c5;
   border-radius: 8px;
   background: #fff;
-  font: 14px var(--sans);
+  font: 17px var(--sans);
   color: #1f2a24;
 }
 .std-field input::placeholder {
   color: #9aa496;
-  font-size: 13px;
+  font-size: 16px;
 }
 .std-action {
   display: inline-flex;
@@ -160,7 +160,7 @@
   padding: 10px 16px;
   border-radius: 8px;
   border: 1px solid transparent;
-  font: 600 14px var(--sans);
+  font: 600 17px var(--sans);
   cursor: pointer;
   max-width: 100%;
 }
@@ -185,7 +185,7 @@
   background: #eef1e8;
   color: #23372c;
   border-color: #dde2d3;
-  font-size: 13px;
+  font-size: 16px;
 }
 .std-secondary:hover,
 .std-foot-action:hover {
@@ -194,7 +194,7 @@
 .std-nav {
   background: #ffffff1a;
   color: #eef3e9;
-  font-size: 13px;
+  font-size: 16px;
   min-height: 40px;
   padding: 8px 12px;
 }
@@ -214,7 +214,7 @@
   border-radius: 50%;
   background: #ae4d41;
   color: #fff8e9;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
 }
 .std-primary .std-mark {
@@ -230,7 +230,7 @@
 }
 .std-note {
   margin: 0;
-  font-size: 12px;
+  font-size: 15px;
   color: #7c8878;
 }
 /* A dialog sits on a dimmed page; an ending is centered and quiet. */
@@ -268,6 +268,6 @@
     gap: 16px;
   }
   .std-hero h1 {
-    font-size: 22px;
+    font-size: 25px;
   }
 }

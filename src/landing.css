@@ -20,11 +20,11 @@
   border-bottom: 1px solid var(--line);
 }
 .landing-header .brand {
-  font-size: 22px;
+  font-size: 25px;
 }
 .landing-note {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 17px;
 }
 .landing-main {
   width: min(1120px, 100% - 40px);
@@ -85,7 +85,7 @@
 }
 .landing-start h2,
 .landing-boards h2 {
-  font: 400 28px/1.15 var(--serif);
+  font: 400 31px/1.15 var(--serif);
   margin: 0;
 }
 .landing-start form {
@@ -99,7 +99,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--muted);
 }
 .landing-start input {
@@ -108,7 +108,7 @@
   border: 1px solid var(--line);
   border-radius: 9px;
   background: #fffef8;
-  font: 15px var(--sans);
+  font: 18px var(--sans);
   color: var(--ink);
 }
 .landing-start .button {
@@ -119,7 +119,7 @@
   align-items: center;
   gap: 10px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
@@ -135,7 +135,7 @@
 .landing-hint {
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.55;
 }
 .landing-boards {
@@ -152,7 +152,7 @@
   padding: 4px 6px 14px;
 }
 .landing-boards-head span {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--muted);
 }
 .landing-boards ul {
@@ -209,13 +209,13 @@
   gap: 2px;
 }
 .landing-board-text strong {
-  font: 600 16px var(--sans);
+  font: 600 19px var(--sans);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .landing-board-text small {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--muted);
 }
 /* The brand in the workstation header is the way back to this page. */
@@ -244,7 +244,7 @@
   gap: 8px;
 }
 .board-empty .board-empty-agent small {
-  font-size: 13px;
+  font-size: 16px;
   color: #6f6a55;
 }
 @media (max-width: 900px) {
@@ -280,7 +280,7 @@
   border: 1px solid #c9d0bc;
   border-radius: 50%;
   background: #fffef7;
-  font: 600 14px var(--sans);
+  font: 600 17px var(--sans);
   cursor: pointer;
 }
 .tutorial-steps [aria-current],
@@ -293,7 +293,7 @@
   min-height: 0;
 }
 .tutorial-lesson h3 {
-  font-size: 24px;
+  font-size: 27px;
   margin: 0 0 8px;
 }
 .tutorial-lesson p {
@@ -312,7 +312,7 @@
   gap: 12px;
 }
 .tutorial-practice p {
-  font-size: 14px;
+  font-size: 17px;
   margin: 0;
 }
 .tutorial-practice label {

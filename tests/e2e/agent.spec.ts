@@ -85,14 +85,8 @@ test('every view hands its task to the agent, and the agent can read everything 
     [/Sketchcoded task · the whole board · Board/, /brief\?view=board/],
   );
   expect(board.body).toContain('## The board at a glance');
-  const card = page.locator('.screen-card').first();
-  const cardTitle = (await card.getAttribute('aria-label'))!.replace('Screen: ', '');
-  const onCork = await handoff(
-    page,
-    card.getByRole('button', { name: `Tell the agent about ${cardTitle}` }),
-    [/· P\d+ “[^”]+” \([^)]+\) · Screen editor/, /brief\?view=screen-editor&screen=/],
-  );
-  expect(onCork.text).toContain(`“${cardTitle}”`);
+  // The board's frames carry no agent button of their own; the screen editor has one per frame.
+  await expect(page.locator('.screen-card .tell-agent')).toHaveCount(0);
   const library = await handoff(
     page,
     page

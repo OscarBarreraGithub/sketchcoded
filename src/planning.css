@@ -22,7 +22,7 @@
   background: #ede6d6;
   color: #a78a59;
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: 14px;
   margin-left: 2px;
 }
 
@@ -42,7 +42,7 @@
   flex-wrap: wrap;
 }
 .planning-intro h2 {
-  font: 400 30px var(--serif);
+  font: 400 33px var(--serif);
   margin: 10px 0;
 }
 .planning-intro p {
@@ -55,7 +55,7 @@
   flex-wrap: wrap;
   gap: 10px 16px;
   align-items: center;
-  font-size: 13px;
+  font-size: 16px;
   color: #55604f;
   padding-top: 6px;
 }
@@ -117,13 +117,13 @@
   margin-top: 26px;
 }
 .plan-frame-form h3 {
-  font: 400 22px var(--serif);
+  font: 400 25px var(--serif);
   margin: 6px 0;
 }
 .plan-frame-form p {
   color: #6b7563;
   line-height: 1.6;
-  font-size: 13px;
+  font-size: 16px;
 }
 .plan-frame-form .field-help {
   display: flex;
@@ -167,11 +167,11 @@
   min-width: 200px;
 }
 .folder-heading h3 {
-  font: 400 21px var(--serif);
+  font: 400 24px var(--serif);
 }
 .folder-heading p {
   color: #707a65;
-  font-size: 12px;
+  font-size: 15px;
   margin-top: 4px;
   line-height: 1.6;
 }
@@ -182,7 +182,7 @@
 }
 .folder-empty {
   color: #8a927f;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.6;
   margin-top: 14px;
 }
@@ -218,7 +218,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 14px;
 }
 .idea-heading small {
   color: #9aa190;
@@ -229,7 +229,7 @@
   gap: 5px;
   border-radius: 5px;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.3px;
 }
 .idea-status.placed {
@@ -245,14 +245,14 @@
   color: #6b7563;
 }
 .idea-card h4 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.4;
 }
 .idea-card p {
   color: #5d675a;
   line-height: 1.6;
-  font-size: 13px;
+  font-size: 16px;
   white-space: pre-wrap;
 }
 .idea-controls {
@@ -261,7 +261,7 @@
   gap: 10px;
 }
 .idea-controls label {
-  font-size: 11px;
+  font-size: 14px;
 }
 .idea-actions {
   display: flex;
@@ -278,7 +278,7 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font:
-    13px/1.65 ui-monospace,
+    16px/1.65 ui-monospace,
     SFMono-Regular,
     Menlo,
     monospace;
@@ -299,7 +299,7 @@
   padding: 26px 14px;
   min-height: 170px;
   color: #6f7767;
-  font-size: 12px;
+  font-size: 15px;
   border: 2px dashed #cfc8a9;
   border-radius: 6px;
   background: repeating-linear-gradient(0deg, transparent 0 23px, #efebdc 23px 24px);
@@ -308,7 +308,7 @@
   color: #a08c5a;
 }
 .frame-planned strong {
-  font: 400 21px var(--serif);
+  font: 400 max(24px, calc(15px / var(--board-zoom, 1))) var(--serif);
   color: #4c5648;
 }
 .frame-planned ul {
@@ -317,7 +317,7 @@
   flex-direction: column;
   gap: 3px;
   font-family: var(--hand);
-  font-size: 18px;
+  font-size: 21px;
   line-height: 1.25;
   color: #4c5648;
 }
@@ -325,7 +325,7 @@
   font-style: italic;
 }
 .frame-planned small {
-  font-size: 10px;
+  font-size: 13px;
   color: #9aa58d;
   letter-spacing: 0.6px;
 }
@@ -374,7 +374,7 @@
   align-items: center;
   gap: 6px;
   width: 100%;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: #7d8872;
@@ -399,7 +399,7 @@
 .editable-image .frame-planned label {
   width: 100%;
   max-width: 320px;
-  font-size: 12px;
+  font-size: 15px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -409,7 +409,7 @@
   margin: 0;
 }
 .editable-image .frame-planned strong {
-  font-size: 14px;
+  font-size: 17px;
 }
 /* The bezel is an outline so pin percentages still measure the drawing itself. */
 .mobile-frame {
@@ -426,7 +426,7 @@
   gap: 8px;
   align-items: center;
   width: 100%;
-  font-size: 11px;
+  font-size: 14px;
   color: #7d8872;
 }
 .idea-row {
@@ -436,7 +436,7 @@
   gap: 10px;
   padding: 6px 0;
   border-bottom: 1px dashed #e2e5d8;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.4;
 }
 .idea-row > span {
@@ -485,8 +485,8 @@
   gap: 6px;
   padding: 8px 14px;
   border-radius: 7px;
-  font-size: 13px;
-  min-height: 40px;
+  font-size: 16px;
+  min-height: 44px;
 }
 .layout-toggle button[aria-pressed='true'] {
   background: #fffef7;
@@ -502,7 +502,7 @@
   gap: 8px;
   align-items: center;
   margin-top: 14px;
-  font-size: 12px;
+  font-size: 15px;
   color: #7d8872;
 }
 .preview-planned {
@@ -519,12 +519,12 @@
   border-radius: 10px;
   background: #f7f5ea;
   color: #5d675a;
-  font-size: 14px;
+  font-size: 17px;
 }
 .preview-planned ul {
   list-style: none;
   font-family: var(--hand);
-  font-size: 21px;
+  font-size: 24px;
   line-height: 1.3;
   color: #4c5648;
   display: flex;

@@ -14,11 +14,12 @@ Read `project.json`, `flow.md`, this skill and the full checklist. Implement the
 
 ## Browser acceptance
 
-Use actual browser tab zoom at 125%, 150%, 200% and 250%, at both 1440×900 and 1280×720 window sizes. A smaller CSS viewport is useful for finding bugs but is not the final zoom check. Inspect each affected view at every size and zoom. Check the whole checklist, including:
+Use actual browser tab zoom at 125%, 150%, 200% and 250%, at both 1440×900 and 1280×720 window sizes, then keep going to 300%, 400% and the 500% maximum, where nothing may break. A smaller CSS viewport is useful for finding bugs but is not the final zoom check. Inspect each affected view at every size and zoom. Check the whole checklist, including:
 
-- No overlapping, clipped or unreadable text, labels, controls or pins. Text is at least 12 screen pixels or deliberately steps aside on a distant canvas.
+- Text is comfortable at 100% without zooming in: at least 15px for anything read, never under 14px, in screen pixels at the canvas zoom the user works at. Measure it: list every text and every click target under the minimum in each view, at 100% and at the user's saved canvas view, and fix the list.
+- No overlapping, clipped or unreadable text, labels, controls or pins. On a distant canvas, text deliberately steps aside rather than shrinking.
 - Dialog and panel size stays stable when selection, tab or content changes. Long notes remain readable.
-- Controls stay reachable, click targets are at least 44px and fields at least 48px. The main workspace retains useful room at high zoom.
+- Controls stay reachable, click targets are at least 44px and fields at least 48px. The main workspace retains useful room at high zoom. Past 250%, a crowded toolbar scrolls sideways and a dialog becomes one scrolling column with its main content first.
 - The shell fits the window. Panels scroll inside it with visible scrollbars and “More below” hints until the end. The document does not scroll.
 - Canvas pan and zoom keep content in reach. Test extremes, selection, returning to the overview and switching views.
 - Authored Back, Dismiss and reset work as specified; Rewind test remains a separate testing aid. Plain-language conditions are chosen by the tester, not executed or proved.

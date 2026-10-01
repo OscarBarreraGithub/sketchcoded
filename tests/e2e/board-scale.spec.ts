@@ -80,9 +80,9 @@ test('thirty planned frames fit the window without overlapping, clipped titles o
 });
 
 // Rule: nothing overlaps, and when there are more labels than fit, they come on demand. A board
-// of many threads rests quietly; clicking a frame picks it out, brings its own threads and labels
-// forward, and steps the frames it is tied to a little further apart.
-test('a crowded board rests quietly, and clicking a frame picks out its threads', async ({
+// of many threads rests quietly; pointing at a frame picks it out, brings its own threads and
+// labels forward, and steps the frames it is tied to a little further apart. A click opens it.
+test('a crowded board rests quietly, pointing at a frame picks out its threads, and a click opens it', async ({
   page,
 }) => {
   const made = await (
@@ -141,7 +141,7 @@ test('a crowded board rests quietly, and clicking a frame picks out its threads'
   // At rest: no label words at all, a mark for each thread, and the legend says what to do.
   await expect(words).toHaveCount(0);
   await expect(dots).toHaveCount(project.transitions.length);
-  await expect(page.locator('.legend-note')).toHaveText('Click a frame to follow its threads');
+  await expect(page.locator('.legend-note')).toHaveText('Point at a frame to follow its threads');
   const card = page.locator('.screen-card').first();
   const before = (await card.boundingBox())!;
   // Pick the first frame out: its own threads get their words, the rest stay quiet.
@@ -162,12 +162,12 @@ test('a crowded board rests quietly, and clicking a frame picks out its threads'
     return null;
   });
   expect(spot).not.toBeNull();
-  await page.mouse.click(spot!.x, spot!.y);
+  await page.mouse.move(spot!.x, spot!.y);
   await expect(page.locator('.screen-card.focused')).toHaveCount(1);
   const picked = await words.count();
   expect(picked).toBeGreaterThan(0);
   expect(picked).toBeLessThan(project.transitions.length);
-  await expect(page.locator('.legend-note')).toContainText('click the cork to let go');
+  await expect(page.locator('.legend-note')).toContainText(/: \d+ threads?$/);
   // The frames it is tied to step aside a little; nothing else moves, and no card overlaps another.
   const tied = page.locator('.screen-card.tied').first();
   await expect(tied).toHaveCount(1);
@@ -204,8 +204,11 @@ test('a crowded board rests quietly, and clicking a frame picks out its threads'
     ))
   )
     expect(Math.hypot(after.x - before.x, after.y - before.y)).toBeLessThan(1);
-  // Clicking the cork lets go.
-  await page.mouse.click(spot!.x, spot!.y - 200);
+  // Moving off the frame lets go.
+  await page.mouse.move(spot!.x, spot!.y - 200);
   await expect(page.locator('.screen-card.focused')).toHaveCount(0);
   await expect(words).toHaveCount(0);
+  // A click on the frame opens it.
+  await page.mouse.click(spot!.x, spot!.y);
+  await expect(page.getByRole('dialog')).toBeVisible();
 });

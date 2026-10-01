@@ -20,7 +20,7 @@ async function close(page: Page) {
   await page.getByRole('button', { name: 'Close dialog', exact: true }).last().click();
 }
 async function addPin(page: Page, screen: string, name: string, description: string) {
-  await page.getByRole('button', { name: `Edit ${screen}`, exact: true }).click();
+  await page.getByRole('button', { name: `Open ${screen}`, exact: true }).click();
   await page.getByRole('button', { name: 'Add a pin', exact: true }).first().click();
   const image = page.locator('.editable-image');
   const box = await image.boundingBox();
@@ -140,13 +140,13 @@ test('connect a local folder, drag sketches, author pins and yarn, save, delete 
     );
 
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Edit Home', exact: true })).toBeVisible();
-    await page.getByRole('button', { name: 'Edit Details', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Open Home', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Open Details', exact: true }).click();
     await page.getByRole('button', { name: 'Remove screen', exact: true }).click();
     await page.getByRole('button', { name: 'Remove', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Edit Details', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Open Details', exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: 'Undo', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Edit Details', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Open Details', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Test flow', exact: true }).click();
     await page.getByRole('button', { name: 'Try Open item', exact: true }).click();
     await expect(page.getByAltText('Preview: Details', { exact: true })).toBeVisible();
@@ -228,7 +228,7 @@ test('board movement, zoom, fit, keyboard undo and dialog focus', async ({ page 
   await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
   await expect(page.locator('.zoom-value')).not.toHaveText(before);
   await page.getByRole('button', { name: 'Fit board', exact: true }).click();
-  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Your people', exact: true }).click();
   await page.getByLabel('Paper title').focus();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -243,7 +243,7 @@ test('small viewport and reduced motion preserve authoring and preview access', 
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
   ).toBeTruthy();
-  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Your people', exact: true }).click();
   await expect(page.getByLabel('Paper title')).toBeVisible();
   await close(page);
   await page.getByRole('button', { name: 'Test flow', exact: true }).click();
@@ -261,7 +261,7 @@ test('move and describe a pin, reconnect a yarn, remove a pin and undo its branc
   page,
 }) => {
   const p = await openFresh(page);
-  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Your people', exact: true }).click();
   const pin = page.getByRole('button', { name: 'Pin 1: Open a recent chat', exact: true });
   const box = await pin.boundingBox();
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
@@ -282,7 +282,7 @@ test('move and describe a pin, reconnect a yarn, remove a pin and undo its branc
   expect(saved.transitions.find((v: { id: string }) => v.id === 'chat-allowed').target).toBe(
     'blocked',
   );
-  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Your people', exact: true }).click();
   await page.getByRole('button', { name: 'Pin 1: Open a recent chat', exact: true }).click();
   await page.getByRole('button', { name: 'Remove pin', exact: true }).click();
   await page.getByRole('button', { name: 'Remove', exact: true }).click();

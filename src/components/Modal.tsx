@@ -14,7 +14,9 @@ export function Modal({
 }) {
   const ref = useRef<HTMLDialogElement>(null),
     contentRef = useRef<HTMLDivElement>(null),
-    closeRef = useRef(onClose);
+    closeRef = useRef(onClose),
+    // The second click of a double-click lands outside a dialog the first click just opened.
+    openedAt = useRef(performance.now());
   closeRef.current = onClose;
   useEffect(() => {
     const dialog = ref.current!;
@@ -35,7 +37,7 @@ export function Modal({
       className={`modal ${className}`}
       aria-label={title}
       onClick={(e) => {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget && performance.now() - openedAt.current > 500) {
           const r = e.currentTarget.getBoundingClientRect();
           if (
             e.clientX < r.left ||

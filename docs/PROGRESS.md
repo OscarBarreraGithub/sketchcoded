@@ -1,6 +1,6 @@
 # Product progress and handoff
 
-Updated 2026-09-30. Current status for anyone picking the product up. Requirements are in [SKETCHCODED_REQUESTS.md](SKETCHCODED_REQUESTS.md), decisions in [DECISIONS.md](DECISIONS.md), and every request so far with its status in [CATALOG.md](CATALOG.md).
+Updated 2026-10-01. Current status for anyone picking the product up. Requirements are in [SKETCHCODED_REQUESTS.md](SKETCHCODED_REQUESTS.md), decisions in [DECISIONS.md](DECISIONS.md), and every request so far with its status in [CATALOG.md](CATALOG.md).
 
 ## Current state
 
@@ -8,7 +8,7 @@ The local screenshot flow designer, structural review and interactive Test flow 
 
 The companion site is live at [sketchcoded.com](https://sketchcoded.com), with a [guide](https://sketchcoded.com/guide) and a [read-only example](https://sketchcoded.com/demo) made from the authored Sketchcoded board and its original hand drawings. The published example has eight frames: three drawings and five pages left to the AI, all connected, the same eight as the local board.
 
-The local Sketchcoded board is at revision 237. Home's “Example: this website” leads to The board, since the example on the site is that board; the separate P11 Example demo frame was removed, and so were the blank P2 Boards and P8 Review flow frames and the P12 Guide frame, whose ideas are now in the unassigned pool. Home's “Read more: Guide” is a link out to sketchcoded.com/guide. Every page has a way back through Back or Close pins, shown as small ↶ marks in the frame footers, and its categories are named Main path, Branch, Detour and Way back. Home → The board is accepted as one way (the site's logo returns home). Review flow has one open finding: the P6 Close pin waits to be placed on its drawing. The example opens on the view the board was left on, and was regenerated from revision 237. The logo everywhere (app header, favicon, site) is the owner's hand-drawn alien on the green tile.
+The local Sketchcoded board is at revision 260: on 2026-10-01 the user rearranged its frames and saved a 68% view, which the published example does not have yet. Home's “Example: this website” leads to The board, since the example on the site is that board; the separate P11 Example demo frame was removed, and so were the blank P2 Boards and P8 Review flow frames and the P12 Guide frame, whose ideas are now in the unassigned pool. Home's “Read more: Guide” is a link out to sketchcoded.com/guide. Every page has a way back through Back or Close pins, shown as small ↶ marks in the frame footers, and its categories are named Main path, Branch, Detour and Way back. Home → The board is accepted as one way (the site's logo returns home). Review flow has one open finding: the P6 Close pin waits to be placed on its drawing. The example opens on the view the board was left on; it was last regenerated from revision 237. The logo everywhere (app header, favicon, site) is the owner's hand-drawn alien on the green tile.
 
 ## Start here
 
@@ -49,6 +49,7 @@ See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model s
 | 2026-09-28    | Portability: cross-platform startup, port and data options, repository-relative resources, complete exports, CI matrix                                                                     | Build, 105 unit/API tests, 32 browser workflows; a fresh checkout in a path with spaces passed; app and site CI passed on macOS, Linux and Windows with Node 22.12 and 24; 16 site checks at both laptop sizes and four zooms |
 | 2026-09-28    | Focused public example: ten frames, seven pages left to the AI                                                                                                                             | Build, 105 tests, 32 browser workflows; 112 delegated-page checks (7 pages, 4 zooms, 2 window sizes, app and demo); site CI passed                                                                                            |
 | 2026-09-30    | Requirements catalog; ways back and named categories on the Sketchcoded board                                                                                                              | Board review findings went from 18 to 3                                                                                                                                                                                       |
+| 2026-10-01    | A click opens a frame; larger type in the app and site; zoom works up to 500%; rules for text size, measuring what is too small and full zoom                                              | Build, 113 tests, 32 browser workflows; 70 app and 68 site states at real tab zoom 100%–500% in two window sizes; no text under 15px                                                                                          |
 
 ## Deliberate limits
 
@@ -61,14 +62,25 @@ See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model s
 
 ## Open
 
-- Publish: the 2026-09-30 and 2026-10-01 changes to the app and the site (logo, ways back as marks, opening view, eight-frame example, 404 page) are committed locally and verified, not yet deployed or pushed. Deploy with the site README after the user has looked; regenerate the example first if the board changed.
+- Publish: the 2026-09-30 and 2026-10-01 changes to the app and the site (logo, ways back as marks, opening view, eight-frame example, 404 page, click to open, larger text, zoom to 500%) are committed locally and verified, not yet deployed or pushed. Deploy with the site README after the user has looked; regenerate the example first if the board changed.
+- Regenerate the example from the board as the user leaves it (revision 260 or later) before deploying, so the site opens on their new arrangement.
 - Place the P6 Close pin on the Screen editor drawing (the user's step), then regenerate the example.
-- The real-zoom acceptance test (`tests/e2e/review-acceptance.spec.ts`) failed once in a full browser run on 2026-10-01 and passed three times on its own; the failure details were not kept. Watch it in the next full runs and in CI.
+- The real-zoom acceptance test (`tests/e2e/review-acceptance.spec.ts`) failed once in a full browser run on 2026-10-01, then passed alone three times and in two later full runs. Watch it in CI.
 - On The board's drawing, pins 5 and 6, and pins 7 and 8, sit close together; at high browser zoom pin 8 covers pin 7 in Test flow. The user can nudge them apart in the screen editor.
-- Restructure the guide from `CATALOG.md`, starting with its “Guide topics” section.
+- Restructure the guide as our principles for web design (the general rules in `BUILD_CHECKLIST.md`, written for the public), plus `CATALOG.md`'s “Guide topics” for using Sketchcoded.
 - Point things out on a built UI: planned on 2026-09-29, not built.
 - Decide whether the in-app How it works help folds into the six-panel tutorial.
 - Existing UI copy that predates the direct-copy rule (for example “From a sketch to a story.”) is unchanged, as that rule asks; rewrite it only on request.
+
+## Verification · 2026-10-01
+
+Changes: a click opens a frame (pointing picks one out on a crowded board); the footer's agent button and open arrow removed; the app's type raised by about one browser-zoom step (reading text at least 15px, board text in screen pixels), with label placement measured on the new type; small click areas raised to 44px; layouts for 250% to 500% zoom (a sideways-scrolling toolbar, one-column editor and Test flow); drawings never shrink until their pins pile up (420px on the long side, then the stage scrolls); the same type, pin and zoom treatment on the site and its example; the hero image retaken. New rules in the checklist, the skills, `AGENTS.md` and the site README: text comfortable without zooming in, measure every view for what is too small, and zoom works all the way in.
+
+- `npm run build`, all **113** unit/API tests, all **32** browser workflows (the crowded-board test now points instead of clicking and checks that a click opens the frame; frames open by their title tape) and `npm run format:check` pass. The site's `node --test` (3) and formatting pass.
+- Measured in every app view at 1440×900 and the board's saved view: no text under 15px; every click target at least 44px except the frame title tapes, which open the same frame as the frame around them. At the user's saved views (56% and, after their rearrangement, 68%) all seven yarn labels show their words with no overlap.
+- Real Chromium tab zoom at 100%, 150%, 200%, 250%, 300%, 400% and 500% in 1440×900 and 1280×720 windows: the board, screen editor, Test flow, Plan and the agent dialog (70 states) never scroll the page and keep every control reachable. On The board's drawing (17 pins), no pins pile up in Test flow or the example at any size (before: 8 pairs at 300%).
+- Site, at the same zooms plus a 390×844 phone window: home, guide, example and 404 (68 states) have no page scroll or overflow, no text under 15px (the logo's word hides below 380px wide, leaving the logo), no example label over a frame, controls in view, and the example walks Home → The board → How it works → back at every size. No browser errors.
+- All checks ran on a copy of the board data on a separate port; the user's board was only read.
 
 ## Verification · 2026-09-30
 

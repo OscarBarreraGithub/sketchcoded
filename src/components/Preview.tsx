@@ -27,6 +27,7 @@ import { arrive, follow, type PreviewState } from '../../shared/navigation';
 import { buildsItsOwnPage } from '../../shared/standard-page';
 import { Modal } from './Modal';
 import { ScrollHints } from './ScrollHints';
+import { drawingWidth } from '../drawingFit';
 import { StandardPage } from './StandardPage';
 import { TellAgent } from './TellAgent';
 export function Preview({ project, onClose }: { project: Project; onClose: () => void }) {
@@ -122,7 +123,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
       ? pins.filter(isProvisional)
       : [];
   // Rule (2026-09-26): every view works at every zoom. The drawing is sized to the stage in both
-  // directions so every pin is in view without scrolling, however small the dialog.
+  // directions, down to the size where its pins would pile up; below that the stage scrolls.
   const stageRef = useRef<HTMLDivElement>(null),
     sideRef = useRef<HTMLDivElement>(null),
     [fit, setFit] = useState<{ width: number; height: number } | null>(null);
@@ -142,9 +143,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
     return () => sizes.disconnect();
   }, []);
   const aspect = asset ? asset.width / asset.height : 4 / 3;
-  const fitWidth = fit
-    ? Math.max(120, Math.floor(Math.min(fit.width, (fit.height - 6) * aspect)))
-    : undefined;
+  const fitWidth = fit ? drawingWidth(fit, aspect, asset?.width) : undefined;
   return (
     <Modal title="Take your idea for a walk." onClose={onClose} className="preview-modal">
       <div className="preview-toolbar">
@@ -217,7 +216,6 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
                 style={{
                   aspectRatio: `${aspect}`,
                   width: fitWidth === undefined ? undefined : `${fitWidth}px`,
-                  maxWidth: '100%',
                 }}
               >
                 {asset ? (
@@ -267,6 +265,7 @@ export function Preview({ project, onClose }: { project: Project; onClose: () =>
               </div>
             )}
           </div>
+          <ScrollHints target={stageRef} label="More of the drawing" />
         </div>
         <aside className="preview-sidebar">
           <div className="preview-sidebar-scroll" ref={sideRef}>

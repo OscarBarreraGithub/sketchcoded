@@ -90,7 +90,9 @@ All are in the build checklist.
 - Explain what the Review flow button does. Built.
 - Show whether a sketch is already used. Built (New and Used library sections).
 - Remove the dashed planned-connection lines; only yarn is drawn. Done.
-- A crowded board stays legible: frames further apart, and clicking a frame highlights its threads and moves the frames tied to it slightly apart without losing anyone's place. Built.
+- A crowded board stays legible: frames further apart, and clicking a frame highlights its threads and moves the frames tied to it slightly apart without losing anyone's place. Built; the click is superseded (2026-10-01): a click opens the frame and pointing at it highlights its threads.
+- A click on a frame opens it; remove the small agent button and open arrow from each frame's footer (2026-10-01). Built.
+- Much larger text everywhere, so nothing needs browser zoom; find everything too small; nothing breaks at the browser's maximum zoom (2026-10-01). Built in the app; the site follows.
 - Filter by yarn category: the chosen color stays lit, unrelated frames shrink and dull in place, a Threads button beside Board / App outline / Plan with show all, naming and adding categories. Built.
 - The smallest useful set of yarn categories, preset by the agent. Built (Main path, Branch, Detour, Way back).
 - The bar above the board takes less room. Done.
@@ -149,10 +151,10 @@ All are in the build checklist.
 - The home drawing promised automatic checks for overlapping or small text and zoom problems. Review flow stays structural; those visual checks are part of the agent's instructions when building from a board or working on one. Done.
 - Find what was asked for and not built, what to cut, what the guide is missing, and what in the checklist is project-specific. Done (review of 2026-09-28).
 
-### Open (2026-09-30)
+### Open (2026-09-30, updated 2026-10-01)
 
 - **Point things out on a built UI** (above). Not built.
-- **Restructure the guide** around this catalog. Not started.
+- **Restructure the guide** as our principles for web design (2026-10-01): every request of the kind “nothing overlaps”, “text readable without zooming”, “zoom works all the way in”, “the page never scrolls, panels do”, “say when there is more below”, “44px targets”, written for the public from [BUILD_CHECKLIST.md](BUILD_CHECKLIST.md), with the guide topics below for using Sketchcoded. Not started.
 - **Place the P6 Close pin** on the Screen editor drawing. Every page on the example board now has a Back or Close and the colors use the category names; this one pin waits for its spot on the user's drawing.
 - The integrated build and review loop from the original brief remains deferred by design.
 

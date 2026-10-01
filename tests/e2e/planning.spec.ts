@@ -99,7 +99,7 @@ test('layouts: a mobile drawing, pins placed on it, review, preview toggle and e
   page,
 }) => {
   const project = await fresh(page);
-  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Your people', exact: true }).click();
   await page.getByLabel('Mobile drawing').selectOption({ index: 3 });
   await page
     .getByRole('dialog')
@@ -111,7 +111,7 @@ test('layouts: a mobile drawing, pins placed on it, review, preview toggle and e
   await close(page);
   await page.getByRole('button', { name: /^Review flow/ }).click();
   await expect(page.getByText('Open a recent chat is not on the mobile layout')).toBeVisible();
-  await page.getByRole('button', { name: 'Edit Your people', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Your people', exact: true }).click();
   await page.getByRole('button', { name: 'Pin 1: Open a recent chat', exact: true }).click();
   await page.getByRole('button', { name: 'Place on the mobile drawing', exact: true }).click();
   const phone = page.locator('.mobile-frame');
@@ -253,7 +253,7 @@ test('strings are tied before the drawing: a provisional pin waits, then is plac
   await expect(page.getByRole('heading', { name: project.name, exact: true })).toBeVisible();
   const yarnBefore = await page.locator('.yarn').count();
   // Place the idea on the undrawn frame: a provisional pin with its yarn, no drawing needed.
-  await page.getByRole('button', { name: 'Edit Waiting one', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Waiting one', exact: true }).click();
   const editor = page.getByRole('dialog', { name: /Waiting one/ });
   await expect(editor.getByText('Waiting for a drawing.')).toBeVisible();
   await editor.getByRole('button', { name: 'Place', exact: true }).click();
@@ -263,7 +263,7 @@ test('strings are tied before the drawing: a provisional pin waits, then is plac
   await expect(page.locator('.board-pin.provisional')).toHaveCount(1);
   await expect(page.getByText('All changes saved')).toBeVisible();
   // The drawing lands: the editor asks to place the waiting pin, and the review warns until then.
-  await page.getByRole('button', { name: 'Edit Waiting one', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Waiting one', exact: true }).click();
   await editor.getByLabel('Choose a web drawing').selectOption({ index: 1 });
   const strip = editor.locator('.provisional-strip');
   await expect(strip).toContainText('Place on the drawing:');
@@ -281,7 +281,7 @@ test('strings are tied before the drawing: a provisional pin waits, then is plac
   await expect(waiting).toContainText('Not placed on the drawing yet:');
   await expect(waiting.getByRole('button', { name: 'Try Open two' })).toBeVisible();
   await close(page);
-  await page.getByRole('button', { name: 'Edit Waiting one', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Waiting one', exact: true }).click();
   await strip.getByRole('button', { name: /Open two/ }).click();
   const image = editor.locator('.editable-image img').first();
   await expect(image).toBeVisible();

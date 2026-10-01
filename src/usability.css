@@ -9,7 +9,7 @@ button {
 input:not([type='checkbox']):not([type='range']),
 select {
   min-height: 48px;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.4;
 }
 select {
@@ -34,14 +34,14 @@ input[type='checkbox'] {
 label,
 .editor-inspector label,
 .edge-modal label {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
 }
 .editor-inspector input,
 .editor-inspector select,
 .editor-inspector textarea,
 textarea {
-  font-size: 14px;
+  font-size: 17px;
 }
 .auto-textarea {
   min-height: 128px;
@@ -53,7 +53,7 @@ textarea {
 .text-button,
 .review-button {
   min-height: 44px;
-  font-size: 13px;
+  font-size: 16px;
   padding: 10px 14px;
 }
 .icon-button,
@@ -72,7 +72,7 @@ textarea {
 }
 .check-row {
   min-height: 48px;
-  font-size: 13px;
+  font-size: 16px;
   padding: 8px 0;
 }
 .check-row small,
@@ -80,7 +80,7 @@ textarea {
 .modal-note,
 .editor-toolbar .text-button,
 .sketch-caption {
-  font-size: 12px;
+  font-size: 15px;
   color: #68755e;
 }
 .field-help {
@@ -112,10 +112,10 @@ textarea {
   gap: 10px;
 }
 .header-actions .button {
-  font-size: 13px;
+  font-size: 16px;
 }
 .brand {
-  font-size: 25px;
+  font-size: 28px;
   flex-shrink: 0;
 }
 .project-switcher {
@@ -123,7 +123,7 @@ textarea {
 }
 .project-trigger {
   min-height: 44px;
-  font-size: 13px;
+  font-size: 16px;
   max-width: 280px;
 }
 .project-trigger span {
@@ -147,10 +147,10 @@ textarea {
   padding: 24px 18px 16px;
 }
 .library-heading h2 {
-  font-size: 18px;
+  font-size: 21px;
 }
 .library-heading .eyebrow {
-  font-size: 9px;
+  font-size: 11px;
 }
 .folder-button {
   margin: 0 18px 12px;
@@ -159,10 +159,10 @@ textarea {
   min-height: 68px;
 }
 .folder-button strong {
-  font-size: 13px;
+  font-size: 16px;
 }
 .folder-button small {
-  font-size: 11px;
+  font-size: 14px;
 }
 .folder-icon {
   width: 30px;
@@ -172,7 +172,7 @@ textarea {
 }
 .library-filter {
   margin: 12px 18px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .library-filter select {
   margin-top: 5px;
@@ -183,7 +183,7 @@ textarea {
   scrollbar-width: auto;
 }
 .library-section {
-  font-size: 10px;
+  font-size: 13px;
 }
 .asset {
   margin-bottom: 22px;
@@ -195,14 +195,14 @@ textarea {
   height: 146px;
 }
 .asset-caption {
-  font-size: 12px;
+  font-size: 15px;
   gap: 7px;
 }
 .asset-number {
-  font-size: 10px;
+  font-size: 13px;
 }
 .asset-used {
-  font-size: 11px;
+  font-size: 14px;
   padding: 6px 8px;
   right: 10px;
   bottom: 10px;
@@ -219,12 +219,12 @@ textarea {
   color: #465e40;
   background: #edf1e5;
   text-align: left;
-  font-size: 12px;
+  font-size: 15px;
 }
 .asset-unused {
   display: block;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: 15px;
   color: #737c6c;
 }
 .asset-placements {
@@ -250,11 +250,11 @@ textarea {
   margin: 12px 18px;
 }
 .import-zone strong {
-  font-size: 13px;
+  font-size: 16px;
 }
 .import-zone span,
 .library-footer {
-  font-size: 11px;
+  font-size: 14px;
 }
 .library-footer {
   padding: 12px 18px;
@@ -280,15 +280,15 @@ textarea {
   gap: 8px;
 }
 .board-title h1 {
-  font-size: 34px;
+  font-size: 37px;
   max-width: none;
   min-width: 0;
 }
 .board-eyebrow {
-  font-size: 9px;
+  font-size: 11px;
 }
 .workspace-header p {
-  font-size: 12px;
+  font-size: 15px;
   color: #727c66;
   max-width: none;
 }
@@ -298,10 +298,10 @@ textarea {
 }
 .board-counts {
   display: flex;
-  font-size: 11px;
+  font-size: 14px;
 }
 .review-count {
-  font-size: 11px;
+  font-size: 14px;
 }
 .view-toolbar {
   flex-shrink: 0;
@@ -320,7 +320,7 @@ textarea {
   margin-left: auto;
   color: #65715e;
   line-height: 1.5;
-  font-size: 12px;
+  font-size: 15px;
 }
 .view-switch {
   display: flex;
@@ -336,7 +336,7 @@ textarea {
   gap: 8px;
   padding: 10px 16px;
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 16px;
 }
 .view-switch button[aria-pressed='true'] {
   background: #fffef7;
@@ -369,11 +369,11 @@ textarea {
 .zoom-value {
   min-height: 44px;
   min-width: 50px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .board-help {
   bottom: 12px;
-  font-size: 11px;
+  font-size: 14px;
   gap: 9px;
 }
 .board-help > span:last-child,
@@ -386,7 +386,7 @@ textarea {
 .board-pin {
   width: calc(44px / var(--board-zoom));
   height: calc(44px / var(--board-zoom));
-  font-size: calc(12px / var(--board-zoom));
+  font-size: calc(15px / var(--board-zoom));
   min-height: 0;
   border-width: calc(2px / var(--board-zoom));
 }
@@ -395,7 +395,7 @@ textarea {
   width: 44px;
   height: 44px;
   min-height: 44px;
-  font-size: 14px;
+  font-size: 17px;
 }
 .paper-title {
   min-height: 44px;
@@ -407,7 +407,7 @@ textarea {
   stroke-width: calc(44px / var(--board-zoom));
 }
 .connection-banner {
-  font-size: 13px;
+  font-size: 16px;
   max-width: calc(100% - 24px);
   white-space: normal;
 }
@@ -448,7 +448,7 @@ textarea {
 }
 .edge-route {
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.6;
 }
 .edge-options {
@@ -505,7 +505,7 @@ textarea {
 .detail-thumbnail small {
   display: block;
   margin-top: 10px;
-  font-size: 12px;
+  font-size: 15px;
   color: #67765c;
 }
 .detail-modal {
@@ -538,14 +538,14 @@ textarea {
   background-color: #fffefa;
   padding: 11px 38px 11px 12px;
   border: 1px solid #dcded4;
-  font-size: 14px;
+  font-size: 17px;
 }
 .preview-toolbar > div {
   flex-wrap: wrap;
   gap: 8px;
 }
 .preview-toolbar .text-button {
-  font-size: 13px;
+  font-size: 16px;
 }
 .preview-body {
   min-height: 0;
@@ -563,7 +563,7 @@ textarea {
 }
 .preview-sidebar p,
 .branch-choice small {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.7;
 }
 .preview-footer {
@@ -571,7 +571,7 @@ textarea {
   padding: 16px 24px;
 }
 .preview-footer > span {
-  font-size: 12px;
+  font-size: 15px;
 }
 .preview-footer > span:not(.preview-step) {
   flex: 1;
@@ -585,11 +585,11 @@ textarea {
   padding: 24px 24px 18px;
 }
 .review-heading p {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.7;
 }
 .review-heading h2 {
-  font-size: 28px;
+  font-size: 31px;
 }
 .review-scroll {
   scrollbar-width: auto;
@@ -597,12 +597,12 @@ textarea {
 .review-context p,
 .issue-detail p,
 .issue-detail li {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.65;
 }
 .review-tabs button {
   min-height: 48px;
-  font-size: 13px;
+  font-size: 16px;
 }
 .outline-view {
   flex: 1;
@@ -618,7 +618,7 @@ textarea {
   gap: 20px;
 }
 .outline-intro h2 {
-  font: 400 30px var(--serif);
+  font: 400 33px var(--serif);
   margin: 10px 0;
 }
 .outline-intro p {
@@ -651,13 +651,13 @@ textarea {
   margin-bottom: 14px;
 }
 .outline-group-heading h3 {
-  font-size: 15px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 .outline-group-heading h3 span {
-  font-size: 12px;
+  font-size: 15px;
   border-radius: 5px;
   background: #e4e8d9;
   padding: 3px 7px;
@@ -701,7 +701,7 @@ textarea {
 }
 .outline-view summary strong {
   overflow-wrap: anywhere;
-  font-size: 14px;
+  font-size: 17px;
 }
 .disclosure-arrow {
   transition: transform 0.15s;
@@ -713,7 +713,7 @@ textarea {
 .outline-count {
   margin-left: auto;
   color: #6e7964;
-  font-size: 12px;
+  font-size: 15px;
   flex-shrink: 0;
 }
 .outline-screen-content {
@@ -763,7 +763,7 @@ textarea {
   border-radius: 50%;
   color: #9b4b3d;
   background: #f4e4d8;
-  font-size: 12px;
+  font-size: 15px;
 }
 .outline-pin-number.reference {
   color: #526b45;
@@ -815,7 +815,7 @@ textarea {
 .outline-branch small {
   line-height: 1.6;
   color: #6a755e;
-  font-size: 12px;
+  font-size: 15px;
   white-space: pre-wrap;
 }
 .outline-destination,
@@ -846,7 +846,7 @@ textarea {
   color: #6f7d62;
 }
 .outline-empty h3 {
-  font: 28px var(--serif);
+  font: 31px var(--serif);
   margin: 18px 0 12px;
 }
 @media (max-width: 1200px) {
@@ -920,7 +920,7 @@ textarea {
     overflow: visible;
   }
   .library-heading h2 {
-    font-size: 20px;
+    font-size: 23px;
   }
   .workspace-header {
     padding: 14px 20px;
@@ -930,7 +930,7 @@ textarea {
     display: none;
   }
   .board-title h1 {
-    font-size: 30px;
+    font-size: 33px;
   }
   .view-toolbar {
     padding: 8px 20px;
@@ -956,7 +956,7 @@ textarea {
     padding: 8px 12px;
   }
   .brand {
-    font-size: 22px;
+    font-size: 25px;
   }
   .brand-logo {
     display: none;
@@ -985,10 +985,10 @@ textarea {
     gap: 8px;
   }
   .board-eyebrow {
-    font-size: 9px;
+    font-size: 11px;
   }
   .board-title h1 {
-    font-size: 27px;
+    font-size: 30px;
   }
   .board-summary {
     align-self: center;
@@ -1004,7 +1004,7 @@ textarea {
     width: 100%;
     min-width: 0;
     flex-basis: 100%;
-    font-size: 12px;
+    font-size: 15px;
   }
   .view-switch {
     flex: 1;
@@ -1041,7 +1041,7 @@ textarea {
     gap: 12px;
   }
   .outline-intro h2 {
-    font-size: 27px;
+    font-size: 30px;
   }
   .outline-screen-content {
     padding: 12px;
@@ -1056,7 +1056,7 @@ textarea {
     min-width: 80px;
   }
   .outline-count {
-    font-size: 11px;
+    font-size: 14px;
   }
   .outline-pin {
     margin-left: 0;
@@ -1079,7 +1079,7 @@ textarea {
     padding: 20px 16px;
   }
   .modal-heading h2 {
-    font-size: 25px;
+    font-size: 28px;
   }
   .screen-workspace,
   .editor-inspector,
@@ -1139,7 +1139,7 @@ textarea {
     display: none;
   }
   .review-heading p {
-    font-size: 12px;
+    font-size: 15px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1249,15 +1249,15 @@ textarea {
 .accepted-reason p,
 .accepted-reason > .text-button,
 .stale-reason {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.65;
 }
 .issue-body textarea {
-  font-size: 14px;
+  font-size: 17px;
 }
 .issue-heading small,
 .accepted-reason small {
-  font-size: 10px;
+  font-size: 13px;
   color: #71805e;
 }
 .accepted-reason {

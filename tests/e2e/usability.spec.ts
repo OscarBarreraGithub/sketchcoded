@@ -78,7 +78,7 @@ test('outline lists shared destinations once, follows loops, searches pins and r
   await target.getByRole('button', { name: 'Show on board', exact: true }).click();
   await expect(page.getByRole('main', { name: 'Design board' })).toBeVisible();
   await expect(
-    page.getByRole('button', { name: 'Edit A little conversation', exact: true }),
+    page.getByRole('button', { name: 'Open A little conversation', exact: true }),
   ).toBeInViewport();
   await page.getByRole('slider', { name: 'Board zoom', exact: true }).fill('135');
   const viewport = await page.locator('.board-world').getAttribute('style');
@@ -110,7 +110,7 @@ test('detail pin intake, board attachment, persistence, export and preview do no
   await page.getByRole('combobox', { name: 'Pin purpose', exact: true }).selectOption('detail');
   await page.getByRole('button', { name: 'Choose detail on board', exact: true }).click();
   await expect(page.getByRole('main', { name: 'Design board' })).toBeVisible();
-  await page.getByRole('button', { name: 'Edit Chat row close-up', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Chat row close-up', exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByText('All changes saved', { exact: true })).toBeVisible();
   const saved: Project = await (await page.request.get(`/api/projects/${p.id}`)).json();
@@ -168,7 +168,7 @@ test('library shows usage, filters unused images and locates an existing placeme
   await page.locator('.asset-usage').first().click();
   await page.locator('.asset-placements button').first().click();
   await expect(
-    page.getByRole('button', { name: 'Edit A warm welcome', exact: true }),
+    page.getByRole('button', { name: 'Open A warm welcome', exact: true }),
   ).toBeInViewport();
   const slider = page.getByRole('slider', { name: 'Board zoom', exact: true });
   await slider.fill('120');

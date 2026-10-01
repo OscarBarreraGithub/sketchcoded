@@ -17,7 +17,6 @@ import {
   Smartphone,
   Undo2,
   X,
-  MoveUpRight,
 } from 'lucide-react';
 import {
   assetUrl,
@@ -84,7 +83,7 @@ export function Board({
     viewRef = useRef(view),
     [moving, setMoving] = useState<{ id: string; x: number; y: number } | null>(null),
     [resizing, setResizing] = useState<{ id: string; width: number } | null>(null),
-    [focus, setFocus] = useState<string | null>(null),
+    [hovered, setHovered] = useState<string | null>(null),
     [space, setSpace] = useState(false);
   viewRef.current = view;
   const drag = useRef<{
@@ -228,11 +227,24 @@ export function Board({
     el.addEventListener('wheel', wheel, { passive: false });
     return () => el.removeEventListener('wheel', wheel);
   }, []);
-  // Rule: nothing overlaps, and a board of many threads must still be readable. Clicking a frame
-  // picks it out: everything else fades, its own threads come forward with their labels, and the
-  // frames it is tied to step a little further away so the yarn between them can be read. The step
-  // is a constant 26 screen pixels applied as a transform, so no position is ever written and
-  // nothing jumps: a frame is always where the user left it.
+  // With many threads the labels would cover everything, so they wait until a frame is picked.
+  const threads = project.transitions.filter((t) => !isHistory(t) && t.target);
+  const crowded = threads.length > 8;
+  // Rule: nothing overlaps, and a board of many threads must still be readable. A click opens a
+  // frame (2026-10-01). On a crowded board, pointing at a frame picks it out: everything else
+  // fades, its own threads come forward with their labels, and the frames it is tied to step a
+  // little further away so the yarn between them can be read. It lets go a moment after the pointer
+  // leaves, so the pointer can reach a label. The step is a constant 26 screen pixels applied as a
+  // transform, so no position is ever written and nothing jumps: a frame is always where the user
+  // left it.
+  const focus = crowded ? hovered : null;
+  const pickTimer = useRef<number | undefined>(undefined);
+  const pick = (id: string | null, wait: number) => {
+    window.clearTimeout(pickTimer.current);
+    if (crowded) pickTimer.current = window.setTimeout(() => setHovered(id), wait);
+  };
+  const keep = () => window.clearTimeout(pickTimer.current);
+  useEffect(() => keep, []);
   const ties = (() => {
     const frames = new Set<string>(),
       yarn = new Set<string>();
@@ -270,9 +282,6 @@ export function Board({
       step = NUDGE / view.zoom;
     return { x: (dx / length) * step, y: (dy / length) * step };
   };
-  // With many threads the labels would cover everything, so they wait until a frame is picked.
-  const threads = project.transitions.filter((t) => !isHistory(t) && t.target);
-  const crowded = threads.length > 8;
   const used = colorNames.filter((c) => project.transitions.some((t) => t.color === c));
   // A label says its words when there is room for them: a quiet board, the frame you picked, or a
   // category small enough to read at once. Otherwise it waits as a mark.
@@ -343,7 +352,7 @@ export function Board({
     if (!d) return;
     drag.current = null;
     if (d.type === 'pan') {
-      if (Math.hypot(d.dx, d.dy) < 4) setFocus(null);
+      if (Math.hypot(d.dx, d.dy) < 4) setHovered(null);
       commitView(viewRef.current);
     } else if (d.type === 'resize') {
       const width = resizing?.width;
@@ -352,9 +361,7 @@ export function Board({
           group: `size:${d.id}`,
         });
       setResizing(null);
-    } else if (Math.hypot(d.dx, d.dy) < 4)
-      // A click on a frame picks it out of the tangle; its tape and its arrow open it.
-      setFocus((current) => (current === d.id ? null : d.id!));
+    } else if (Math.hypot(d.dx, d.dy) < 4) onScreen(d.id!);
     else
       update((p) => ({
         ...p,
@@ -503,7 +510,10 @@ export function Board({
                 } as CSSProperties
               }
               onPointerDown={(e) => start(e, 'screen', s)}
-              onDoubleClick={() => onScreen(s.id)}
+              onPointerEnter={() => pick(s.id, 180)}
+              onPointerLeave={() => pick(null, 600)}
+              onFocus={() => pick(s.id, 0)}
+              onBlur={() => pick(null, 600)}
               aria-label={`Screen: ${s.title}`}
             >
               <div className="card-paper">
@@ -629,23 +639,6 @@ export function Board({
                         </button>
                       ))}
                   </span>
-                  <span className="card-agent" onPointerDown={(e) => e.stopPropagation()}>
-                    <TellAgent
-                      project={project}
-                      context={{ view: 'screen-editor', screen: s.id }}
-                      label=""
-                      title={`Tell the agent about ${s.title}`}
-                      className="icon-button"
-                    />
-                  </span>
-                  <button
-                    className="icon-button"
-                    aria-label={`Edit ${s.title}`}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={() => (connecting ? onConnect(connecting, s.id) : onScreen(s.id))}
-                  >
-                    <MoveUpRight size={14} />
-                  </button>
                 </div>
                 <button
                   className="resize-handle"
@@ -657,6 +650,7 @@ export function Board({
               </div>
               <button
                 className="paper-title"
+                aria-label={`Open ${s.title}`}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => (connecting ? onConnect(connecting, s.id) : onScreen(s.id))}
               >
@@ -748,6 +742,8 @@ export function Board({
                 style={{ left: at.x, top: at.y }}
                 aria-label={`Edit connection: ${t.summary}`}
                 title={t.summary}
+                onPointerEnter={() => focus && ties.yarn.has(t.id) && keep()}
+                onPointerLeave={() => focus && pick(null, 600)}
                 onClick={() => onEdge(t.id)}
               >
                 <span>{t.summary || 'Add a condition'}</span>
@@ -817,7 +813,7 @@ export function Board({
         </div>
       </div>
       <div className="board-help">
-        <span>Click a frame to follow it · double-click to open</span>
+        <span>Click a frame to open it</span>
         <i /> <span>Drag to arrange · drag blank space to pan</span>
         <i /> <span>Scroll to zoom · Shift + scroll to pan</span>
       </div>
@@ -843,8 +839,8 @@ export function Board({
         {!category && view.zoom >= 0.4 && crowded && (
           <span className="legend-note">
             {focus
-              ? `${project.screens.find((s) => s.id === focus)?.title ?? 'This frame'}: ${ties.yarn.size} ${ties.yarn.size === 1 ? 'thread' : 'threads'} · click the cork to let go`
-              : 'Click a frame to follow its threads'}
+              ? `${project.screens.find((s) => s.id === focus)?.title ?? 'This frame'}: ${ties.yarn.size} ${ties.yarn.size === 1 ? 'thread' : 'threads'}`
+              : 'Point at a frame to follow its threads'}
           </span>
         )}
       </div>
