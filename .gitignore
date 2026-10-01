@@ -8,5 +8,3 @@ playwright-report/
 .DS_Store
 *.tsbuildinfo
 
-# Project records kept by agents for the maintainer; local only, never published.
-notes/

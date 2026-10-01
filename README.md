@@ -50,3 +50,7 @@ npm run format:check
 ```
 
 The browser tests include real browser zoom at 125% to 250%. `AGENTS.md` has the conventions for agents working on this repository.
+
+## License
+
+The code is MIT licensed; see [LICENSE](LICENSE). The hand-drawn logo in `public/brand/` and `public/favicon.svg` is the author's own and is not covered by it.
