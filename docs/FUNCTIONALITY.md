@@ -12,7 +12,7 @@ Started 2026-09-25 from the original brief and the product requirements; kept cu
 - Title and tagline: Sketchcoded. Prompts make apps. Sketching makes your vision.
 - Example: this website. A frame showing this site as a Sketchcoded board; it leads to The board, because the read-only demo is that board. Make it obvious it should be clicked. The public demo uses the original drawings and connected pages. Undrawn example pages are left to the AI; isolated planning frames stay in the local backlog.
 - Set up: tell your AI. A setup prompt generated from the configured repository address, with a Copy prompt button. On mobile this block sits below the example frame.
-- Runs on your computer; your sketches never leave it. No account, no API key.
+- Runs on your computer; your sketches never leave it. No account, no API key. The site dropped this box on 2026-10-01; the README still says it.
 - Read more: Guide, a link pin to sketchcoded.com/guide, which leads to the guidelines at the bottom of the home page (there is no separate guide page, and no frame for it). The guidelines are our principles for web design, a compact form of the build checklist the agent verifies when authoring a board or building its site; setup, controls and agent handoff are in the repository README.
 - GitHub: a link pin. The address lives in the pin's notes; no frame, no yarn.
 - See more projects: a link pin to sciencewithagents.com.

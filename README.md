@@ -6,9 +6,17 @@ Ramble about your ideas with your agent: it sorts each one into the plan, on the
 
 ![A Sketchcoded board](docs/screenshots/board.png)
 
-[sketchcoded.com](https://sketchcoded.com) has the setup prompt and our guidelines for web design, and [the example](https://sketchcoded.com/demo) is the board this project was planned on.
+See [sketchcoded.com](https://sketchcoded.com) for the design principles every Sketchcoded site follows, and [the example](https://sketchcoded.com/demo), the board this project was planned on.
 
-## Run it
+## Set up with your agent
+
+Paste this into your AI agent:
+
+```text
+Set up Sketchcoded on this computer. Clone https://github.com/OscarBarreraGithub/sketchcoded, use Node 22.12 or later, run npm ci, then npm run dev. Reuse a running instance of this checkout; otherwise, if port 5173 is busy, use npm run dev -- --port 0. Open the local address printed by the server in my browser.
+```
+
+## Run it yourself
 
 Requires Node.js 22.12 or later.
 
