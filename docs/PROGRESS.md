@@ -63,6 +63,7 @@ See `FUNCTIONALITY.md` for the feature list by screen and `GRAPH.md` for model s
 ## Open
 
 - Publish: the 2026-09-30 and 2026-10-01 changes to the app and the site (logo, ways back as marks, opening view, eight-frame example, 404 page, click to open, larger text, zoom to 500%) are committed locally and verified, not yet deployed or pushed. Deploy with the site README after the user has looked; regenerate the example first if the board changed.
+- Next (agreed): take “Rephrase:” out of Home's “Runs local, sketches never leave” pin description, make a frame opened in the example's walk fit the window without scrolling, then re-export the example and redeploy.
 - Regenerate the example from the board as the user leaves it before deploying, so the site opens on their latest arrangement (last regenerated from revision 263).
 - Place the P6 Close pin on the Screen editor drawing (the user's step), then regenerate the example.
 - The real-zoom acceptance test (`tests/e2e/review-acceptance.spec.ts`) failed once in a full browser run on 2026-10-01, then passed alone three times and in two later full runs. Watch it in CI.
