@@ -67,9 +67,10 @@ export function Landing({
               </b>
             </p>
             <p className="landing-lede">
-              Draw the screens of the app you’re imagining. Pin them to a board, tie them together
-              with yarn, and write what each part should do in plain words. Play it, check it, and
-              hand your agent a plan it can build from.
+              Draw the screens of the app you’re imagining. Pin them to a board, tie their logic
+              together with yarn, and write what each part should do in plain words. Click through
+              your sketches like a prototype. A post-it on a frame leaves its design to your agent,
+              so you draw only the pages you care about.
             </p>
             <button className="button" onClick={() => setTutorial(true)}>
               Try the six-step tutorial

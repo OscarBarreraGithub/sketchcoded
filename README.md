@@ -1,10 +1,12 @@
 # Sketchcoded
 
-**Ideas, connected.** Draw the screens of the app you're imagining, pin them to a board, tie them together with yarn, and hand your agent a plan it can build from. It runs on your computer; your sketches never leave it. No account, no API key.
+Draw the screens of the app you're imagining. Pin them to a board, tie their logic together with yarn, and write what each part should do in plain words. Click through your sketches like a prototype. A post-it on a frame leaves its design to your agent, so you draw only the pages you care about.
+
+Ramble about your ideas with your agent: it sorts each one into the plan, on the screen it belongs to, and keeps your rules as a checklist that every build is checked against. Sketchcoded doesn't build your site; it's the plan your agent builds from, updated live as you both work. It runs on your computer, and your sketches never leave it. No account, no API key.
 
 ![A Sketchcoded board](docs/screenshots/board.png)
 
-The [guide](https://sketchcoded.com/guide) covers everything in detail, and [the example](https://sketchcoded.com/demo) is the board this project was planned on.
+[sketchcoded.com](https://sketchcoded.com) has the setup prompt and our guidelines for web design, and [the example](https://sketchcoded.com/demo) is the board this project was planned on.
 
 ## Run it
 
@@ -31,13 +33,15 @@ The server listens on 127.0.0.1 only. Run one server per data directory.
 5. **Check it.** **Review flow** finds dead ends and missing ways back. **Test flow** lets you click through the sketches.
 6. **Hand it over.** Every view has a **Tell the agent** button that copies a short prompt. Your agent reads the live board from the running app and writes back to it. **Export project** saves a `.sketchcoded.zip` with the board, its drawings, `flow.md` and the agent's instructions.
 
+On the board, drag blank cork to pan, scroll to zoom, Shift + scroll to pan and press F to fit. Drag a frame to move it and its corner to resize it.
+
 ## Your rules
 
 `docs/BUILD_CHECKLIST.md` is the list of requirements an agent checks before calling work done: text you can read without zooming in, nothing overlapping, zoom that works all the way in, and more. Edit it to make it yours. `docs/skills/` holds the instructions agents follow. The app serves both and includes them in every export.
 
 ## Your files
 
-Boards save automatically, and each save keeps the previous version as a `.bak` next to it. To move boards to another computer, export them and use **Import project** there.
+Boards save automatically, and each save keeps the previous version as a `.bak` next to it. To move boards to another computer, export them and use **Import a project** there.
 
 ## Development
 
